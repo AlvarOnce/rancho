@@ -95,6 +95,8 @@ void Arena::dibujar(Renderizador* renderizador) {
 			//combatientes[i]->dibujar(pos_x[i], pos_y[i]); no se porque da error
 		}
 	}
+
+	renderizador->dibujarSprite("../assets/Sprites/tablero/tableroFondo.png", 512, 512, 480/2, 270/2, -1);
 }
 
 void Arena::recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada) {

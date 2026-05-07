@@ -132,8 +132,14 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
                 proximo_estado = CREDITOS;
                 break;
             }
-
         }
+
+        if (key == 'b') {
+            transicion.empieza();
+            proximo_estado = BATALLA;
+        }
+
+
         break;
 
 		case TABLERO: // movimiento discreto en el tablero, no hace falta procesar la tecla al levantarla, el movimiento se hace una vez al pulsar y ya está
@@ -142,6 +148,7 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
          if (key == 'a' || key == 'A') tablero->recibirMovimiento(0, -1, 0);
          if (key == 'd' || key == 'D') tablero->recibirMovimiento(0, 1, 0);
          if (key == 'q' || key == 'Q') tablero->seleccionarPieza(0);
+
         break;
 
 		case BATALLA: // movimiento continuo en la batalla, se procesa al pulsar la tecla y al levantarla, hay movimiento mientras se mantenga pulsada la tecla
@@ -150,6 +157,13 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
          if (key == 'a' || key == 'A') arena->recibirMovimiento(0, IZQUIERDA, true);
          if (key == 'd' || key == 'D') arena->recibirMovimiento(0, DERECHA, true);
          if (key == 'q' || key == 'Q') arena->recibirAtaque(0); //poner los controles qeu querais
+
+         if (key == 'b') {
+             transicion.empieza();
+             proximo_estado = MENU;
+         }
+
+
          break;
 
     }
