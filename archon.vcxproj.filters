@@ -50,7 +50,7 @@
     <ClInclude Include="include\creditos.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="docs\memoria.md">
+    <None Include="docs\cuadernoBitacora.md">
       <Filter>docs</Filter>
     </None>
     <None Include="bin\assets\Audio\ranchoMainTheme.mpeg">
@@ -99,8 +99,9 @@
     </Library>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="src\CopiaDibujoAnterior" />
-    <Text Include="src\zzz.txt" />
+    <Text Include="src\old\CopiaDibujoAnterior" />
+    <Text Include="src\old\Funciones tablero david.txt" />
+    <Text Include="src\old\zzz.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\Sprites\menu\titulo0.png" />

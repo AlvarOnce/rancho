@@ -16,24 +16,24 @@
 class Juego 
 {
     Transicion transicion;
-    Menu* miMenu;
-    Tablero* miTablero;
-    Arena* miArena;
-    Renderizador* motorGrafico;
-    Animal* misAnimales[18];
+    Menu* menu;
+    Tablero* tablero;
+    Arena* arena;
+    Renderizador* renderizador;
+    Animal* animales[18];
     Creditos* creditos;
 
-    double anchoVentana = 480;
-    double altoVentana = 270;
+    double ancho_ventana_ = 480;
+    double alto_ventana_ = 270;
 
 public:
 
-    double getAnchoVentana() {return anchoVentana;} // Para decirle al main cuánto mide la ventana que debe crear
-    double getAltoVentana() {return altoVentana;}
+    double anchoVentana() const {return ancho_ventana_;} // Para decirle al main cuánto mide la ventana que debe crear
+    double altoVentana() const {return alto_ventana_;}
 
     enum Estado { MENU, TABLERO, BATALLA, CREDITOS };
-    Estado estadoActual;
-    Estado proximoEstado;
+    Estado estado_actual;
+    Estado proximo_estado;
 
     Juego(); 
     ~Juego();

@@ -44,89 +44,93 @@ void Tablero::inicializarTablero() // iniclizaiamos el Tablero vacio, es decir, 
 
 }
 
+void Tablero::actualizar(float dt)
+{
+    // actualiza todos los animales posados sobre el tablero
+    for (int i = 0; i < FILAS; i++)
+    {
+        for (int j = 0; j < COLUMNAS; j++)
+        {
+            if (casillas[i][j] != nullptr)
+            {
+                casillas[i][j]->actualizar(dt);
+            }
+        }
+    }
+
+    // actualiza el animal levantado en el cursor
+    if (animal_seleccionado_ != nullptr)
+    {
+        animal_seleccionado_->actualizar(dt);
+    }
+}
+
 void Tablero::dibujar(Renderizador* motor){
 
     // imagen de fondo del tablero
     motor->dibujarSprite("../assets/Sprites/tablero/tableroFondo.png", 512, 512, 480/2, 270/2, -1);
     motor->dibujarSprite("../assets/Sprites/tablero/tablero.png", 256, 256, 480 / 2, 270 / 2, -2);
 
+    // dibuja los animales posados sobre el tablero
+    for (int i = 0; i < FILAS; i++)
+    {
+        for (int j = 0; j < COLUMNAS; j++)
+        {
+            if (casillas[i][j] != nullptr)
+            {
+                casillas[i][j]->dibujar(motor);
+            }
+        }
+    }
 
-    //// recorrer la matriz para dibujar casillas de poder y animales
-    //for (int i = 0; i < FILAS; i++)
-    //{
-    //    for (int j = 0; j < COLUMNAS; j++)
-    //    {
-    //        int x = X_INICIO + j * TAMANO_CASILLA;
-    //        int y = Y_INICIO + i * TAMANO_CASILLA;
+    // dibuja el animal levantado en el cursor
+    if (animal_seleccionado_ != nullptr)
+    {
+        animal_seleccionado_->dibujar(motor);
+    }
 
-    //        if (esPuntoDePoder(i, j))
-    //        {
-    //            // motor->dibujarSprite("../assets/Sprites/puntopoder.png", [...] )
-    //        }
+	// dibuja el cursor
+	cursor.dibujar(motor);
 
-    //        if (casillas[i][j] != nullptr)
-    //        {
-    //            // casillas[i][j]->dibujar(motor); 
-    //            // la funcion dibujar debe estar dentro de animal.h, porque aqui le decimos que nos dibuje en la casilla el animal
-    //        }
-    //    }
-    //}
-
-    // dibujar los cursores
-    //float cursor1X = X_INICIO + (posicion_columna_cursor_actual_j1 * TAMANO_CASILLA) + 11.0f;
-    //float cursor1Y = Y_INICIO + (posicion_fila_cursor_actual_j1 * TAMANO_CASILLA) + 11.0f;
-    //motor->dibujarSprite("../assets/Sprites/cursorJ1.png", 22, 22, cursor1X, cursor1Y, -1.0f);
-
-    //float cursor2X = X_INICIO + (posicion_columna_cursor_actual_j2 * TAMANO_CASILLA) + 11.0f;
-    //float cursor2Y = Y_INICIO + (posicion_fila_cursor_actual_j2 * TAMANO_CASILLA) + 11.0f;
-    //motor->dibujarSprite("../assets/Sprites/cursorJ2.png", 22, 22, cursor2X, cursor2Y, -1.0f);
-
+    // if(el cursor esta sobre un animal) funcion propia de tablero y cursor detectar la casilla
+        // en actualizar se determina que tarjeta se va a dibujar interiormente
+    if (cursor.posx > 150 && cursor.posx < 170) // ELIMINAR ESTA CONDICION
+        tarjeta.dibujar(motor);
 }
 
-void Tablero::moverCursor(int key)
+//la 'd' y la flecha izquierda las dos glut las lee como 100
+//std::cout << "posicion del cursor: " << cursor.columna << ", " << cursor.fila << std::endl;
+//std::cout << casillas[cursor.columna][cursor.fila] << std::endl; // esto es para ver si el cursor se mueve por la matriz, si el puntero es null o no
+
+void Tablero::recibirMovimiento(int jugador, int dx, int dy)
 {
-    if (casillas[0][0]!= nullptr && casillas[0][0]->getIntroTablero()) return;
+	if (casillas[0][0] != nullptr && casillas[0][0]->getIntroTablero()) return; // si no ha terminado su animación de introducción, bloqueamos el movimiento del tablero
+
     if (hay_pieza_seleccionada_ == FALSE)
-    {
-        if (turno_actual == BANDO_LUZ)
-        {
-            if (key == 'w' || key == 'W')   cursor.mover(0, 1);
-            if (key == 's' || key == 'S')   cursor.mover(0, -1);
-            if (key == 'a' || key == 'A')   cursor.mover(-1, 0);
-            if (key == 'd' || key == 'D')   cursor.mover(1, 0);     //la 'd' y la flecha izquierda las dos glut las lee como 100
-            //std::cout << "posicion del cursor: " << cursor.columna << ", " << cursor.fila << std::endl;
-			//std::cout << casillas[cursor.columna][cursor.fila] << std::endl; // esto es para ver si el cursor se mueve por la matriz, si el puntero es null o no
-        }
-        else if (turno_actual == BANDO_OSCURIDAD)
-        {
-            if (key == GLUT_KEY_UP)         cursor.mover(0, 1);
-            if (key == GLUT_KEY_DOWN)       cursor.mover(0, -1);
-            if (key == GLUT_KEY_LEFT)       cursor.mover(-1, 0);
-            if (key == GLUT_KEY_RIGHT)      cursor.mover(1, 0);
-        }
+    {                                               // queda mucho más compacto así, pasando directamente los parámetros al método mover del cursor
+		if (turno_actual == BANDO_LUZ)              // sin necesidad de un montón de ifs anidados
+			if (jugador == 0) cursor.mover(dx, dy); // si el turno es del bando de luz, solo se puede mover el cursor del jugador 1 (el de la izquierda)
+		if (turno_actual == BANDO_OSCURIDAD)        // habrá que modificar esto cuando haya un cursor para cada jugador.
+			if (jugador == 1) cursor.mover(dx, dy);
     }
     else 
     {
-        if (animal_seleccionado_->getEnMovimiento()) return;
-
+		if (animal_seleccionado_->getEnMovimiento()) return; // si el animal seleccionado se está moviendo, bloqueamos el movimiento del tablero
+		                                                     // esto impide jugar rápido
 		bool movimiento_valido = false;
-        if (key == 'w' || key == 'W')   movimiento_valido = animal_seleccionado_->mover(TABLERO, U);
-        if (key == 's' || key == 'S')   movimiento_valido = animal_seleccionado_->mover(TABLERO, D);
-        if (key == 'a' || key == 'A')   movimiento_valido = animal_seleccionado_->mover(TABLERO, L);
-        if (key == 'd' || key == 'D')   movimiento_valido = animal_seleccionado_->mover(TABLERO, R);
+        if (dx == 0 && dy == 1)   movimiento_valido = animal_seleccionado_->mover(TABLERO, U);
+        if (dx == 0 && dy == -1)   movimiento_valido = animal_seleccionado_->mover(TABLERO, D);
+        if (dx == -1 && dy == 0)   movimiento_valido = animal_seleccionado_->mover(TABLERO, L);
+        if (dx == 1 && dy == 0)   movimiento_valido = animal_seleccionado_->mover(TABLERO, R);
 
         if (movimiento_valido) {
-            if (key == 'w' || key == 'W') cursor.mover(0, 1);
-            if (key == 's' || key == 'S') cursor.mover(0, -1);
-            if (key == 'a' || key == 'A') cursor.mover(-1, 0);
-            if (key == 'd' || key == 'D') cursor.mover(1, 0);
+            cursor.mover(dx, dy); 
         }
-    }
-    if (key == '.') seleccionarPieza();
-    
+    }   
 }
 
-void Tablero::seleccionarPieza() {
+void Tablero::seleccionarPieza(int jugador) // falta que tenga en cuenta el turno, que solo se pueda seleccionar una pieza del bando del jugador que le toca
+{                                           // seguramente con la clase Jugador sea más fácil
     if (casillas[cursor.columna][cursor.fila] == nullptr && animal_seleccionado_ == nullptr) {
 
     }

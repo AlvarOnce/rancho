@@ -6,7 +6,7 @@ void Renderizador::limpiarPantalla() {
     glLoadIdentity();
 }
 
-void Renderizador::dibujarSprite(const char* rutaImagen, float ancho, float alto, float posx, float posy, float capa, int rows, int cols, int stateX, int stateY) {
+void Renderizador::dibujarSprite(const char* rutaImagen, float ancho, float alto, float posx, float posy, float capa, int rows, int cols, int stateX, int stateY, bool transparencia) {
 
     float anchoFrame = ancho / cols; // si es solo un frame anchoFrame = ancho pasado en parametro
     float altoFrame = alto / rows;
@@ -26,6 +26,11 @@ void Renderizador::dibujarSprite(const char* rutaImagen, float ancho, float alto
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	if (transparencia) { // si el sprite tiene transparencia, activamos el alpha test
+        glEnable(GL_ALPHA_TEST);        // para que no se dibujen los píxeles que sean completamente transparentes, 
+        glAlphaFunc(GL_GREATER, 0.05f); // mejora rendimiento y evita artefactos raros entre animales
+    }
+
     glDisable(GL_LIGHTING);
     glColor3f(1, 1, 1);
 
@@ -38,6 +43,10 @@ void Renderizador::dibujarSprite(const char* rutaImagen, float ancho, float alto
     glTexCoord2d(inicioFrameX/ancho               , inicioFrameY/alto);                  glVertex3f( -anchoFrame/2,  altoFrame/2, 0); // arriba izquierda (0,0)
     glEnd();
     glPopMatrix();
+    
+	if (transparencia) {  // desactivamos el alpha test para no afectar a los siguientes sprites que se dibujen
+        glDisable(GL_ALPHA_TEST);
+    }
 
     //glEnable(GL_LIGHTING);
     glDisable(GL_TEXTURE_2D);

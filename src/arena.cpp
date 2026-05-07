@@ -74,7 +74,7 @@ void Arena::actualizar(float dt) {
 	confirmarFinCombate();
 }
 
-void Arena::dibujar() {
+void Arena::dibujar(Renderizador* renderizador) {
 	//code para dibujar la arena
 
 	//dibujamos barreras aqui

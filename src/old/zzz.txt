@@ -1,4 +1,7 @@
-﻿-- VIEJO ONDRAW --
+﻿
+
+
+-- VIEJO ONDRAW --
 
 //Borrado de la pantalla	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -25,7 +28,10 @@
 	Dibujar("../assets/Sprites/tablero y escenario/tablero.png",ancho/2,alto/2,1,tamano, tamano); //Función propia en otro.cpp para dibujar de forma más fácil
 	Dibujar("../assets/Sprites/Pruebas/borrar20-Sheet.png", x, y, 0, 20, 20);
 
+
+
 -- VIEJO ONTIMER --
+
 // conversion de flechas a dos direcciones que pueden ser + o -
 	float dirX = 0;
 	float dirY = 0;
@@ -47,7 +53,10 @@
 	x += dirX * velocidad;
 	y += dirY * velocidad;
 
+
+
 -- VIEJO ONKEYBOARDDOWN --
+
 if (key == 27)  // Al pulsar "Esc", cierra la ventana gráfica.
 		exit(0);
 	
@@ -62,13 +71,58 @@ if (key == 27)  // Al pulsar "Esc", cierra la ventana gráfica.
 
 	}
 
+
+
 -- VIEJO ONSPECIALDOWN --
+
 if (key == GLUT_KEY_RIGHT) teclaDerecha = true;
 	if (key == GLUT_KEY_LEFT)  teclaIzquierda = true;
 	if (key == GLUT_KEY_UP)    teclaArriba = true;
 	if (key == GLUT_KEY_DOWN)  teclaAbajo = true;
 
-- VIEJO ONSEPECIALUP --
+
+
+-- VIEJA ACTUALIZACIÓN DE ANIMALES EN TABLERO DESDE JUEGO --    
+
+for (int j = 0; j < 2; j++)
+    for (int i = 0; i < numeroAnimales; i++)
+    {
+        misAnimales[i + j * numeroAnimales]->actualizar(dt);
+    }
+
+
+
+-- VIEJO DIBUJADO DE ANIMALES EN TABLERO --
+
+// recorrer la matriz para dibujar casillas de poder y animales
+    for (int i = 0; i < FILAS; i++)
+    {
+        for (int j = 0; j < COLUMNAS; j++)
+        {
+            int x = X_INICIO + j * TAMANO_CASILLA;
+            int y = Y_INICIO + i * TAMANO_CASILLA;
+
+            if (esPuntoDePoder(i, j))
+            {
+                // motor->dibujarSprite("../assets/Sprites/puntopoder.png", [...] )
+            }
+
+            if (casillas[i][j] != nullptr)
+            {
+                // casillas[i][j]->dibujar(motor); 
+                // la funcion dibujar debe estar dentro de animal.h, porque aqui le decimos que nos dibuje en la casilla el animal
+            }
+        }
+    }
+
+     dibujar los cursores
+    float cursor1X = X_INICIO + (posicion_columna_cursor_actual_j1 * TAMANO_CASILLA) + 11.0f;
+    float cursor1Y = Y_INICIO + (posicion_fila_cursor_actual_j1 * TAMANO_CASILLA) + 11.0f;
+    motor->dibujarSprite("../assets/Sprites/cursorJ1.png", 22, 22, cursor1X, cursor1Y, -1.0f);
+
+    float cursor2X = X_INICIO + (posicion_columna_cursor_actual_j2 * TAMANO_CASILLA) + 11.0f;
+    float cursor2Y = Y_INICIO + (posicion_fila_cursor_actual_j2 * TAMANO_CASILLA) + 11.0f;
+    motor->dibujarSprite("../assets/Sprites/cursorJ2.png", 22, 22, cursor2X, cursor2Y, -1.0f);
 
 
 
@@ -91,6 +145,8 @@ if (key == GLUT_KEY_RIGHT) teclaDerecha = true;
 
 	int tamanoTransicion;
 bool transicion = false;
+
+
 
 -- MAIN--
 
@@ -116,6 +172,8 @@ float tamanoTransicion;
 			estadoTransicion = true;
 		tamanoTransicion = 7000;
 
+
+
 -- MENU --
 
 //menu.cpp
@@ -128,11 +186,7 @@ void transicion(float tamanoTransicion)
 
 
 
-
-
 -- TABLERO DAVID --
-
-
 
 #include "tablero.h"
 

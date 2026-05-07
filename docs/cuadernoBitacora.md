@@ -9,3 +9,5 @@ Eventos importantes:
 17/03/2026 - Establecimiento del GitFlow Workflow para la creación de ramas.
 
 28/03/2026 - Creación del coordinador del Juego
+
+04/05/2026 - Creación de la memoria del proyecto

@@ -153,7 +153,7 @@
     <None Include="bin\fmodL.dll" />
     <None Include="bin\freeglut.dll" />
     <None Include="docs\GitFlow Workflow.pdf" />
-    <None Include="docs\memoria.md" />
+    <None Include="docs\cuadernoBitacora.md" />
     <None Include="lib\ETSIDI.exp" />
     <None Include="docs\ETSIDIlib.pdf" />
   </ItemGroup>

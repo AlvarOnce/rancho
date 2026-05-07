@@ -1,9 +1,5 @@
 #include "animal.h"
 
-Animal::Animal(float posx, float posy, float capa, int vida, float xinicial) 
-    : posx_(posx), posy_(posy), capaz_(capa), vida_(vida), xinicial_(xinicial){
-        
-}
 void Animal::actualizar(float dt) {
 
     if (intro_tablero_) {

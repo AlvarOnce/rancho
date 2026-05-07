@@ -1,5 +1,6 @@
 #pragma once
 #include "animal.h"
+#include "renderizador.h"	
 
 const int ANCHO_DE_LA_ARENA = 480;
 const int ALTO_DE_LA_ARENA = 270;
@@ -62,7 +63,7 @@ public:
 
 	void inicioCombate(Animal* pieza_luz, Animal* pieza_oscuridad);
 	void actualizar(float dt);
-	void dibujar();
+	void dibujar(Renderizador* renderizador);
 	void recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada);
 	bool recibirAtaque(int jugador);
 
