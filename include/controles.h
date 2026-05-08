@@ -1,11 +1,14 @@
 #pragma once
 #include "renderizador.h"
+#include "estructuras.h"
 
 class PalomaControles {
 
-	float timer = 0;
-	float msStep = 100;
-	int nFrames = 5;
+	//float timer = 0;
+	//float msStep = 100;
+	//int nFrames = 5;
+
+	Animacion animacion{0, 100, 5};
 
 public:
 

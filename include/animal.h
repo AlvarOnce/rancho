@@ -1,7 +1,9 @@
 #pragma once
 #include <iostream>
+#include <vector>
 #include "ETSIDI.h"
 #include "renderizador.h"
+#include "estructuras.h"
 
 enum modoJuego
 {
@@ -19,12 +21,12 @@ enum direccion
 };
 
 class Animal {
+	bool vivo = true;
 
 public:
 
 	Animal(float posx, float posy, float capa, int vida, float xinicial, int equipo )
 		: posx_(posx), posy_(posy), capaz_(capa), vida_(vida), xinicial_(xinicial), equipo_(equipo){
-
 	}
 
 	virtual ~Animal() {}
@@ -37,7 +39,7 @@ public:
 	float vely_{0};
 	int equipo_;
 	int vida_;
-	int ataque_;
+	int ataque_{};
 	float avanzando_casilla_ = 0;	// para saber cuando ha terminado de moverse
 	bool en_movimiento_ = false;	// para bloquear el teclado si se esta moviendo
 	int casillas_movidas_x_ = 0;
@@ -47,7 +49,9 @@ public:
 	bool intro_tablero_ = true; 
 	float xinicial_ = 152; 
 
-	int casillaInicial_[2];
+	int casillaInicial_[2]{};
+
+	// virtual std::vector<Mover> movimientosPosibles() const = 0;
 
 	bool mover(modoJuego modo, direccion dir);	//ahora es un bool, si devuelve true se ha movido bien,
 												// si devuelve false, no se ha movido
@@ -75,16 +79,15 @@ public:
 	// Dibujo y animación
 	int frameActualX_ = 0;
 	int frameActualY_ = 1;
-	int nFrames;
+	int nFrames{};
 	float timer = 0;
 	float msStep = 100;
 	bool pausa = true;
-	int ancho;
-	int alto;
+	int ancho{};
+	int alto{};
 	void setState(int frameX, int frameY);
 	void animar(float dt);
 
 	virtual void actualizar(float dt);
-	virtual void dibujar(Renderizador* motor);
-
+	virtual void dibujar(Renderizador* motor);	
 };

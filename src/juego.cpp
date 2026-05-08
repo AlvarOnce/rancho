@@ -20,6 +20,7 @@ Juego::Juego() {
         for (int i = 0; i < numeroAnimales; i++) // se crean de arriba a abajo 
         {
             if (i < 9) 
+
             animalesJ1[i] = new Oveja(-44 - 15 * (i) + 11, 36 + 176 - (22 * i) + 11, -3 - 0.01 * i - 0, 20, 152, 0); // dejar los numeros asi por ahora porque representan unidades conocidas
 
             if (i >= 9)

@@ -2,12 +2,12 @@
 
 void PalomaControles::animar(float dt) {
 
-    timer = timer + dt;
-    if (timer > msStep)
+    animacion.timer = animacion.timer + dt;
+    if (animacion.timer > animacion.msStep)
     {
-        if (frameActualX_ < nFrames - 1) frameActualX_++;
+        if (frameActualX_ < animacion.nFrames - 1) frameActualX_++;
         else frameActualX_ = 0;
-        timer = timer - msStep;
+        animacion.timer = animacion.timer - animacion.msStep;
     }
 }
 

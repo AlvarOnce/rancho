@@ -8,7 +8,7 @@ Tablero::Tablero(Animal** animalesJ1, Animal** animalesJ2)
     {
         for (int i = 0; i < FILAS; i++)
         {
-            casillas[i][j] = animalesJ1[j * FILAS + i];
+            tablero_[i][j] = animalesJ1[j * FILAS + i];
         }
     }
 
@@ -16,14 +16,23 @@ Tablero::Tablero(Animal** animalesJ1, Animal** animalesJ2)
     {
         for (int i = 0; i < FILAS; i++)
         {
-            casillas[i][8-j] = animalesJ2[j * FILAS + i];
+            tablero_[i][8-j] = animalesJ2[j * FILAS + i];
         }
     }
 }
 
 Tablero::~Tablero()
 {
-
+    for (int i = 0; i < DIM; ++i) {
+        for (int j = 0; j < DIM; ++j) {
+            if (tablero_[i][j] != nullptr) {
+                delete tablero_[i][j];
+                tablero_[i][j] = nullptr;
+            }
+        }
+    }
+    animales_a_.clear();
+    animales_b_.clear();
 }
 
 void Tablero::inicializarTablero() // iniclizaiamos el Tablero vacio, es decir, creamos la matriz pero no le decimos todavia si hay figuras o no en las casillas
@@ -32,7 +41,7 @@ void Tablero::inicializarTablero() // iniclizaiamos el Tablero vacio, es decir, 
     {
         for (int j = 0; j < COLUMNAS; j++)
         {
-            casillas[i][j] = nullptr;
+            tablero_[i][j] = nullptr;
 
             if ((i + j) % 2 == 0)
             {
@@ -44,11 +53,7 @@ void Tablero::inicializarTablero() // iniclizaiamos el Tablero vacio, es decir, 
             }
         }
     }
-
-
     turno_actual = BANDO_LUZ; // incia el turno el bando de luz
-
-
 }
 
 void Tablero::actualizar(float dt)
@@ -58,9 +63,9 @@ void Tablero::actualizar(float dt)
     {
         for (int j = 0; j < COLUMNAS; j++)
         {
-            if (casillas[i][j] != nullptr)
+            if (tablero_[i][j] != nullptr)
             {
-                casillas[i][j]->actualizar(dt);
+                tablero_[i][j]->actualizar(dt);
             }
         }
     }
@@ -87,9 +92,9 @@ void Tablero::dibujar(Renderizador* motor){
     {
         for (int j = 0; j < COLUMNAS; j++)
         {
-            if (casillas[i][j] != nullptr)
+            if (tablero_[i][j] != nullptr)
             {
-                casillas[i][j]->dibujar(motor);
+                tablero_[i][j]->dibujar(motor);
             }
         }
     }
@@ -108,12 +113,24 @@ void Tablero::dibujar(Renderizador* motor){
         tarjeta.dibujar(motor);
 }
 
+bool Tablero::esMovimientoLegal(const Movimiento& m) const {
+	return false;
+}
+
+void Tablero::mover(const Movimiento& m) {
+    
+}
+
+bool Tablero::hayColisionEnemiga(const Movimiento& m) const {
+    return false;
+}
+
 
 
 void Tablero::recibirMovimiento(int jugador, int dx, int dy)
 {
     // La pieza [8][0] es la última en llegar
-	if (casillas[8][0] != nullptr && casillas[8][0]->getIntroTablero()) return; // si no ha terminado su animación de introducción, bloqueamos el movimiento del tablero
+	if (tablero_[8][0] != nullptr && tablero_[8][0]->getIntroTablero()) return; // si no ha terminado su animación de introducción, bloqueamos el movimiento del tablero
    
     if (jugador == turno_actual) // El tablero decide si el movimiento recibido es ejecutable según el turno, por ser su dueño
     { 
@@ -145,20 +162,20 @@ void Tablero::seleccionarPieza(int jugador) // falta que tenga en cuenta el turn
 
     if (turno_actual == jugador) // solo puede seleccionar la pieza aquel jugador con el turno, y solo las suyas
     {
-        if (casillas[cursor.fila][cursor.columna] == nullptr && animal_seleccionado_ == nullptr) {
+        if (tablero_[cursor.fila][cursor.columna] == nullptr && animal_seleccionado_ == nullptr) {
 
         }
-        else if (casillas[cursor.fila][cursor.columna] != nullptr && animal_seleccionado_ == nullptr) {
+        else if (tablero_[cursor.fila][cursor.columna] != nullptr && animal_seleccionado_ == nullptr) {
 
-            if (casillas[cursor.fila][cursor.columna]->equipo_ == jugador) // para poder solo seleccionar mis piezas
+            if (tablero_[cursor.fila][cursor.columna]->equipo_ == jugador) // para poder solo seleccionar mis piezas
             {
                 hay_pieza_seleccionada_ = !hay_pieza_seleccionada_;
-                animal_seleccionado_ = casillas[cursor.fila][cursor.columna];
-                casillas[cursor.fila][cursor.columna] = nullptr;
+                animal_seleccionado_ = tablero_[cursor.fila][cursor.columna];
+                tablero_[cursor.fila][cursor.columna] = nullptr;
             }
         }
-        else if (casillas[cursor.fila][cursor.columna] == nullptr && animal_seleccionado_ != nullptr) {
-            casillas[cursor.fila][cursor.columna] = animal_seleccionado_;
+        else if (tablero_[cursor.fila][cursor.columna] == nullptr && animal_seleccionado_ != nullptr) {
+            tablero_[cursor.fila][cursor.columna] = animal_seleccionado_;
             hay_pieza_seleccionada_ = !hay_pieza_seleccionada_;
             animal_seleccionado_ = nullptr;
 
@@ -169,7 +186,7 @@ void Tablero::seleccionarPieza(int jugador) // falta que tenga en cuenta el turn
 
             letreroTurnos.setState(0, turno_actual);
         }
-        else if (casillas[cursor.fila][cursor.columna] != nullptr && animal_seleccionado_ != nullptr)
+        else if (tablero_[cursor.fila][cursor.columna] != nullptr && animal_seleccionado_ != nullptr)
         {
 
         }
