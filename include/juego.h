@@ -31,7 +31,7 @@ class Juego
 
 public:
 
-    double anchoVentana() const {return ancho_ventana_;} // Para decirle al main cu�nto mide la ventana que debe crear
+    double anchoVentana() const {return ancho_ventana_;} // Para decirle al main cuánto mide la ventana que debe crear
     double altoVentana() const {return alto_ventana_;}
 
     enum Estado { MENU, TABLERO, BATALLA, CREDITOS, CONTROLES};

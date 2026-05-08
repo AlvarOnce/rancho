@@ -1,6 +1,6 @@
 #include "controles.h"
 
-void PalomaCreditos::animar(float dt) {
+void PalomaControles::animar(float dt) {
 
     timer = timer + dt;
     if (timer > msStep)
@@ -11,7 +11,7 @@ void PalomaCreditos::animar(float dt) {
     }
 }
 
-void PalomaCreditos::setState(int frameX, int frameY) {
+void PalomaControles::setState(int frameX, int frameY) {
 
     frameActualX_ = frameX;
     frameActualY_ = frameY;

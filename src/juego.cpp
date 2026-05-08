@@ -57,14 +57,14 @@ void Juego::actualizarLogica(float dt) {    // FASE 1: matemáticas, colisiones 
     
     switch (estado_actual) {
 
-    case MENU:       
+    case MENU:
         menu->actualizar(dt);
         break;
 
     case TABLERO:
-		tablero->actualizar(dt);
+        tablero->actualizar(dt);
         break;
-    
+
     case BATALLA:
         arena->actualizar(dt);
         break;
@@ -74,7 +74,7 @@ void Juego::actualizarLogica(float dt) {    // FASE 1: matemáticas, colisiones 
         if (!transicion.activo)
             creditos->actualizar(25);
 
-        if (creditos->getFinalizado()) 
+        if (creditos->getFinalizado())
         {
             transicion.empieza();
             proximo_estado = MENU;
@@ -91,12 +91,12 @@ void Juego::actualizarLogica(float dt) {    // FASE 1: matemáticas, colisiones 
             proximo_estado = MENU;
         }
         break;
+    }
 
-
-    if (transicion.activo) 
+    if (transicion.activo)
         transicion.actualizar(dt);
 
-    if (transicion.getEstado() == Transicion::CERRADO) 
+    if (transicion.getEstado() == Transicion::CERRADO)
         estado_actual = proximo_estado;
 }
 
@@ -139,8 +139,11 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
     switch (estado_actual) {
 
         case MENU:
+
         if (key == 13) { // Intro para elegir una opción
+
             switch (menu->getOpcionActual()) {
+
             case Selector::JUGAR: 
                 transicion.empieza();
                 proximo_estado = TABLERO;
@@ -168,6 +171,7 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
             }
 
         }
+
         break;
 
 		case TABLERO: // movimiento discreto en el tablero, no hace falta procesar la tecla al levantarla, el movimiento se hace una vez al pulsar y ya está

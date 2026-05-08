@@ -1,7 +1,7 @@
 #pragma once
 #include "renderizador.h"
 
-class PalomaCreditos {
+class PalomaControles {
 
 	float timer = 0;
 	float msStep = 100;
@@ -22,7 +22,7 @@ class Controles {
 
 private:
 
-	PalomaCreditos paloma;
+	PalomaControles paloma;
 	float posx_;
 	float posy_;
 	const float posFinal_ = -246;
