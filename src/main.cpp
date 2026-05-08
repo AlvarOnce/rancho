@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(0, rancho.anchoVentana(), 0, rancho.altoVentana(), 50, -50); // alto y ancho podrian hacerse static para acceder desde otras clases como menú (
-	glutFullScreen();
+	//glutFullScreen();
 	
 	//Registrar los callbacks
 	glutDisplayFunc(OnDraw);

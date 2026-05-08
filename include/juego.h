@@ -20,7 +20,8 @@ class Juego
     Tablero* tablero;
     Arena* arena;
     Renderizador* renderizador;
-    Animal* animales[18];
+    Animal* animalesJ1[18];
+    Animal* animalesJ2[18];
     Creditos* creditos;
 
     double ancho_ventana_ = 480;

@@ -3,6 +3,8 @@
 void Animal::actualizar(float dt) {
 
     if (intro_tablero_) {
+
+        if (equipo_ == 0)
         if (posx_ < xinicial_) {
             posx_ += dt/25; 
             animar(dt);
@@ -12,6 +14,18 @@ void Animal::actualizar(float dt) {
             intro_tablero_ = false; 
             setState(0, 0);     
         }
+
+        if (equipo_ == 1)
+        if (posx_ > xinicial_) {
+            posx_ -= dt / 25;
+            animar(dt);
+        }
+        else {
+            posx_ = xinicial_; // Aseguramos que quede clavado en la posición exacta
+            intro_tablero_ = false;
+            setState(0, 0);
+        }
+
         return; // Salimos de la función para que no haga el movimiento del Tablero todavía
     } 
     if (!en_movimiento_) { 
@@ -30,7 +44,6 @@ void Animal::actualizar(float dt) {
         avanzando_casilla_ = 0;
 		en_movimiento_ = false;
 	}
-
 
     //cuando te vas a una casilla fuera del cuadrado, el juego mueve otra vez automaticamente a la casilla de antes
 	if (posx_ <= 130) int trash = mover(TABLERO, R); // Limite izquierdo del tablero
