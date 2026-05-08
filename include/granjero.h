@@ -6,8 +6,8 @@ class Granjero : public Animal {
 public:
 
 
-	Granjero(float posx, float posy, float capa, int vida, float xinicial) 
-		: Animal(posx, posy, capa, vida, xinicial) {
+	Granjero(float posx, float posy, float capa, int vida, float xinicial, int equipo) 
+		: Animal(posx, posy, capa, vida, xinicial, equipo) {
 
 		nFrames = 5;
 		setState(0, 0);

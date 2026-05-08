@@ -3,10 +3,10 @@
 #include "cursor.h" 
 #include "tarjetaID.h" 
 
-const int BANDO_LUZ = 1;        //bando luz igual bando izquierda
-const int BANDO_OSCURIDAD = 2;
-const int CASILLA_LUZ = 1;
-const int CASILLA_OSCURA = 2;
+const int BANDO_LUZ = 0;        //bando luz igual bando izquierda
+const int BANDO_OSCURIDAD = 1;
+const int CASILLA_LUZ = 0;
+const int CASILLA_OSCURA = 1;
 
 class Tablero {
 
@@ -43,7 +43,7 @@ class Tablero {
 
 public:
 
-    Tablero(Animal** misAnimales);//le metemos un puntero a un array de punteros, los animales se crean desde juego y los enviamos
+    Tablero(Animal** animalesJ1, Animal** animalesJ2);//le metemos un puntero a un array de punteros, los animales se crean desde juego y los enviamos
     // a este constructor que simplemente copia la direccion de los animales creados en las casillas del tablero y entonces
     //cada casilla apunta a un animal creado y tiene toda la informacion de ese animal y puede modificar valores de el
     ~Tablero();//no hace nada porque el constructor no tiene ningun new
