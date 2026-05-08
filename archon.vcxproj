@@ -132,6 +132,7 @@
     <ClInclude Include="include\arena.h" />
     <ClInclude Include="include\cabra.h" />
     <ClInclude Include="include\cerdo.h" />
+    <ClInclude Include="include\controles.h" />
     <ClInclude Include="include\creditos.h" />
     <ClInclude Include="include\cursor.h" />
     <ClInclude Include="include\ETSIDI.h" />
@@ -162,6 +163,7 @@
     <ClCompile Include="src\arena.cpp" />
     <ClCompile Include="src\cabra.cpp" />
     <ClCompile Include="src\cerdo.cpp" />
+    <ClCompile Include="src\controles.cpp" />
     <ClCompile Include="src\creditos.cpp" />
     <ClCompile Include="src\cursor.cpp" />
     <ClCompile Include="src\gallina.cpp" />

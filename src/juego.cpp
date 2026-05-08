@@ -3,7 +3,7 @@
 #include "arena.h"
 #include "juego.h"
 
-#define numeroAnimales 18 // Por ahora crea 9 entidades
+#define numeroAnimales 18 // Por ahora crea 18 entidades
 
 Juego::Juego() {
 
@@ -14,6 +14,7 @@ Juego::Juego() {
     arena = new Arena();
     renderizador = new Renderizador();
     creditos = new Creditos();
+    controles = new Controles();
 
      // Animales equipo 1, lado izquierdo
         for (int i = 0; i < numeroAnimales; i++) // se crean de arriba a abajo 
@@ -47,6 +48,7 @@ Juego::~Juego() {
     delete arena;
     delete renderizador;
 	delete creditos;
+    delete controles;
     for (int i = 0; i < numeroAnimales; i++)
 		delete animalesJ1[i];
 }
@@ -78,7 +80,18 @@ void Juego::actualizarLogica(float dt) {    // FASE 1: matemáticas, colisiones 
             proximo_estado = MENU;
         }
         break;
-    }
+
+    case CONTROLES:
+
+        if (!transicion.activo)
+            controles->actualizar(25);
+        if (controles->getFinalizado())
+        {
+            transicion.empieza();
+            proximoEstado = MENU;
+        }
+        break;
+
 
     if (transicion.activo) 
         transicion.actualizar(dt);
@@ -108,6 +121,11 @@ void Juego::renderizarGraficos() {          // FASE 2: pintar en pantalla
     case CREDITOS:
 
         creditos->dibujar(renderizador);
+        break;
+
+    case CONTROLES:
+
+        controles->dibujar(motorGrafico);
         break;
     }
 
@@ -140,6 +158,12 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
                 creditos->reset();
                 transicion.empieza();
                 proximo_estado = CREDITOS;
+                break;
+
+            case Selector::CONTROLES:
+                controles->reset();
+                transicion.empieza();
+                proximoEstado = CONTROLES;
                 break;
             }
 

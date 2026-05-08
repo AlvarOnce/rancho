@@ -12,6 +12,7 @@
 #include "granjero.h"
 #include "transicion.h" 
 #include "creditos.h"
+#include "controles.h"
 
 class Juego 
 {
@@ -23,16 +24,17 @@ class Juego
     Animal* animalesJ1[18];
     Animal* animalesJ2[18];
     Creditos* creditos;
+    Controles* controles;
 
     double ancho_ventana_ = 480;
     double alto_ventana_ = 270;
 
 public:
 
-    double anchoVentana() const {return ancho_ventana_;} // Para decirle al main cuánto mide la ventana que debe crear
+    double anchoVentana() const {return ancho_ventana_;} // Para decirle al main cu�nto mide la ventana que debe crear
     double altoVentana() const {return alto_ventana_;}
 
-    enum Estado { MENU, TABLERO, BATALLA, CREDITOS };
+    enum Estado { MENU, TABLERO, BATALLA, CREDITOS, CONTROLES};
     Estado estado_actual;
     Estado proximo_estado;
 
