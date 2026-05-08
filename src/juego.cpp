@@ -88,7 +88,7 @@ void Juego::actualizarLogica(float dt) {    // FASE 1: matemáticas, colisiones 
         if (controles->getFinalizado())
         {
             transicion.empieza();
-            proximoEstado = MENU;
+            proximo_estado = MENU;
         }
         break;
 
@@ -125,7 +125,7 @@ void Juego::renderizarGraficos() {          // FASE 2: pintar en pantalla
 
     case CONTROLES:
 
-        controles->dibujar(motorGrafico);
+        controles->dibujar(renderizador);
         break;
     }
 
@@ -163,7 +163,7 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
             case Selector::CONTROLES:
                 controles->reset();
                 transicion.empieza();
-                proximoEstado = CONTROLES;
+                proximo_estado = CONTROLES;
                 break;
             }
 
