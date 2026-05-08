@@ -10,15 +10,19 @@ struct Letra {
 struct Tractor {
     float posx = 550;
     float posy = 65;
-    int frameActualX = 0, frameActualY = 0;
+    int frameActualX_ = 0, frameActualY_ = 0;
     float timer{}, msStep = 300;
+    int nFrames = 2;
+    void animar(float dt);
 };
 
 struct Paloma {
     float posx = -10;
     float posy = 222;
-    int frameActualX = 0, frameActualY = 1;
+    int frameActualX_ = 0, frameActualY_ = 1;
     float timer{}, msStep = 100;
+    int nFrames = 4;
+    void animar(float dt);
 };
 
 struct Nube {

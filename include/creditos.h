@@ -1,7 +1,6 @@
 #pragma once
 #include "renderizador.h"
 
-
 class GallinaCreditos {
 
 	float timer = 0;

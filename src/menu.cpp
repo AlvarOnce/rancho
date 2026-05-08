@@ -17,13 +17,7 @@ void Menu::actualizar(float dt)
 	}
 
 	if (tractor.posx > -200) tractor.posx -= 0.8; // TRACTOR
-	tractor.timer = tractor.timer + dt;
-	if (tractor.timer > tractor.msStep)
-	{
-		if (tractor.frameActualX < 1) tractor.frameActualX++;
-		else tractor.frameActualX = 0;
-		tractor.timer = tractor.timer - tractor.msStep;
-	}
+	tractor.animar(dt);
 
 	for (auto& n : nube) // NUBES 
 		if (n.posx <480) n.posx += 0.2;
@@ -32,18 +26,12 @@ void Menu::actualizar(float dt)
 	if (paloma.posx < 0.15 * ancho + titulo[0].horiz) // PALOMA (Es posible hacer paloma.actualizar(dt) y llamar aquí)
 	{
 		paloma.posx++;
-			paloma.timer = paloma.timer + dt;
-		if (paloma.timer > paloma.msStep)
-		{
-			if (paloma.frameActualX < 3) paloma.frameActualX++;
-			else                   paloma.frameActualX = 0;
-			paloma.timer = paloma.timer - paloma.msStep;
-		}
+		paloma.animar(dt);
 	}		
 	else
 	{
-		paloma.frameActualX = 0;
-		paloma.frameActualY = 0;
+		paloma.frameActualX_ = 0;  // Hacer SetState para una clase general OBJETO para no redefinir siempre
+		paloma.frameActualY_ = 0;
 		paloma.posx = 0.15 * ancho + titulo[0].horiz;
 		paloma.posy = 0.14444 * alto + titulo[0].altura; 
 	}
@@ -70,8 +58,8 @@ void Menu::dibujar(Renderizador* motor)
 
 	motor->dibujarSprite("../assets/Sprites/menu/opciones.png", 512, 128, 245, 103, -2.8,1,4,selector.opcionActual,0); // OPCIONES
 	motor->dibujarSprite("../assets/Sprites/menu/selector.png", selector.tamano_actual, selector.tamano_actual, selector.posx, selector.posy, -3.2); // SELECTOR
-	motor->dibujarSprite("../assets/Sprites/menu/palomaSpritesheet.png", 128, 64, paloma.posx, paloma.posy, -3, 2, 4, paloma.frameActualX, paloma.frameActualY); // PALOMA
-	motor->dibujarSprite("../assets/Sprites/menu/tractorSpritesheet.png", 512, 128, tractor.posx, tractor.posy, -5, 1, 2, tractor.frameActualX, tractor.frameActualY); // TRACTOR
+	motor->dibujarSprite("../assets/Sprites/menu/palomaSpritesheet.png", 128, 64, paloma.posx, paloma.posy, -3, 2, 4, paloma.frameActualX_, paloma.frameActualY_); // PALOMA
+	motor->dibujarSprite("../assets/Sprites/menu/tractorSpritesheet.png", 512, 128, tractor.posx, tractor.posy, -5, 1, 2, tractor.frameActualX_, tractor.frameActualY_); // TRACTOR
 		
 }
 
@@ -83,6 +71,27 @@ void Menu::moverSelector(int direccion) {
 	}
 }
 
+void Paloma::animar(float dt) {
+
+	timer = timer + dt;
+	if (timer > msStep)
+	{
+		if (frameActualX_ < nFrames - 1) frameActualX_++;
+		else frameActualX_ = 0;
+		timer = timer - msStep;
+	}
+}
+
+void Tractor::animar(float dt) {
+
+	timer = timer + dt;
+	if (timer > msStep)
+	{
+		if (frameActualX_ < nFrames - 1) frameActualX_++;
+		else frameActualX_ = 0;
+		timer = timer - msStep;
+	}
+}
 
 
 

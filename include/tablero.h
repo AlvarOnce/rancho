@@ -8,6 +8,17 @@ const int BANDO_OSCURIDAD = 1;
 const int CASILLA_LUZ = 0;
 const int CASILLA_OSCURA = 1;
 
+struct Letrero {
+    float posx = 550;
+    float posy = 65;
+    int frameActualX_ = 0, frameActualY_ = 0;
+    float timer{}, msStep = 65;
+    int nFrames = 8;
+    void animar(float dt);
+    bool loop = false;
+    void setState(int frameX, int frameY);
+};
+
 class Tablero {
 
     Animal* casillas[9][9]; //crea la matriz que es el tablero, cada casilla es un puntero a animal, es decir que tiene los atributos de animal
@@ -15,6 +26,7 @@ class Tablero {
     bool hay_pieza_seleccionada_ = FALSE;  //1 hay una pieza seleccionada 0 no hay
 	Animal* animal_seleccionado_ = nullptr; //puntero al animal seleccionado, si no hay ninguno seleccionado es nullptr
     int turno_actual;
+    Letrero letreroTurnos;
 
     /*
         Haremos que ColorCasilla sea como una bandera

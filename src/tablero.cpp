@@ -70,6 +70,9 @@ void Tablero::actualizar(float dt)
     {
         animal_seleccionado_->actualizar(dt);
     }
+
+        letreroTurnos.posx = 102 + turno_actual * 273;
+        letreroTurnos.animar(dt);
 }
 
 void Tablero::dibujar(Renderizador* motor){
@@ -77,7 +80,7 @@ void Tablero::dibujar(Renderizador* motor){
     // imagen de fondo del tablero
     motor->dibujarSprite("../assets/Sprites/tablero/tableroFondo.png", 512, 512, 480/2, 270/2, -1);
     motor->dibujarSprite("../assets/Sprites/tablero/tablero.png", 256, 256, 480 / 2, 270 / 2, -2);
-    motor->dibujarSprite("../assets/Sprites/tablero/turnos.png", 32, 32, 90+turno_actual*285, 270 / 2, -2);
+    motor->dibujarSprite("../assets/Sprites/tablero/turnos.png", 256, 128, letreroTurnos.posx, 270 / 2, -5, 4, 8, letreroTurnos.frameActualX_, letreroTurnos.frameActualY_);
 
     // dibuja los animales posados sobre el tablero
     for (int i = 0; i < FILAS; i++)
@@ -163,10 +166,33 @@ void Tablero::seleccionarPieza(int jugador) // falta que tenga en cuenta el turn
                 turno_actual = 1;
             else
                 turno_actual = 0;
+
+            letreroTurnos.setState(0, turno_actual);
         }
         else if (casillas[cursor.fila][cursor.columna] != nullptr && animal_seleccionado_ != nullptr)
         {
 
         }
     }
+}
+
+void Letrero::animar(float dt) {
+
+    timer = timer + dt;
+
+    if (timer > msStep)
+    {
+        if (frameActualX_ < nFrames - 1) frameActualX_++;
+        else if (loop) frameActualX_ = 0;
+
+        timer = timer - msStep;
+    }
+}
+
+void Letrero::setState(int frameX, int frameY) {
+
+    frameActualX_ = frameX;
+    frameActualY_ = frameY;
+    loop = false;
+
 }
