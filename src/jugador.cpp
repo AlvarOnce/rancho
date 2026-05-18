@@ -1,47 +1,29 @@
 #include "jugador.h"
-#include "renderizador.h"
+#include "oveja.h"
+#include "gallina.h"
 
-Jugador::Jugador() : numAnimales(0) {
-    for (int i = 0; i < 9; i++) {
-        animales[i] = nullptr;
+Jugador::Jugador(int equipo) : equipo_(equipo) {
+
+    if (equipo_ == 0) {
+
+        for (int i = 0; i < 9; i++)
+            animales_[i] = new Oveja(-44 - 15 * i + 11,36 + 176 - (22 * i) + 11,-3 - 0.01 * i,20,152,0);
+
+        for (int i = 9; i < 18; i++)
+            animales_[i] = new Gallina(-15 * (i - 9) + 11,36 + 176 - (22 * (i - 9)) + 11,-3 - 0.01 * (i - 9) - 0.08,20,152 + 22,0);
+    }
+
+    if (equipo_ == 1) {
+
+        for (int i = 0; i < 9; i++)
+            animales_[i] = new Oveja(480 + 44 + 15 * i - 11,36 + 176 - (22 * i) + 11,-3 - 0.01 * i,20,152 + 22 * 8,1);
+
+         for (int i = 9; i < 18; i++)
+            animales_[i] = new Gallina(480 + 15 * (i - 9) - 11,36 + 176 - (22 * (i - 9)) + 11,-3 - 0.01 * (i - 9) - 0.08,20,152 + 22 * 7,1);
     }
 }
 
 Jugador::~Jugador() {
-    limpiar();
-}
-
-void Jugador::inicializar(int numAnimales) {
-    this->numAnimales = numAnimales;
-}
-
-void Jugador::agregarAnimal(int indice, Animal* animal) {
-    if (indice >= 0 && indice < 9) {
-        animales[indice] = animal;
-    }
-}
-
-void Jugador::limpiar() {
-    for (int i = 0; i < 9; i++) {
-        if (animales[i] != nullptr) {
-            delete animales[i];
-            animales[i] = nullptr;
-        }
-    }
-}
-
-void Jugador::actualizar(float dt) {
-    for (int i = 0; i < 9; i++) {
-        if (animales[i] != nullptr) {
-            animales[i]->actualizar(dt);
-        }
-    }
-}
-
-void Jugador::dibujar(Renderizador* motor) {
-    for (int i = 0; i < 9; i++) {
-        if (animales[i] != nullptr) {
-            animales[i]->dibujar(motor);
-        }
-    }
+    for (int i = 0; i < numAnimales_; i++)
+        delete animales_[i];
 }

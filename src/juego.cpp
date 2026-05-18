@@ -16,29 +16,10 @@ Juego::Juego() {
     creditos = new Creditos();
     controles = new Controles();
 
-     // Animales equipo 1, lado izquierdo
-        for (int i = 0; i < numeroAnimales; i++) // se crean de arriba a abajo 
-        {
-            if (i < 9) 
-            animalesJ1[i] = new Oveja(-44 - 15 * (i) + 11, 36 + 176 - (22 * i) + 11, -3 - 0.01 * i - 0, 20, 152, 0); // dejar los numeros asi por ahora porque representan unidades conocidas
+    jugador1_ = new Jugador(0);  // crea sus propios animales internamente
+    jugador2_ = new Jugador(1);
 
-            if (i >= 9)
-            animalesJ1[i] = new Gallina( - 15 * (i-9) + 11, 36 + 176 - (22 * (i-9)) + 11, -3 - 0.01 * (i-9) - 0.08, 20, 152+22, 0);
-           // animalesJ1[i + j * numeroAnimales] = new Cerdo(-44 * j - 15 * (numeroAnimales - i) + 11, 36 + (22 * i) + 11, -3 - 0.01 * i - 0.08 * j, 20, 152);
-        }
-
-     // Animales equipo 2, lado derecho
-        for (int i = 0; i < numeroAnimales; i++)
-        {
-            if (i < 9)
-                animalesJ2[i] = new Oveja(anchoVentana() + 44 + 15 * (i)-11, 36 + 176 - (22 * i) + 11, -3 - 0.01 * i - 0, 20, 152 + 22 * 8, 1);
-
-            if (i >= 9)
-                animalesJ2[i] = new Gallina(anchoVentana() + 15 * (i - 9) - 11, 36 + 176 - (22 * (i - 9)) + 11, -3 - 0.01 * (i - 9) - 0.08, 20, 152 + 22 * 7, 1);
-            // animalesJ1[i + j * numeroAnimales] = new Cerdo(-44 * j - 15 * (numeroAnimales - i) + 11, 36 + (22 * i) + 11, -3 - 0.01 * i - 0.08 * j, 20, 152);
-        }
-
-    tablero = new Tablero(animalesJ1, animalesJ2);
+    tablero = new Tablero(jugador1_->getAnimales(), jugador2_->getAnimales());
 }
 
 Juego::~Juego() {
@@ -49,8 +30,8 @@ Juego::~Juego() {
     delete renderizador;
 	delete creditos;
     delete controles;
-    for (int i = 0; i < numeroAnimales; i++)
-		delete animalesJ1[i];
+    delete jugador1_;
+    delete jugador2_;
 }
 
 void Juego::actualizarLogica(float dt) {    // FASE 1: matemáticas, colisiones y reglas del juego

@@ -13,6 +13,7 @@
 #include "transicion.h" 
 #include "creditos.h"
 #include "controles.h"
+#include "jugador.h"
 
 class Juego 
 {
@@ -21,8 +22,8 @@ class Juego
     Tablero* tablero;
     Arena* arena;
     Renderizador* renderizador;
-    Animal* animalesJ1[18];
-    Animal* animalesJ2[18];
+    Jugador* jugador1_;
+    Jugador* jugador2_;
     Creditos* creditos;
     Controles* controles;
 
