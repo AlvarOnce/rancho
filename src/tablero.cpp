@@ -1,7 +1,11 @@
 #include "tablero.h"
 
 Tablero::Tablero(Jugador* jugador1, Jugador* jugador2)
+    : cursorJ1_(141.0f + 11.0f, 36.0f + 11.0f + 22.0f * 8.0f, 0),
+    cursorJ2_(141.0f + 11.0f + 22.0f * 8.0f, 36.0f + 11.0f, 1)
 {
+    jugador1_ = jugador1;
+    jugador2_ = jugador2;
     inicializarTablero();
 
     for (int j = 0; j < 2; j++)
@@ -13,12 +17,19 @@ Tablero::Tablero(Jugador* jugador1, Jugador* jugador2)
             casillas[i][8 - j] = jugador2->getAnimales()[j * FILAS + i];
 }
 
-Tablero::~Tablero()
-{
+Tablero::~Tablero() {}
 
+Cursor& Tablero::getCursorActivo()
+{
+    return turno_actual == 0 ? cursorJ1_ : cursorJ2_;
 }
 
-void Tablero::inicializarTablero() // iniclizaiamos el Tablero vacio, es decir, creamos la matriz pero no le decimos todavia si hay figuras o no en las casillas
+Jugador* Tablero::getJugadorActivo()
+{
+    return turno_actual == 0 ? jugador1_ : jugador2_;
+}
+
+void Tablero::inicializarTablero()
 {
     for (int i = 0; i < FILAS; i++)
     {
@@ -27,173 +38,145 @@ void Tablero::inicializarTablero() // iniclizaiamos el Tablero vacio, es decir, 
             casillas[i][j] = nullptr;
 
             if ((i + j) % 2 == 0)
-            {
-                color_casilla[i][j] = CASILLA_LUZ; // como ya estan creadas las celdas de la matriz, ahora le decimos a cada celda que es, si es luz o oscuradad
-            }
+                color_casilla[i][j] = CASILLA_LUZ;
             else
-            {
                 color_casilla[i][j] = CASILLA_OSCURA;
-            }
         }
     }
 
-
-    turno_actual = BANDO_LUZ; // incia el turno el bando de luz
-
-
+    turno_actual = BANDO_LUZ;
 }
 
 void Tablero::actualizar(float dt)
 {
-    // actualiza todos los animales posados sobre el tablero
     for (int i = 0; i < FILAS; i++)
-    {
         for (int j = 0; j < COLUMNAS; j++)
-        {
             if (casillas[i][j] != nullptr)
-            {
                 casillas[i][j]->actualizar(dt);
-            }
-        }
-    }
 
-    // actualiza el animal levantado en el cursor
-    if (animal_seleccionado_ != nullptr)
-    {
-        animal_seleccionado_->actualizar(dt);
-    }
+    if (getJugadorActivo()->tienePiezaAgarrada())
+        getJugadorActivo()->getPiezaSeleccionada()->actualizar(dt);
 
-        letreroTurnos.posx = 102 + turno_actual * 273;
-        letreroTurnos.animar(dt);
+    actualizarColision();
+
+    letreroTurnos.posx = 102 + turno_actual * 273;
+    letreroTurnos.animar(dt);
 }
 
-void Tablero::dibujar(Renderizador* motor){
-
-    // imagen de fondo del tablero
-    motor->dibujarSprite("../assets/Sprites/tablero/tableroFondo.png", 512, 512, 480/2, 270/2, -1);
+void Tablero::dibujar(Renderizador* motor)
+{
+    motor->dibujarSprite("../assets/Sprites/tablero/tableroFondo.png", 512, 512, 480 / 2, 270 / 2, -1);
     motor->dibujarSprite("../assets/Sprites/tablero/tablero.png", 256, 256, 480 / 2, 270 / 2, -2);
     motor->dibujarSprite("../assets/Sprites/tablero/turnos.png", 256, 128, letreroTurnos.posx, 270 / 2, -5, 4, 8, letreroTurnos.frameActualX_, letreroTurnos.frameActualY_);
 
-    // dibuja los animales posados sobre el tablero
     for (int i = 0; i < FILAS; i++)
-    {
         for (int j = 0; j < COLUMNAS; j++)
-        {
             if (casillas[i][j] != nullptr)
-            {
                 casillas[i][j]->dibujar(motor);
-            }
-        }
-    }
 
-    // dibuja el animal levantado en el cursor
-    if (animal_seleccionado_ != nullptr)
-    {
-        animal_seleccionado_->dibujar(motor);
-    }
+    if (getJugadorActivo()->tienePiezaAgarrada())
+        getJugadorActivo()->getPiezaSeleccionada()->dibujar(motor);
 
-	cursor.dibujar(motor);
+    cursorJ1_.dibujar(motor);
+    cursorJ2_.dibujar(motor);
 
-    // if(el cursor esta sobre un animal) funcion propia de tablero y cursor detectar la casilla
-        // en actualizar se determina que tarjeta se va a dibujar interiormente
-    if (cursor.posx > 150 && cursor.posx < 170) // ELIMINAR ESTA CONDICION
+    if (getCursorActivo().getPosX() > 150 && getCursorActivo().getPosX() < 170)
         tarjeta.dibujar(motor);
 }
 
-
-
 void Tablero::recibirMovimiento(int jugador, int dx, int dy)
 {
-    // La pieza [8][0] es la última en llegar
-	if (casillas[8][0] != nullptr && casillas[8][0]->getIntroTablero()) return; // si no ha terminado su animación de introducción, bloqueamos el movimiento del tablero
-   
-    if (jugador == turno_actual) // El tablero decide si el movimiento recibido es ejecutable según el turno, por ser su dueño
-    { 
-        if (hay_pieza_seleccionada_ == FALSE)
-        {                                               
-             cursor.mover(dx, dy);
-        }
-        else // tengo una pieza
+    if (casillas[8][0] != nullptr && casillas[8][0]->getIntroTablero()) return;
+
+    Cursor& cursor = jugador == 0 ? cursorJ1_ : cursorJ2_;
+
+    if (jugador == turno_actual)
+    {
+        Jugador* jugadorActivo = getJugadorActivo();
+
+        if (!jugadorActivo->tienePiezaAgarrada())
         {
-            if (animal_seleccionado_->getEnMovimiento()) return; // si el animal seleccionado se está moviendo, bloqueamos el movimiento del tablero, esto impide jugar rápido
-            bool movimiento_valido = false;
-            if (dx == 0 && dy == 1)   movimiento_valido = animal_seleccionado_->mover(TABLERO, U);
-            if (dx == 0 && dy == -1)   movimiento_valido = animal_seleccionado_->mover(TABLERO, D);
-            if (dx == -1 && dy == 0)   movimiento_valido = animal_seleccionado_->mover(TABLERO, L);
-            if (dx == 1 && dy == 0)   movimiento_valido = animal_seleccionado_->mover(TABLERO, R);
-
-            if (movimiento_valido) {
-                cursor.mover(dx, dy);
-            }
+            cursor.mover(dx, dy);
         }
+        else
+        {
+            std::cout << "tengo pieza agarrada" << std::endl;
+            Animal* pieza = jugadorActivo->getPiezaSeleccionada();
+            if (pieza->getEnMovimiento()) return;
 
-        std::cout << cursor.fila << " " << cursor.columna << std::endl;
-        //std::cout << casillas[cursor.columna][cursor.fila] << std::endl; // esto es para ver si el cursor se mueve por la matriz, si el puntero es null o no
+            bool movimiento_valido = false;
+            if (dx == 0 && dy == 1)  movimiento_valido = pieza->mover(TABLERO, U);
+            if (dx == 0 && dy == -1) movimiento_valido = pieza->mover(TABLERO, D);
+            if (dx == -1 && dy == 0) movimiento_valido = pieza->mover(TABLERO, L);
+            if (dx == 1 && dy == 0)  movimiento_valido = pieza->mover(TABLERO, R);
+
+            if (movimiento_valido)
+                cursor.mover(dx, dy);
+        }
     }
 }
 
-void Tablero::seleccionarPieza(int jugador) // falta que tenga en cuenta el turno, que solo se pueda seleccionar una pieza del bando del jugador que le toca
-{                                           // seguramente con la clase Jugador sea más fácil
-
-    if (turno_actual == jugador) // solo puede seleccionar la pieza aquel jugador con el turno, y solo las suyas
+void Tablero::seleccionarPieza(int jugador)
+{
+    if (turno_actual == jugador)
     {
-        if (casillas[cursor.fila][cursor.columna] == nullptr && animal_seleccionado_ == nullptr) {
+        Cursor& cursor = getCursorActivo();
+        std::cout << "seleccionando en fila: " << cursor.fila<< " col: " << cursor.columna<< " casilla: " << casillas[cursor.fila][cursor.columna]<< std::endl;
+        Jugador* jugadorActivo = getJugadorActivo();
+        Animal* casilla = casillas[cursor.fila][cursor.columna];
 
+        if (casilla == nullptr && !jugadorActivo->tienePiezaAgarrada()) {
+            // casilla vacía y sin pieza agarrada, no hace nada
         }
-        else if (casillas[cursor.fila][cursor.columna] != nullptr && animal_seleccionado_ == nullptr) {
+        else if (casilla != nullptr && !jugadorActivo->tienePiezaAgarrada()) {
 
-            if (casillas[cursor.fila][cursor.columna]->equipo_ == jugador) // para poder solo seleccionar mis piezas
+            if (casilla->equipo_ == jugador)
             {
-                hay_pieza_seleccionada_ = !hay_pieza_seleccionada_;
-                animal_seleccionado_ = casillas[cursor.fila][cursor.columna];
+                jugadorActivo->agarrarPieza(casilla);
                 casillas[cursor.fila][cursor.columna] = nullptr;
             }
         }
-        else if (casillas[cursor.fila][cursor.columna] == nullptr && animal_seleccionado_ != nullptr) {
-            casillas[cursor.fila][cursor.columna] = animal_seleccionado_;
-            hay_pieza_seleccionada_ = !hay_pieza_seleccionada_;
-            animal_seleccionado_ = nullptr;
+        else if (casilla == nullptr && jugadorActivo->tienePiezaAgarrada()) {
 
-            if (turno_actual == 0)
-                turno_actual = 1;
-            else
-                turno_actual = 0;
+            casillas[cursor.fila][cursor.columna] = jugadorActivo->getPiezaSeleccionada();
+            jugadorActivo->soltarPieza();
 
+            turno_actual = (turno_actual == 0) ? 1 : 0;
             letreroTurnos.setState(0, turno_actual);
         }
-        else if (casillas[cursor.fila][cursor.columna] != nullptr && animal_seleccionado_ != nullptr)
-        {
-
+        else if (casilla != nullptr && jugadorActivo->tienePiezaAgarrada()) {
+            // colisión con enemigo, se gestiona desde Juego con getHayColision()
         }
     }
 }
 
-void Letrero::animar(float dt) {
-
-    timer = timer + dt;
-
-    if (timer > msStep)
-    {
-        if (frameActualX_ < nFrames - 1) frameActualX_++;
-        else if (loop) frameActualX_ = 0;
-
-        timer = timer - msStep;
-    }
-}
 void Tablero::actualizarColision()
 {
+    Cursor& cursor = getCursorActivo();
+    Jugador* jugadorActivo = getJugadorActivo();
+
     if (casillas[cursor.fila][cursor.columna] != nullptr
-        && animal_seleccionado_ != nullptr
-        && casillas[cursor.fila][cursor.columna]->equipo_ != animal_seleccionado_->equipo_)
+        && jugadorActivo->tienePiezaAgarrada()
+        && casillas[cursor.fila][cursor.columna]->equipo_ != jugadorActivo->getEquipo())
         hay_colision_ = true;
     else
         hay_colision_ = false;
 }
 
-void Letrero::setState(int frameX, int frameY) {
+void Letrero::animar(float dt)
+{
+    timer = timer + dt;
+    if (timer > msStep)
+    {
+        if (frameActualX_ < nFrames - 1) frameActualX_++;
+        else if (loop) frameActualX_ = 0;
+        timer = timer - msStep;
+    }
+}
 
+void Letrero::setState(int frameX, int frameY)
+{
     frameActualX_ = frameX;
     frameActualY_ = frameY;
     loop = false;
-
 }

@@ -1,20 +1,30 @@
 #include "cursor.h"
 #include "renderizador.h"
 
+Cursor::Cursor(float x_inicial, float y_inicial, int id)
+    : posx_(x_inicial), posy_(y_inicial), idJugador_(id)
+{
+    columna = (int)((x_inicial - 141.0f - 11.0f) / 22.0f);
+    fila = 8 - (int)((y_inicial - 36.0f - 11.0f) / 22.0f);
+}
+
 void Cursor::mover(int x, int y)
 {
-	posx += 22*x;
-	posy += 22*y;
-	columna += x;
-	fila -= y; // Fila de cursor aumenta al bajar, contrario a su movimiento en pantalla (que considera Y+ hacia arriba)
-	if (columna < 0)	{columna = 0;		posx = 141 + 11;}
-	if (columna > 8)	{columna = 8;		posx = 141 + 11 + 22 * 8;}
-	if (fila < 0)		{fila = 0;			posy = 36 + 11 + 22 * 8;}
-	if (fila > 8)		{fila = 8;			posy = 36 + 11;}
+    posx_ += 22 * x;
+    posy_ += 22 * y;
+    columna += x;
+    fila -= y;
 
+    if (columna < 0) { columna = 0;  posx_ = 141 + 11; }
+    if (columna > 8) { columna = 8;  posx_ = 141 + 11 + 22 * 8; }
+    if (fila < 0) { fila = 0;     posy_ = 36 + 11 + 22 * 8; }
+    if (fila > 8) { fila = 8;     posy_ = 36 + 11; }
 }
 
 void Cursor::dibujar(Renderizador* motor)
 {
-	motor->dibujarSprite("../assets/Sprites/tablero/cursor.png", 32, 32, posx, posy, -5);
+    if (idJugador_ == 0)
+        motor->dibujarSprite("../assets/Sprites/tablero/cursor.png", 32, 32, posx_, posy_, -5.0f);
+    else
+        motor->dibujarSprite("../assets/Sprites/tablero/cursor.png", 32, 32, posx_, posy_, -5.0f);
 }
