@@ -67,6 +67,23 @@ void Juego::actualizarLogica(float dt) {    // FASE 1: matemáticas, colisiones 
 
     case BATALLA:
         arena->actualizar(dt);
+            if (arena->combateTerminado()) 
+            {
+                int perdedor = arena->obtenerPerdedor();
+                if (perdedor == 0) 
+                {
+                    animalesJ1[9]->vida_ = 0;
+                    animalesJ1[9]->posx_ = -100; // la mandamos fuera de pantalla
+                    animalesJ1[9]->posy_ = -100;
+                }
+                else 
+                {
+                    animalesJ2[9]->vida_ = 0;
+                    animalesJ2[9]->posx_ = -100;
+                    animalesJ2[9]->posy_ = -100;
+                }
+                estado_actual = TABLERO;
+            }
         break;
 
     case CREDITOS:
@@ -135,6 +152,13 @@ void Juego::renderizarGraficos() {          // FASE 2: pintar en pantalla
 void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo se procese si transicion.activo = false
 {
     if (key == 27) exit(0); // Esc siempre cierra el juego, aunque en un futuro molaría poner un menú de pausa
+
+    if (key == 'b' || key == 'B')
+    {
+        arena->inicioCombate(animalesJ1[9], animalesJ2[9]);
+        estado_actual = BATALLA;
+        return;
+    }
 
     switch (estado_actual) {
 
@@ -220,6 +244,7 @@ void Juego::procesarTeclaLevantada(unsigned char key)
 
 void Juego::procesarTeclaEspecialPresionada(int key) // JUGADOR 2 (FLECHAS)
 {
+ 
     switch (estado_actual) {
     case MENU:
         if (key == GLUT_KEY_UP) menu->moverSelector(-1); // arriba resta 1 (se acerca a 0 que es JUGAR)

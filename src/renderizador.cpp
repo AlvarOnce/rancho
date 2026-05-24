@@ -13,6 +13,7 @@ void Renderizador::dibujarSprite(const char* rutaImagen, float ancho, float alto
     float inicioFrameX = stateX * anchoFrame;
     float inicioFrameY = stateY * altoFrame;
 
+  
     glEnable(GL_TEXTURE_2D);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
@@ -50,4 +51,41 @@ void Renderizador::dibujarSprite(const char* rutaImagen, float ancho, float alto
 
     //glEnable(GL_LIGHTING);
     glDisable(GL_TEXTURE_2D);
+   
+}
+
+void Renderizador::dibujarArena(float x, float y, float ancho, float alto, float r, float g, float b, float profundidad)
+{
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glColor3f(r, g, b);
+
+    glPushMatrix();
+    glTranslatef(x + ancho / 2, y + alto / 2, profundidad);
+    glBegin(GL_POLYGON);
+        glVertex3f(-ancho / 2, -alto / 2, 0);
+        glVertex3f(ancho / 2, -alto / 2, 0);
+        glVertex3f(ancho / 2, alto / 2, 0);
+        glVertex3f(-ancho / 2, alto / 2, 0);
+    glEnd();
+    glPopMatrix();
+}
+
+void Renderizador::dibujarBarreras(float x, float y, float ancho, float alto, float r, float g, float b, float profundidad)
+{
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glColor3f(r, g, b);
+
+    glPushMatrix();
+    glTranslatef(x + ancho / 2, y + alto / 2, profundidad);
+    glBegin(GL_POLYGON);
+        glVertex3f(-ancho / 2, -alto / 2, 0);
+        glVertex3f(ancho / 2, -alto / 2, 0);
+        glVertex3f(ancho / 2, alto / 2, 0);
+        glVertex3f(-ancho / 2, alto / 2, 0);
+    glEnd();
+    glPopMatrix();
+    glEnable(GL_DEPTH_TEST);
 }
