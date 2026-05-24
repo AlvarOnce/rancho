@@ -26,4 +26,7 @@ public:
 									// esto mejora rendimiento y evita artefactos raros entre animales
     );
 
+	void dibujarArena(float x, float y, float ancho, float alto, float r, float g, float b, float profundidad);
+	void dibujarBarreras(float x, float y, float ancho, float alto, float r, float g, float b, float profundidad);
+
 };
