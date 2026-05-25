@@ -163,7 +163,7 @@ void Tablero::seleccionarPieza(int jugador)
                 casillas_[m.origen.fila][m.origen.columna] = pieza;
 
                 float origX = 141.0f + 11.0f + (22.0f * m.origen.columna);
-                float origY = 36.0f + 11.0f + (22.0f * m.origen.fila);
+				float origY = 36.0f + 11.0f + (22.0f * (8 - m.origen.fila)); // lo de (8 - m.origen.fila) se explica más abajo en la linea 274
                 pieza->setPosX(origX);
                 pieza->setPosy(origY);
 
@@ -175,7 +175,8 @@ void Tablero::seleccionarPieza(int jugador)
                 pieza->casillas_movidas_ = 0;
                 pieza->casillas_movidas_x_ = 0;
                 pieza->casillas_movidas_y_ = 0;
-                jugadorActivo->soltarPieza();
+
+                jugadorActivo->soltarPieza(); // soltar la pieza aunque el movimiento sea ilegal
                 // no se cambia el turno, el jugador vuelve a intentarlo
             }
         }
@@ -270,8 +271,10 @@ void Tablero::mover(const Movimiento& m)
 
     // sincronizar la posición física/gráfica del animal con su nuevo destino
     float nuevaPosX = 141.0f + 11.0f + (22.0f * m.destino.columna);
-    float nuevaPosY = 36.0f + 11.0f + (22.0f * m.destino.fila);
-
+	float nuevaPosY = 36.0f + 11.0f + (22.0f * (8 - m.destino.fila)); // invertir el eje Y para que la fila 0 esté en la parte inferior del tablero
+    // esto es porque en la lógica del tablero, la fila 0 es la inferior, pero en el dibujo, la fila 0 está en la parte superior.
+    // habría que cambiar alguna de las dos cosas para que no haya que hacer esta conversión, pero es un detalle menor y no afecta a la lógica del juego
+                                                                            
     pieza->setPosX(nuevaPosX);
     pieza->setPosy(nuevaPosY);
 
