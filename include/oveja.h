@@ -1,5 +1,7 @@
 #pragma once
+#include <vector>
 #include "animal.h"
+#include "estructuras.h"
 
 class Oveja : public Animal 
 {
@@ -12,6 +14,8 @@ public:
 		nFrames = 5;
 		setState(0, 0);
 	}
+
+	std::vector<Movimiento> movimientosPosibles() const override;
 
 	//void actualizar(float dt) override;
 	void dibujar(Renderizador* motor) override;

@@ -8,7 +8,6 @@ namespace Constantes
 	inline constexpr int NUMERO_ANIMALES = 18;
 	inline constexpr int FILAS_TABLERO = 9;
 	inline constexpr int COLUMNAS_TABLERO = 9;
-
 }
 
 struct Casilla {

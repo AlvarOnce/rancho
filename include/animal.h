@@ -1,7 +1,9 @@
 #pragma once
 #include <iostream>
+#include <vector>
 #include "ETSIDI.h"
 #include "renderizador.h"
+#include "estructuras.h"
 
 enum modoJuego 
 {
@@ -86,4 +88,7 @@ public:
 
 	virtual void actualizar(float dt);
 	virtual void dibujar(Renderizador* motor);
+
+	// funcion virtual pura, se pone = 0 para obligar a que cada clase hija la defina
+	virtual std::vector<Movimiento> movimientosPosibles() const = 0; // cada animal tiene que definir sus movimientos posibles
 };

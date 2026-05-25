@@ -123,27 +123,61 @@ void Tablero::seleccionarPieza(int jugador)
         Jugador* jugadorActivo = getJugadorActivo();
         Animal* casilla = casillas_[cursor.fila][cursor.columna];
 
-        if (casilla == nullptr && !jugadorActivo->tienePiezaAgarrada()) {
-            // casilla vacía y sin pieza agarrada, no hace nada
-        }
-        else if (casilla != nullptr && !jugadorActivo->tienePiezaAgarrada()) {
-
+        // CASO 1: LEVANTAR UNA PIEZA
+        if (!jugadorActivo->tienePiezaAgarrada() && casilla != nullptr)
+        {
             if (casilla->equipo_ == jugador)
             {
+                // guardar el origen antes de levantarla físicamente
+                casilla->casillaInicial_[0] = cursor.fila;
+                casilla->casillaInicial_[1] = cursor.columna;
+
                 jugadorActivo->agarrarPieza(casilla);
                 casillas_[cursor.fila][cursor.columna] = nullptr;
             }
         }
-        else if (casilla == nullptr && jugadorActivo->tienePiezaAgarrada()) {
+        // CASO 2: SOLTAR UNA PIEZA (Intentar movimiento)
+        else if (casilla == nullptr && jugadorActivo->tienePiezaAgarrada())
+        {
+            Animal* pieza = jugadorActivo->getPiezaSeleccionada();
 
-            casillas_[cursor.fila][cursor.columna] = jugadorActivo->getPiezaSeleccionada();
-            jugadorActivo->soltarPieza();
+            // intento de movimiento lógico
+            Movimiento m;
+            m.origen.fila = pieza->casillaInicial_[0];
+            m.origen.columna = pieza->casillaInicial_[1];
+            m.destino.fila = cursor.fila;
+            m.destino.columna = cursor.columna;
 
-            turno_actual_ = (turno_actual_ == 0) ? 1 : 0;
-            letreroTurnos_.setState(0, turno_actual_);
-        }
-        else if (casilla != nullptr && jugadorActivo->tienePiezaAgarrada()) {
-            // colisión con enemigo, se gestiona desde Juego con getHayColision()
+            if (esMovimientoLegal(m))
+            {
+                mover(m);
+                jugadorActivo->soltarPieza();
+
+                // cambio de turno
+                turno_actual_ = (turno_actual_ == 0) ? 1 : 0;
+                letreroTurnos_.setState(0, turno_actual_);
+            }
+            else
+            {
+				// MOVIMIENTO ILEGAL: volver a colocar la pieza en su posición original
+                casillas_[m.origen.fila][m.origen.columna] = pieza;
+
+                float origX = 141.0f + 11.0f + (22.0f * m.origen.columna);
+                float origY = 36.0f + 11.0f + (22.0f * m.origen.fila);
+                pieza->setPosX(origX);
+                pieza->setPosy(origY);
+
+				// parar el movimiento de la pieza, por si acaso
+                pieza->setVelX(0);
+                pieza->setVelY(0);
+                pieza->setEnMovimiento(false);
+                pieza->avanzando_casilla_ = 0;
+                pieza->casillas_movidas_ = 0;
+                pieza->casillas_movidas_x_ = 0;
+                pieza->casillas_movidas_y_ = 0;
+                jugadorActivo->soltarPieza();
+                // no se cambia el turno, el jugador vuelve a intentarlo
+            }
         }
     }
 }
@@ -177,4 +211,78 @@ void Letrero::setState(int frameX, int frameY)
     frameActualX_ = frameX;
     frameActualY_ = frameY;
     loop = false;
+}
+
+bool Tablero::esMovimientoLegal(const Movimiento& m) const
+{
+    // validar que el destino esté dentro de las dimensiones del tablero
+    if (m.destino.fila < 0 || m.destino.fila >= Constantes::FILAS_TABLERO ||
+        m.destino.columna < 0 || m.destino.columna >= Constantes::COLUMNAS_TABLERO)
+    {
+        return false;
+    }
+
+    // obtener el jugador activo
+    Jugador* jugadorActivo = jugadores_[turno_actual_];
+    if (!jugadorActivo || !jugadorActivo->tienePiezaAgarrada())
+    {
+        return false;
+    }
+
+	// obtener la pieza seleccionada
+    Animal* pieza = jugadorActivo->getPiezaSeleccionada();
+    if (!pieza) 
+    { 
+        return false; 
+    }
+
+    // comprobar colisión con piezas del propio equipo
+    Animal* casillaDestino = casillas_[m.destino.fila][m.destino.columna];
+    if (casillaDestino != nullptr && casillaDestino->equipo_ == turno_actual_)
+    {
+        return false;
+    }
+
+    // conexión con los vectores de movimientos posibles de cada animal
+    std::vector<Movimiento> permitidos = pieza->movimientosPosibles();
+    bool esValidoGeometricamente = false;
+
+    for (const auto& mov : permitidos)
+    {
+        // comprobar si el destino propuesto coincide con uno de los destinos calculados por el animal
+        if (mov.destino.fila == m.destino.fila && mov.destino.columna == m.destino.columna)
+        {
+            esValidoGeometricamente = true;
+            break;
+        }
+    }
+
+    return esValidoGeometricamente;
+}
+
+void Tablero::mover(const Movimiento& m)
+{
+    Jugador* jugadorActivo = getJugadorActivo();
+    Animal* pieza = jugadorActivo->getPiezaSeleccionada();
+
+    // mover la pieza en la matriz lógica del tablero
+    casillas_[m.destino.fila][m.destino.columna] = pieza;
+
+    // sincronizar la posición física/gráfica del animal con su nuevo destino
+    float nuevaPosX = 141.0f + 11.0f + (22.0f * m.destino.columna);
+    float nuevaPosY = 36.0f + 11.0f + (22.0f * m.destino.fila);
+
+    pieza->setPosX(nuevaPosX);
+    pieza->setPosy(nuevaPosY);
+
+	// parar el movimiento de la pieza, por si acaso
+    pieza->setVelX(0);
+    pieza->setVelY(0);
+    pieza->setEnMovimiento(false);
+    pieza->avanzando_casilla_ = 0;
+
+    // limpiar los contadores de casillas movidas
+    pieza->casillas_movidas_ = 0;
+    pieza->casillas_movidas_x_ = 0;
+    pieza->casillas_movidas_y_ = 0;
 }
