@@ -16,10 +16,9 @@ Juego::Juego() {
     creditos = new Creditos();
     controles = new Controles();
 
-    jugador1_ = new Jugador(0);  // crea sus propios animales internamente
-    jugador2_ = new Jugador(1);
-
-    tablero = new Tablero(jugador1_, jugador2_);
+    for (int i = 0; i < 2; i++)
+        jugadores_[i] = new Jugador(i);
+    tablero = new Tablero(jugadores_[0], jugadores_[1]);
 }
 
 Juego::~Juego() {
@@ -30,8 +29,8 @@ Juego::~Juego() {
     delete renderizador;
 	delete creditos;
     delete controles;
-    delete jugador1_;
-    delete jugador2_;
+    for (int i = 0; i < 2; i++)
+        delete jugadores_[i];
 }
 
 void Juego::actualizarLogica(float dt) {    // FASE 1: matemáticas, colisiones y reglas del juego
@@ -51,20 +50,10 @@ void Juego::actualizarLogica(float dt) {    // FASE 1: matemáticas, colisiones 
             if (arena->combateTerminado()) 
             {
                 int perdedor = arena->obtenerPerdedor();
-                if (perdedor == 0) 
-                {
-                    Animal* j1animalc = jugador1_->getAnimalEnCombate();
-                   j1animalc->vida_ = 0;
-                   j1animalc->posx_ = -100; // la mandamos fuera de pantalla
-                   j1animalc->posy_ = -100;//aqui le podemos mandar a un vector de animales muertos.
-                }
-                else 
-                {
-                    Animal* j2animalc = jugador2_->getAnimalEnCombate();
-                    j2animalc->vida_ = 0;
-                    j2animalc->posx_ = -100;
-                    j2animalc->posy_ = -100;
-                }
+                Animal* animalPerdedor = jugadores_[perdedor]->getAnimalEnCombate();
+                animalPerdedor->vida_ = 0;
+                animalPerdedor->posx_ = -100;
+                animalPerdedor->posy_ = -100;
                 estado_actual = TABLERO;
             }
         break;
@@ -138,7 +127,7 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
 
     if (key == 'b' || key == 'B')
     {
-        arena->inicioCombate(jugador1_->getAnimalEnCombate(), jugador2_->getAnimalEnCombate());
+        arena->inicioCombate(jugadores_[0]->getAnimalEnCombate(), jugadores_[1]->getAnimalEnCombate());
         estado_actual = BATALLA;
         return;
     }

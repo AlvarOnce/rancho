@@ -22,8 +22,7 @@ class Juego
     Tablero* tablero;
     Arena* arena;
     Renderizador* renderizador;
-    Jugador* jugador1_;
-    Jugador* jugador2_;
+    Jugador* jugadores_[2];
     Creditos* creditos;
     Controles* controles;
 

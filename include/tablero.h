@@ -25,12 +25,10 @@ class Tablero {
     Animal* casillas[9][9];
     int color_casilla[9][9];
     bool hay_colision_ = false;
-    int turno_actual;
+    int turno_actual = BANDO_LUZ;
     Letrero letreroTurnos;
 
-    Jugador* jugador1_;         // guardamos punteros a los jugadores
-    Jugador* jugador2_; 
-    Jugador* getJugadorActivo();// que recuerda donde estaba al cambiar el turno// para poder acceder a su pieza seleccionada
+    Jugador* jugadores_[2];// que recuerda donde estaba al cambiar el turno// para poder acceder a su pieza seleccionada
     Cursor cursorJ1_ = Cursor(141.0f + 11.0f, 36.0f + 11.0f + 22.0f * 8.0f, 0);// esquina inferior izquierda
     Cursor cursorJ2_ = Cursor(141.0f + 11.0f + 22.0f * 8.0f, 36.0f + 11.0f, 1);// esquina superior derecha 
     Cursor& getCursorActivo();// devuelve el cursor del jugador con el turno
@@ -55,6 +53,7 @@ public:
     void dibujar(Renderizador* motor);
     void actualizarColision();
     bool getHayColision() const { return hay_colision_; }
+    Jugador* getJugadorActivo();
 
     Tarjeta tarjeta;
 };

@@ -1,20 +1,22 @@
 #include "tablero.h"
+//cursorJ1_(141.0f + 11.0f, 36.0f + 11.0f + 22.0f * 8.0f, 0),
+//cursorJ2_(141.0f + 11.0f + 22.0f * 8.0f, 36.0f + 11.0f, 1)
 
 Tablero::Tablero(Jugador* jugador1, Jugador* jugador2)
     : cursorJ1_(141.0f + 11.0f, 36.0f + 11.0f + 22.0f * 8.0f, 0),
     cursorJ2_(141.0f + 11.0f + 22.0f * 8.0f, 36.0f + 11.0f, 1)
 {
-    jugador1_ = jugador1;
-    jugador2_ = jugador2;
+    jugadores_[0] = jugador1;
+    jugadores_[1] = jugador2;
     inicializarTablero();
 
     for (int j = 0; j < 2; j++)
         for (int i = 0; i < FILAS; i++)
-            casillas[i][j] = jugador1->getAnimales()[j * FILAS + i];
+            casillas[i][j] = jugadores_[0]->getAnimales()[j * FILAS + i];
 
     for (int j = 0; j < 2; j++)
         for (int i = 0; i < FILAS; i++)
-            casillas[i][8 - j] = jugador2->getAnimales()[j * FILAS + i];
+            casillas[i][8 - j] = jugadores_[1]->getAnimales()[j * FILAS + i];
 }
 
 Tablero::~Tablero() {}
@@ -26,7 +28,7 @@ Cursor& Tablero::getCursorActivo()
 
 Jugador* Tablero::getJugadorActivo()
 {
-    return turno_actual == 0 ? jugador1_ : jugador2_;
+    return jugadores_[turno_actual];
 }
 
 void Tablero::inicializarTablero()
@@ -43,8 +45,6 @@ void Tablero::inicializarTablero()
                 color_casilla[i][j] = CASILLA_OSCURA;
         }
     }
-
-    turno_actual = BANDO_LUZ;
 }
 
 void Tablero::actualizar(float dt)
