@@ -11,3 +11,5 @@ Eventos importantes:
 28/03/2026 - Creación del coordinador del Juego
 
 04/05/2026 - Creación de la memoria del proyecto
+
+13/05/2026 - Actualización del repositorio a Visual Studio 2026

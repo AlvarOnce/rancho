@@ -3,7 +3,7 @@
 //cursorJ2_(141.0f + 11.0f + 22.0f * 8.0f, 36.0f + 11.0f, 1)
 
 Tablero::Tablero(Jugador* jugador1, Jugador* jugador2) : 
-    cursorJ1_(141.0f + 11.0f, 36.0f + 11.0f + 22.0f * 8.0f, 0),
+cursorJ1_(141.0f + 11.0f, 36.0f + 11.0f + 22.0f * 8.0f, 0),
     cursorJ2_(141.0f + 11.0f + 22.0f * 8.0f, 36.0f + 11.0f, 1)
 {
     jugadores_[0] = jugador1;
@@ -11,15 +11,15 @@ Tablero::Tablero(Jugador* jugador1, Jugador* jugador2) :
     inicializarTablero();
 
     for (int j = 0; j < 2; j++)
-        for (int i = 0; i < FILAS; i++)
-            casillas_[i][j] = jugadores_[0]->getAnimales()[j * FILAS + i];
+        for (int i = 0; i < Constantes::FILAS_TABLERO; i++)
+            casillas_[i][j] = jugadores_[0]->getAnimales()[j * Constantes::FILAS_TABLERO + i];
 
     for (int j = 0; j < 2; j++)
-        for (int i = 0; i < FILAS; i++)
-            casillas_[i][8 - j] = jugadores_[1]->getAnimales()[j * FILAS + i];
+        for (int i = 0; i < Constantes::FILAS_TABLERO; i++)
+            casillas_[i][8 - j] = jugadores_[1]->getAnimales()[j * Constantes::FILAS_TABLERO + i];
 }
 
-Tablero::~Tablero() {}
+Tablero::~Tablero() {} // las piezas se destruyen en el jugador, no en el tablero
 
 Cursor& Tablero::getCursorActivo()
 {
@@ -33,9 +33,9 @@ Jugador* Tablero::getJugadorActivo()
 
 void Tablero::inicializarTablero()
 {
-    for (int i = 0; i < FILAS; i++)
+    for (int i = 0; i < Constantes::FILAS_TABLERO; i++)
     {
-        for (int j = 0; j < COLUMNAS; j++)
+        for (int j = 0; j < Constantes::COLUMNAS_TABLERO; j++)
         {
             casillas_[i][j] = nullptr;
 
@@ -49,8 +49,8 @@ void Tablero::inicializarTablero()
 
 void Tablero::actualizar(float dt)
 {
-    for (int i = 0; i < FILAS; i++)
-        for (int j = 0; j < COLUMNAS; j++)
+    for (int i = 0; i < Constantes::FILAS_TABLERO; i++)
+        for (int j = 0; j < Constantes::COLUMNAS_TABLERO; j++)
             if (casillas_[i][j] != nullptr)
                 casillas_[i][j]->actualizar(dt);
 
@@ -69,8 +69,8 @@ void Tablero::dibujar(Renderizador* motor)
     motor->dibujarSprite("../assets/Sprites/tablero/tablero.png", 256, 256, 480 / 2, 270 / 2, -2);
     motor->dibujarSprite("../assets/Sprites/tablero/turnos.png", 256, 128, letreroTurnos_.posx, 270 / 2, -5, 4, 8, letreroTurnos_.frameActualX_, letreroTurnos_.frameActualY_);
 
-    for (int i = 0; i < FILAS; i++)
-        for (int j = 0; j < COLUMNAS; j++)
+    for (int i = 0; i < Constantes::FILAS_TABLERO; i++)
+        for (int j = 0; j < Constantes::COLUMNAS_TABLERO; j++)
             if (casillas_[i][j] != nullptr)
                 casillas_[i][j]->dibujar(motor);
 

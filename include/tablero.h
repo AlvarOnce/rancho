@@ -23,8 +23,8 @@ struct Letrero
 
 class Tablero 
 {
-    Animal* casillas_[9][9];
-    int color_casilla_[9][9];
+    Animal* casillas_[Constantes::FILAS_TABLERO][Constantes::COLUMNAS_TABLERO];
+    int color_casilla_[Constantes::FILAS_TABLERO][Constantes::COLUMNAS_TABLERO];
     bool hay_colision_ = false;
     int turno_actual_ = BANDO_LUZ;
     Letrero letreroTurnos_;
@@ -35,8 +35,6 @@ class Tablero
     Cursor& getCursorActivo();// devuelve el cursor del jugador con el turno
 
     static const int TAMANO_CASILLA = 22;
-    static const int FILAS = 9;
-    static const int COLUMNAS = 9;
     static const int X_INICIO = 141;
     static const int Y_INICIO = 36;
   // devuelve el cursor del jugador con el turno
@@ -45,6 +43,8 @@ public:
 
     Tablero(Jugador* jugador1, Jugador* jugador2);
     ~Tablero();
+    Tablero(const Tablero&) = delete; // para evitar que se pueda copiar el tablero
+    Tablero& operator=(const Tablero&) = delete; // no se puede asignar un tablero a otro
 
     void inicializarTablero();
     void recibirMovimiento(int jugador, int dx, int dy);
@@ -56,4 +56,9 @@ public:
     Jugador* getJugadorActivo();
 
     Tarjeta tarjeta;
+
+    // propuesta de psanse en la tutoria:
+    //bool esMovimientoLegal(const Movimiento& m) const;
+    //void mover(const Movimiento& m);
+    //bool hayColisionEnemiga(const Movimiento& m) const;
 };

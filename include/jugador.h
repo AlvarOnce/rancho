@@ -4,7 +4,9 @@
 
 class Jugador 
 {
-    Animal* animales_[Constantes::numeroAnimales] = {};
+	// esto nos lo dijo psanse en la tutoria:
+	//std::vector<Animal*> animales_ // para poder usar push_back y no tener que escribir 18 veces new Oveja/Gallina/Cabra/Cerdo/Granjero/Llama
+	Animal* animales_[Constantes::NUMERO_ANIMALES] = { nullptr };
     Animal* piezaSeleccionada_ = nullptr;
     Animal* animalEnCombate_ = nullptr;
     int equipo_;

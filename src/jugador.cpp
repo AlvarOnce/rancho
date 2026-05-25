@@ -26,6 +26,10 @@ Jugador::Jugador(int equipo) : equipo_(equipo)
 
 Jugador::~Jugador() 
 {
-    for (int i = 0; i < Constantes::numeroAnimales; i++)
+    for (int i = 0; i < Constantes::NUMERO_ANIMALES; i++)
         delete animales_[i];
+
+	// cuando usemos el vector de psanse, esto se haría automáticamente al salir del ámbito, 
+    // pero como usamos un array de punteros, debemos eliminar cada animal manualmente para evitar fugas de memoria
+    //animales_.clear();    
 }
