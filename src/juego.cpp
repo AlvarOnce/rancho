@@ -44,7 +44,9 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
         break;
 
     case BATALLA:
-        arena_->actualizar(dt);
+        arena_->actualizar(dt); // @alvaronce: quiero pensar que aquí hay que hacer la conexión entre el tablero y la arena
+        // lo de poner a false el bool vivo de la pieza perdedora y que se deje de dibujar
+        // puede valer lo de moverla fuera del tablero como está ahora
             if (arena_->combateTerminado()) 
             {
                 int perdedor = arena_->obtenerPerdedor();
@@ -144,10 +146,6 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
 
             //case Selector::OPCIONES: // en opciones puede estar el volumen o quizá algo del juego
             //    estado_actual = OPCIONES; // no sé si los submenús del ménu son un estado 
-            //    break;
-
-            //case Selector::CONTROLES: // en principio muestra nuestros controles, quizá se puedan elegir los tuyos propios
-            //    estado_actual = CONTROLES;
             //    break;
 
             case Selector::CREDITOS:

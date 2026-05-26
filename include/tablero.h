@@ -58,7 +58,7 @@ public:
     Tarjeta tarjeta;
 
     // propuesta de psanse en la tutoria:
-    //bool esMovimientoLegal(const Movimiento& m) const;
-    //void mover(const Movimiento& m);
+    bool esMovimientoLegal(const Movimiento& m) const;
+    void mover(const Movimiento& m);
     //bool hayColisionEnemiga(const Movimiento& m) const;
 };

@@ -19,13 +19,13 @@ Este documento establece las convenciones de código basadas en Google C++ Style
 
 ## 2. Formato y Sintaxis
 
-* **Llaves `{ }`:** La llave de apertura va en la misma línea que la declaración. La de cierre va en una nueva línea.
+* **Llaves `{ }`:** Ambas llaves, la de apertura y cierre van en una nueva línea.
 * **Sangría:** 4 espacios por cada nivel de indentación.
 * **Punteros y Referencias:** El `*` o el `&` se escriben pegados al tipo de dato (`Animal* gallina;`).
 
 ## 3. Arquitectura y C++ Orientado a Objetos
 
 * **Protección:** Todo archivo `.h` debe comenzar con `#pragma once`.
-* **Encapsulamiento:** Atributos siempre `private` o `protected`. Por defecto al principio de la clase, donde no hace falta escribir `private`. Crear los métodos `get()` y `set()` solo si es necesario.
+* **Encapsulamiento:** Atributos siempre `private` o `protected`. Por defecto al principio de la clase, donde no hace falta escribir `private`. Crear los métodos `get()` y `set()` solo si es necesario. Poner `set()` en los setters pero no poner `get()` en los getters.
 * **Const:** Etiqueta con la palabra `const` todos los métodos que lean datos pero no modifiquen los atributos de la clase (ej. `int getVida() const;`).
 * **Memoria:** Todo `new` debe tener su `delete` en el destructor.

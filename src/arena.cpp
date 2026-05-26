@@ -47,21 +47,15 @@ void Arena::inicioCombate(Animal* pieza_luz, Animal* pieza_oscuridad)
 	combatientes_[1] = pieza_oscuridad;
 
 	// desactivamos toda la logica del tablero para estos animales
-	combatientes_[0]->intro_tablero_ = false;
-	combatientes_[0]->en_movimiento_ = false;
-	combatientes_[0]->casillas_movidas_ = 0;
-	combatientes_[0]->casillas_movidas_x_ = 0;
-	combatientes_[0]->casillas_movidas_y_ = 0;
-	combatientes_[0]->velx_ = 0;
-	combatientes_[0]->vely_ = 0;
-
-	combatientes_[1]->intro_tablero_ = false;
-	combatientes_[1]->en_movimiento_ = false;
-	combatientes_[1]->casillas_movidas_ = 0;
-	combatientes_[1]->casillas_movidas_x_ = 0;
-	combatientes_[1]->casillas_movidas_y_ = 0;
-	combatientes_[1]->velx_ = 0;
-	combatientes_[1]->vely_ = 0;
+	for (int i = 0; i < 2; i++) {
+		combatientes_[i]->intro_tablero_ = false;
+		combatientes_[i]->en_movimiento_ = false;
+		combatientes_[i]->casillas_movidas_ = 0;
+		combatientes_[i]->casillas_movidas_x_ = 0;
+		combatientes_[i]->casillas_movidas_y_ = 0;
+		combatientes_[i]->velx_ = 0;
+		combatientes_[i]->vely_ = 0;
+	}	
 
 	// colocacion en la arena
 	pos_x_[0] = ARENA_MARGEN_X + 30.0f;
@@ -69,14 +63,13 @@ void Arena::inicioCombate(Animal* pieza_luz, Animal* pieza_oscuridad)
 	pos_x_[1] = ARENA_MARGEN_X + ZONA_DE_COMBATE_X - 30.0f;
 	pos_y_[1] = ARENA_MARGEN_Y + ZONA_DE_COMBATE_Y / 2.0f;
 
-	combatientes_[0]->posx_ = pos_x_[0];
-	combatientes_[0]->posy_ = pos_y_[0];
-	combatientes_[1]->posx_ = pos_x_[1];
-	combatientes_[1]->posy_ = pos_y_[1];
+	for (int i = 0; i < 2; i++) {
+		combatientes_[i]->posx_ = pos_x_[i];
+		combatientes_[i]->posy_ = pos_y_[i];
 
-	vivo_[0] = true;
-	vivo_[1] = true;
-
+		vivo_[i] = true;
+	}	
+	
 	for (int i = 0; i < 2; i++) {
 		int tipo_de_ataque = ATAQUE_TIPO_GOLPE;
 		if (tipo_de_ataque == ATAQUE_TIPO_GOLPE)   recarga_maxima_de_ataque_[i] = 0.5f;

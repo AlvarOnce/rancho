@@ -1,7 +1,9 @@
 #pragma once
 #include <iostream>
+#include <vector>
 #include "ETSIDI.h"
 #include "renderizador.h"
+#include "estructuras.h"
 
 enum modoJuego 
 {
@@ -11,11 +13,6 @@ enum modoJuego
 enum animacionTipo 
 {
 	QUIETO, CAMINAR, ATACAR,
-};
-
-enum direccion 
-{
-	R, L, U, D, UR, UL, DR, DL
 };
 
 class Animal 
@@ -49,7 +46,7 @@ public:
 
 	int casillaInicial_[2] = {0,0};
 
-	bool mover(modoJuego modo, direccion dir);	//ahora es un bool, si devuelve true se ha movido bien,
+	bool mover(modoJuego modo, int dx, int dy);	//ahora es un bool, si devuelve true se ha movido bien,
 												// si devuelve false, no se ha movido
 	virtual void atacar()						
 	{
@@ -86,4 +83,7 @@ public:
 
 	virtual void actualizar(float dt);
 	virtual void dibujar(Renderizador* motor);
+
+	// funcion virtual
+	virtual std::vector<Movimiento> movimientosPosibles() const; 
 };
