@@ -1,5 +1,4 @@
 #include "gallina.h"
-#include <cmath>
 
 void Gallina::dibujar(Renderizador* motor)
 {

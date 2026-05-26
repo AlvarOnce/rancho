@@ -1,5 +1,4 @@
 #include "oveja.h"
-#include <cmath>
 
 void Oveja::dibujar(Renderizador* motor)
 {
