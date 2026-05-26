@@ -30,8 +30,8 @@ class Tablero
     Letrero letreroTurnos_;
 
     Jugador* jugadores_[2];// que recuerda donde estaba al cambiar el turno// para poder acceder a su pieza seleccionada
-    Cursor cursorJ1_ = Cursor(141.0f + 11.0f, 36.0f + 11.0f + 22.0f * 8.0f, 0);// esquina inferior izquierda
-    Cursor cursorJ2_ = Cursor(141.0f + 11.0f + 22.0f * 8.0f, 36.0f + 11.0f, 1);// esquina superior derecha 
+    Cursor cursorJ1_ = Cursor(2,4,0); // se inicia cursor en columna,fila
+    Cursor cursorJ2_ = Cursor(6,4,1);
     Cursor& getCursorActivo();// devuelve el cursor del jugador con el turno
 
     static const int TAMANO_CASILLA = 22;
@@ -40,6 +40,9 @@ class Tablero
   // devuelve el cursor del jugador con el turno
 
 public:
+
+    bool enBatalla = false;
+    Animal* animalesEnBatalla[2]{};
 
     Tablero(Jugador* jugador1, Jugador* jugador2);
     ~Tablero();

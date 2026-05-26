@@ -10,7 +10,6 @@ public:
 	{
 		nFrames = 6;
 		max_casillas_movidas_ = 5;
-		setState(0, 0);
 		
 	}
 

@@ -3,9 +3,8 @@
 //cursorJ1_(141.0f + 11.0f, 36.0f + 11.0f + 22.0f * 8.0f, 0),
 //cursorJ2_(141.0f + 11.0f + 22.0f * 8.0f, 36.0f + 11.0f, 1)
 
-Tablero::Tablero(Jugador* jugador1, Jugador* jugador2) : 
-cursorJ1_(141.0f + 11.0f, 36.0f + 11.0f + 22.0f * 8.0f, 0),
-    cursorJ2_(141.0f + 11.0f + 22.0f * 8.0f, 36.0f + 11.0f, 1)
+Tablero::Tablero(Jugador* jugador1, Jugador* jugador2) 
+
 {
     jugadores_[0] = jugador1;
     jugadores_[1] = jugador2;
@@ -59,6 +58,7 @@ void Tablero::actualizar(float dt)
         getJugadorActivo()->getPiezaSeleccionada()->actualizar(dt);
 
     actualizarColision();
+    //if(getHayColision())
 
     letreroTurnos_.posx = 102 + turno_actual_ * 273;
     letreroTurnos_.animar(dt);
@@ -70,6 +70,41 @@ void Tablero::dibujar(Renderizador* motor)
     motor->dibujarSprite("../assets/Sprites/tablero/tablero.png", 256, 256, 480 / 2, 270 / 2, -2);
     motor->dibujarSprite("../assets/Sprites/tablero/turnos.png", 256, 128, letreroTurnos_.posx, 270 / 2, -5, 4, 8, letreroTurnos_.frameActualX_, letreroTurnos_.frameActualY_);
 
+    // NO MODIFICAR ESTO, ilumina casillas posibles
+    if (casillas_[getCursorActivo().fila][getCursorActivo().columna] != nullptr || getJugadorActivo()->tienePiezaAgarrada()) { // si cursor encima de animal o animal seleccionado
+
+        int max;
+        int equipo;
+
+        if (casillas_[getCursorActivo().fila][getCursorActivo().columna] != nullptr)
+        {
+            max = casillas_[getCursorActivo().fila][getCursorActivo().columna]->max_casillas_movidas_;
+            equipo = casillas_[getCursorActivo().fila][getCursorActivo().columna]->equipo_;
+        }
+
+        if (getJugadorActivo()->tienePiezaAgarrada()) {
+           max = getJugadorActivo()->getPiezaSeleccionada()->max_casillas_movidas_;
+           equipo = getJugadorActivo()->getPiezaSeleccionada()->equipo_;
+        }
+      
+        for (int i = 0; i < Constantes::FILAS_TABLERO; i++)
+            for (int j = 0; j < Constantes::COLUMNAS_TABLERO; j++)
+
+                if (abs(i - getCursorActivo().fila) + abs(j - getCursorActivo().columna) <= max) // solo si es alcanzable
+                {
+                    if (equipo == getJugadorActivo()->getEquipo()) // solo si es mi animal
+                    {
+                        if (casillas_[i][j] == nullptr || casillas_[i][j]->equipo_ != getJugadorActivo()->getEquipo()) // solo si esta vacia o animal contrario, EVALUACION DE CORTOCIRCUITO
+                        { 
+
+                        int posPosibleX = 141 + 11 + 22 * j;
+                        int posPosibleY = 36 + 11 + 22 * (8 - i);
+                         motor->dibujarSprite("../assets/Sprites/tablero/casillaPosible.png", 32, 32, posPosibleX, posPosibleY, -2.5);
+                         }
+                    }
+                }
+    }
+
     for (int i = 0; i < Constantes::FILAS_TABLERO; i++)
         for (int j = 0; j < Constantes::COLUMNAS_TABLERO; j++)
             if (casillas_[i][j] != nullptr)
@@ -78,8 +113,8 @@ void Tablero::dibujar(Renderizador* motor)
     if (getJugadorActivo()->tienePiezaAgarrada())
         getJugadorActivo()->getPiezaSeleccionada()->dibujar(motor);
 
-    cursorJ1_.dibujar(motor);
-    cursorJ2_.dibujar(motor);
+	Cursor& cursor_activo = getCursorActivo();
+	cursor_activo.dibujar(motor);
 
     if (getCursorActivo().getPosX() > 150 && getCursorActivo().getPosX() < 170)
         tarjeta.dibujar(motor);
@@ -167,10 +202,17 @@ void Tablero::seleccionarPieza(int jugador)
                 while (cursor.fila > m.destino.fila) cursor.mover(0, 1);  // dy=1 es ARRIBA (resta fila)
                 while (cursor.fila < m.destino.fila) cursor.mover(0, -1);
 
-                jugadorActivo->soltarPieza();
 
-                turno_actual_ = (turno_actual_ == 0) ? 1 : 0;
-                letreroTurnos_.setState(0, turno_actual_);
+                if (getHayColision())
+                {
+                    animalesEnBatalla[0] = pieza;
+                    animalesEnBatalla[1] = casillas_[m.destino.fila][m.destino.columna];
+                    enBatalla = true;
+                }
+
+                 jugadorActivo->soltarPieza();
+                 turno_actual_ = (turno_actual_ == 0) ? 1 : 0;
+                 letreroTurnos_.setState(0, turno_actual_);
             }
             else
             {
@@ -318,4 +360,5 @@ void Tablero::mover(const Movimiento& m)
     pieza->casillas_movidas_ = 0;
     pieza->casillas_movidas_x_ = 0;
     pieza->casillas_movidas_y_ = 0;
+
 }

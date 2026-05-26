@@ -2,7 +2,7 @@
 
 void Oveja::dibujar(Renderizador* motor)
 {
-	motor->dibujarSprite("../assets/Sprites/oveja/ovejaSpritesheet.png", 256, 64, posx_, posy_, capaz_, 2, 8, frameActualX_, frameActualY_);
+	motor->dibujarSprite("../assets/Sprites/oveja/ovejaSpritesheet.png", 256, 128, posx_, posy_, capaz_, 4, 8, frameActualX_, frameActualY_);
 }
 
 //void Oveja::actualizar(float dt)

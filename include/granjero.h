@@ -9,7 +9,7 @@ public:
 		: Animal(posx, posy, capa, vida, xinicial, equipo) 
 	{
 		nFrames = 5;
-		setState(0, 0);
+
 	}
 
 	void actualizar(float dt) override;

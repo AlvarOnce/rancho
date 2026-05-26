@@ -40,7 +40,16 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
         break;
 
     case TABLERO:
+
+        //if (!transicion_.activo)
         tablero_->actualizar(dt);
+
+        if (tablero_->enBatalla)
+        {
+            arena_->inicioCombate(tablero_->animalesEnBatalla[0], tablero_->animalesEnBatalla[1]);
+            transicion_.empieza();
+            proximo_estado = BATALLA;
+        }
         break;
 
     case BATALLA:

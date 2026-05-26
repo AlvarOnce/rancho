@@ -22,6 +22,11 @@ public:
 	Animal(float posx, float posy, float capa, int vida, float xinicial, int equipo )
 		: posx_(posx), posy_(posy), capaz_(capa), vida_(vida), xinicial_(xinicial), equipo_(equipo){
 
+		if (equipo_ == 0)
+			setState(0, 0);
+		else if (equipo_ == 1)
+			setState(0, 1);
+
 	}
 
 	virtual ~Animal() {}

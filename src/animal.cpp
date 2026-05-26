@@ -23,13 +23,14 @@ void Animal::actualizar(float dt)
         else {
             posx_ = xinicial_; // Aseguramos que quede clavado en la posición exacta
             intro_tablero_ = false;
-            setState(0, 0);
+            setState(0, 1);
         }
 
         return; // Salimos de la función para que no haga el movimiento del Tablero todavía
     } 
+
     if (!en_movimiento_) { 
-		setState(0, 0);
+		setState(0, equipo_);
         return;
     }
     // movimiento podriamos usar Vector 2D
@@ -62,6 +63,12 @@ bool Animal::mover(modoJuego modo, int dx, int dy) // Para que el animal sepa qu
 
     case TABLERO: // Se llama desde tablero con animal.mover(TABLERO, direccion)
 
+        // orientación de caminata 
+        if (dx == 1) setState(0, 0);
+        if (dx == -1) setState(0, 1);
+        if (dy == 1) setState(0, 2);
+        if (dy == -1) setState(0, 3);
+
        	en_movimiento_ = true;
         casillas_movidas_x_ += dx;
         casillas_movidas_y_ += dy;
@@ -76,7 +83,6 @@ bool Animal::mover(modoJuego modo, int dx, int dy) // Para que el animal sepa qu
         casillas_movidas_ = abs(casillas_movidas_x_) + abs(casillas_movidas_y_);
         if (casillas_movidas_ > getMaxCasillasMovidas()) return mover(CANCELAR, dx, dy);
 		else return true;
-
 
     case BATALLA: // Se llama desde batalla con animal.mover(BATALLA, direccion)
 

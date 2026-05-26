@@ -12,7 +12,7 @@ public:
 	{
 		max_casillas_movidas_ = 5;
 		nFrames = 5;
-		setState(0, 0);
+
 	}
 
 	//void actualizar(float dt) override;
