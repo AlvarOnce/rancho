@@ -104,10 +104,11 @@ void Tablero::recibirMovimiento(int jugador, int dx, int dy)
             if (pieza->getEnMovimiento()) return;
 
             bool movimiento_valido = false;
-            if (dx == 0 && dy == 1)  movimiento_valido = pieza->mover(TABLERO, U);
+            movimiento_valido = pieza->mover(TABLERO, dx, dy);
+            /*if (dx == 0 && dy == 1)  movimiento_valido = pieza->mover(TABLERO, U);
             if (dx == 0 && dy == -1) movimiento_valido = pieza->mover(TABLERO, D);
             if (dx == -1 && dy == 0) movimiento_valido = pieza->mover(TABLERO, L);
-            if (dx == 1 && dy == 0)  movimiento_valido = pieza->mover(TABLERO, R);
+            if (dx == 1 && dy == 0)  movimiento_valido = pieza->mover(TABLERO, R);*/
 
             if (movimiento_valido)
                 cursor.mover(dx, dy);

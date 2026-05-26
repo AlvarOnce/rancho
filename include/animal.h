@@ -15,11 +15,6 @@ enum animacionTipo
 	QUIETO, CAMINAR, ATACAR,
 };
 
-enum direccion 
-{
-	R, L, U, D, UR, UL, DR, DL
-};
-
 class Animal 
 {
 public:
@@ -51,7 +46,7 @@ public:
 
 	int casillaInicial_[2] = {0,0};
 
-	bool mover(modoJuego modo, direccion dir);	//ahora es un bool, si devuelve true se ha movido bien,
+	bool mover(modoJuego modo, int dx, int dy);	//ahora es un bool, si devuelve true se ha movido bien,
 												// si devuelve false, no se ha movido
 	virtual void atacar()						
 	{
