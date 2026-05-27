@@ -140,6 +140,7 @@
     <ClInclude Include="include\freeglut.h" />
     <ClInclude Include="include\gallina.h" />
     <ClInclude Include="include\granjero.h" />
+    <ClInclude Include="include\interaccion.h" />
     <ClInclude Include="include\juego.h" />
     <ClInclude Include="include\jugador.h" />
     <ClInclude Include="include\llama.h" />
