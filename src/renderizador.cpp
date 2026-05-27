@@ -16,10 +16,18 @@ void Renderizador::dibujar(const Animal* animal) const
     if (!animal || !animal->getVivo()) return;
 	std::string ruta_sprite;
     switch (animal->especie()) {
-        case CABRA: ruta_sprite = "../assets/Sprites/cabra/cabraSpritesheet.png";
-		case GALLINA: ruta_sprite = "../assets/Sprites/gallina/gallinaSpritesheet.png";
-		case GRANJERO: ruta_sprite = "../assets/Sprites/granjero/granjeroSpritesheet.png";
-		break;
+        case CABRA:
+            ruta_sprite = "../assets/Sprites/cabra/cabraSpritesheet.png";
+            break;
+        case GALLINA:
+            ruta_sprite = "../assets/Sprites/gallina/gallinaSpritesheet.png";
+            break;
+        case GRANJERO:
+            ruta_sprite = "../assets/Sprites/granjero/granjeroSpritesheet.png";
+            break;
+        default:
+            ruta_sprite = "../assets/Sprites/gallina/gallinaSpritesheet.png";
+            break;
     }
 
     dibujarSprite(

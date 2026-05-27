@@ -13,7 +13,6 @@ Juego::Juego()
     renderizador_ = new Renderizador();
     creditos_ = new Creditos();
     controles_ = new Controles();
-	transicion_ = new Transicion();
 
     for (int i = 0; i < 2; i++)
         jugadores_[i] = new Jugador(i);
@@ -28,7 +27,6 @@ Juego::~Juego()
     delete renderizador_;
 	delete creditos_;
     delete controles_;
-	delete transicion_;
     for (int i = 0; i < 2; i++)
         delete jugadores_[i];
 }
@@ -49,7 +47,7 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
         if (tablero_->enBatalla)
         {
             arena_->inicioCombate(tablero_->animalesEnBatalla[0], tablero_->animalesEnBatalla[1]);
-            transicion_->empieza();
+            transicion_.empieza();
             proximo_estado = BATALLA;
         }
         break;
@@ -68,32 +66,32 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
 
     case CREDITOS:
 
-        if (!transicion_->getActivo())
+        if (!transicion_.getActivo())
             creditos_->actualizar(25);
 
         if (creditos_->getFinalizado())
         {
-            transicion_->empieza();
+            transicion_.empieza();
             proximo_estado = MENU;
         }
         break;
 
     case CONTROLES:
 
-        if (!transicion_->getActivo())
+        if (!transicion_.getActivo())
             controles_->actualizar(25);
         if (controles_->getFinalizado())
         {
-            transicion_->empieza();
+            transicion_.empieza();
             proximo_estado = MENU;
         }
         break;
     }
 
-    if (transicion_->getActivo())
-        transicion_->actualizar(dt);
+    if (transicion_.getActivo())
+        transicion_.actualizar(dt);
 
-    if (transicion_->getEstado() == Transicion::CERRADO)
+    if (transicion_.getEstado() == Transicion::CERRADO)
         estado_actual = proximo_estado;
 }
 
@@ -123,7 +121,7 @@ void Juego::renderizarGraficos() // FASE 2: pintar en pantalla
         renderizador_->dibujar(controles_);
         break;
     }
-    renderizador_->dibujar(transicion_);
+    renderizador_->dibujar(&transicion_);
 }
 
 void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo se procese si transicion.activo = false
@@ -133,7 +131,7 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
 	if (key == 'b' || key == 'B') // temporalmente, para saltar el menú y probar la batalla directamente
     {
         arena_->inicioCombate(jugadores_[0]->getAnimalEnCombate(), jugadores_[1]->getAnimalEnCombate());
-        transicion_->empieza();
+        transicion_.empieza();
         proximo_estado = BATALLA;
         return;
     }
@@ -147,7 +145,7 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
             switch (menu_->getOpcionActual()) {
 
             case Selector::JUGAR: 
-                transicion_->empieza();
+                transicion_.empieza();
                 proximo_estado = TABLERO;
                 break;
 
@@ -157,20 +155,20 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
 
             case Selector::CREDITOS:
                 creditos_->reset();
-                transicion_->empieza();
+                transicion_.empieza();
                 proximo_estado = CREDITOS;
                 break;
 
             case Selector::CONTROLES:
                 controles_->reset();
-                transicion_->empieza();
+                transicion_.empieza();
                 proximo_estado = CONTROLES;
                 break;
             }
         }
 
         if (key == 'b') {
-            transicion_->empieza();
+            transicion_.empieza();
             proximo_estado = BATALLA;
         }
         break;
@@ -194,7 +192,7 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
          if (key == 'm' || key == 'M') arena_->recibirAtaque(1); // Ataque para J2
 
          if (key == 'b') {
-             transicion_->empieza();
+             transicion_.empieza();
              proximo_estado = MENU;
          }
          break;

@@ -15,7 +15,7 @@
 
 class Juego 
 {   
-    Transicion* transicion_;
+    Transicion transicion_;
     Menu* menu_;
     Tablero* tablero_;
     Arena* arena_;
