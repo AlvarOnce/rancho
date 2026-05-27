@@ -64,8 +64,8 @@ void Arena::inicioCombate(Animal* pieza_luz, Animal* pieza_oscuridad)
 	pos_y_[1] = ARENA_MARGEN_Y + ZONA_DE_COMBATE_Y / 2.0f;
 
 	for (int i = 0; i < 2; i++) {
-		combatientes_[i]->velocidad_.x = pos_x_[i];
-		combatientes_[i]->velocidad_.y = pos_y_[i];
+		combatientes_[i]->setPosicion(Vector2D(pos_x_[i], pos_y_[i]));
+		combatientes_[i]->setVelocidad(Vector2D(0, 0));
 
 		vivo_[i] = true;
 	}	
@@ -221,7 +221,7 @@ void Arena::actualizarDisparo(float dt)
 
 		// si sale de la pantalla lo desactivamos
 		if (disparo_x_[i] < 0 || disparo_x_[i] > ANCHO_DE_LA_ARENA ||
-			disparo_x_[i] < 0 || disparo_y_[i] > ALTO_DE_LA_ARENA) {
+			disparo_y_[i] < 0 || disparo_y_[i] > ALTO_DE_LA_ARENA) {
 			disparo_disparado_[i] = false;
 		}
 

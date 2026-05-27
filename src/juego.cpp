@@ -49,6 +49,7 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
             arena_->inicioCombate(tablero_->animalesEnBatalla[0], tablero_->animalesEnBatalla[1]);
             transicion_.empieza();
             proximo_estado = BATALLA;
+            tablero_->enBatalla = false; // para que no haya un bucle infinido de batallas
         }
         break;
 
@@ -57,7 +58,9 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
             if (arena_->combateTerminado()) 
             {
                 int perdedor = arena_->obtenerPerdedor();
-                Animal* animalPerdedor = jugadores_[perdedor]->getAnimalEnCombate();
+                Animal* animalPerdedor = tablero_->animalesEnBatalla[perdedor]; // esto hay que ponerlo así accediendo desde el tablero
+                // porque poniendo como estaba antesjugadores_[perdedor]->getAnimalEnCombate(); 
+                // siempre davuelve el mismo porque en jugador no se actualiza nada, habría que actualizar en jugador
                 animalPerdedor->vida_ = 0;
                 animalPerdedor->setPosicion(Vector2D(-100, -100));
                 estado_actual = TABLERO;
