@@ -10,6 +10,6 @@ public:
 		max_casillas_movidas_ = 2;
 		nFrames = 8;
 		ataque_ = 5;
-
+		especie_ = GALLINA;
 	}
 };
