@@ -3,24 +3,27 @@
 
 class Onda : public Ataque {
 
+    float expansion_ = 50.0f;  // píxeles por segundo que crece
+    float tamanioInicial_;
+
 public:
-    Onda(int dano = 6) {
-        dano_ = dano;
-        alcance_ = 100.0f;
-        tipo_ = "Onda";
-        sprite_ = "../assets/Sprites/ataques/onda.png";
-        tamanio_ = 48.0f;
-        duracion_ = 0.4f;
-        r_ = 1.0f;  g_ = 0.0f;  b_ = 1.0f;  // magenta
+    Onda(int dano, float alcance, float recarga,const char* sprite, float tamanio, float duracion,float r, float g, float b)
+        : Ataque(dano, alcance, recarga, sprite, tamanio, duracion, r, g, b),
+        tamanioInicial_(tamanio) {}
+
+    void activar(float x, float y, float dirX, float dirY) override {
+        Ataque::activar(x, y, dirX, dirY);
+        tamanio_ = tamanioInicial_;  // resetear tamaño al activar
     }
 
-    Onda(int dano, float alcance, const char* sprite, float tamanio, float duracion, float r, float g, float b) {
-        dano_ = dano;
-        alcance_ = alcance;
-        tipo_ = "Onda";
-        sprite_ = sprite;
-        tamanio_ = tamanio;
-        duracion_ = duracion;
-        r_ = r;  g_ = g;  b_ = b;
+    void mover(float dt) override {
+        if (!activo_) return;
+
+        // La onda crece con el tiempo
+        tamanio_ += expansion_ * (dt / 1000.0f);
+        tiempoActivo_ += dt / 1000.0f;
+
+        if (tiempoActivo_ >= duracion_visual_)
+            desactivar();
     }
 };

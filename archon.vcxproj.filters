@@ -51,6 +51,7 @@
     <ClInclude Include="include\controles.h" />
     <ClInclude Include="include\jugador.h" />
     <ClInclude Include="include\estructuras.h" />
+    <ClInclude Include="include\interaccion.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="docs\cuadernoBitacora.md">

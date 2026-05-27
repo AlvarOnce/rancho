@@ -1,5 +1,6 @@
 #pragma once
 #include "animal.h"
+#include "interaccion.h"
 #include "renderizador.h"
 
 //dimensiones que ocupa la arena en la pantalla
@@ -28,10 +29,6 @@ const int ABAJO = 1;
 const int IZQUIERDA = 2;
 const int DERECHA = 3;
 
-const int ATAQUE_TIPO_DISPARO = 1;
-const int ATAQUE_TIPO_GOLPE = 2;
-const int ATAQUE_EN_AREA = 3;
-
 class Arena
 {	
 	Animal* combatientes_[2]{}; // si quereis Bnado Luz [0], [1] para el otro bando.
@@ -48,32 +45,21 @@ class Arena
 	bool movimiento_izq_[2] = {};
 	bool movimiento_dch_[2] = {};
 
-	float disparo_x_[2] = {};
-	float disparo_y_[2] = {};
-	float direccion_disparo_x_[2] = {};
-	float direccion_disparo_y_[2] = {};
-	bool disparo_disparado_[2] = {}; // xd el nombre.
-
 	float recarga_de_ataque_[2] = {};//tiempo que queda para poder atacar 
-	float recarga_maxima_de_ataque_[2] = {};//tiempo de racarga total de cada pieza
+	
 
 	float barrera_x_[NUM_DE_BARRERAS] = {};
 	float barrera_y_[NUM_DE_BARRERAS] = {};
 	bool barrera_visible_[NUM_DE_BARRERAS] = {};
 	float contador_ciclo_barrera_[8] = {};
 	float ciclo_maximo_barrera_[8] = {};
+
 	int ganador_ = {};
 	bool combate_terminado_;
 
-	//atributos de ataque a melee
-	bool ataque_activo_[2] = {};
-	float ataque_x_[2] = {};
-	float ataque_y_[2] = {};
-	float ataque_visible_tiempo_[2] = {};
-	inline static const float DURACION_ATAQUE = 0.2f; 
 
 	void actualizarMovimiento(float dt);
-	void actualizarDisparo(float dt);
+	void actualizarAtaques(float dt);
 	void actualizarRecarga(float dt);
 	void actualizarBarreras(float dt);
 	void confirmarImpacto();
@@ -81,7 +67,6 @@ class Arena
 	void mantenerLimites(int jugador);
 	bool colisionBarrera(float x, float y);
 	void colocarBarrerasAleatorias();
-	void actualizarAtaque(float dt);
 	
 public:
 	Arena();
@@ -92,7 +77,8 @@ public:
 	void dibujar(Renderizador* renderizador) const;
 	void recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada);
 	bool recibirAtaque(int jugador);
-	int obtenerPerdedor() const; 
+	int obtenerPerdedor() const;
+
 	bool combateTerminado() const;
 	int ganadorCombate() const;
 };

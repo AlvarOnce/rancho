@@ -3,24 +3,23 @@
 
 class Disparo : public Ataque {
 
-public:
-    Disparo(int dano = 8) {
-        dano_ = dano;
-        alcance_ = 150.0f;
-        tipo_ = "Disparo";
-        sprite_ = "../assets/Sprites/ataques/proyectil.png";
-        tamanio_ = 16.0f;
-        duracion_ = 0.3f;
-        r_ = 0.0f;  g_ = 1.0f;  b_ = 0.5f;  // cian
-    }
+    float velocidad_ = 200.0f;  // píxeles por segundo
 
-    Disparo(int dano, float alcance, const char* sprite, float tamanio, float duracion, float r, float g, float b) {
-        dano_ = dano;
-        alcance_ = alcance;
-        tipo_ = "Disparo";
-        sprite_ = sprite;
-        tamanio_ = tamanio;
-        duracion_ = duracion;
-        r_ = r;  g_ = g;  b_ = b;
+public:
+    Disparo(int dano, float alcance, float recarga,const char* sprite, float tamanio, float duracion,float r, float g, float b)
+        : Ataque(dano, alcance, recarga, sprite, tamanio, duracion, r, g, b) {}
+
+    void mover(float dt) override {
+        if (!activo_) return;
+
+        // Viaja en la dirección indicada
+        x_ += dirX_ * velocidad_ * (dt / 1000.0f);
+        y_ += dirY_ * velocidad_ * (dt / 1000.0f);
+
+        tiempoActivo_ += dt / 1000.0f;
+
+        // Se desactiva si llega al alcance máximo
+        if (tiempoActivo_ >= alcance_ / velocidad_)
+            desactivar();
     }
 };
