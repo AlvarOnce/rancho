@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include "renderizador.h"
 
 class Ataque {
 
@@ -21,7 +22,7 @@ protected:
     float dirX_ = 0;
     float dirY_ = 0;
     bool activo_ = false;
-    float tiempoActivo_ = 0;  // para controlar la duración visual
+    float tiempoActivo_ = 0;
 
 public:
     Ataque(int dano, float alcance, float recarga,
@@ -50,6 +51,12 @@ public:
     float getX() const { return x_; }
     float getY() const { return y_; }
     bool isActivo() const { return activo_; }
+
+    // Dibuja el sprite del ataque en su posición actual
+    virtual void dibujar(Renderizador* renderizador) const {
+        if (!activo_) return;
+        renderizador->dibujarSprite(sprite_,tamanio_,tamanio_,x_, y_,-2.0f,1, 1,0, 0,true);
+    }
 
     // Activar el ataque en una posición con una dirección
     virtual void activar(float x, float y, float dirX, float dirY) {

@@ -3,7 +3,7 @@
 #include "arena.h"
 #include "juego.h"
 
-Juego::Juego() 
+Juego::Juego()
 {
     estado_actual = MENU;
     proximo_estado = MENU;
@@ -19,21 +19,21 @@ Juego::Juego()
     tablero_ = new Tablero(jugadores_[0], jugadores_[1]);
 }
 
-Juego::~Juego() 
+Juego::~Juego()
 {
     delete menu_;
     delete tablero_;
     delete arena_;
     delete renderizador_;
-	delete creditos_;
+    delete creditos_;
     delete controles_;
     for (int i = 0; i < 2; i++)
         delete jugadores_[i];
 }
 
 void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reglas del juego
-{    
-    switch (estado_actual) 
+{
+    switch (estado_actual)
     {
     case MENU:
         menu_->actualizar(dt);
@@ -47,24 +47,29 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
         if (tablero_->enBatalla)
         {
             arena_->inicioCombate(tablero_->animalesEnBatalla[0], tablero_->animalesEnBatalla[1]);
+
+            // CORRECCIÓN: guardar referencia a los animales en combate en cada jugador,
+            // para poder eliminar al perdedor al terminar la batalla.
+            jugadores_[0]->setAnimalEnCombate(tablero_->animalesEnBatalla[0]);
+            jugadores_[1]->setAnimalEnCombate(tablero_->animalesEnBatalla[1]);
+
+            tablero_->enBatalla = false;
             transicion_.empieza();
             proximo_estado = BATALLA;
         }
         break;
 
     case BATALLA:
-        arena_->actualizar(dt); // @alvaronce: quiero pensar que aquí hay que hacer la conexión entre el tablero y la arena
-        // lo de poner a false el bool vivo de la pieza perdedora y que se deje de dibujar
-        // puede valer lo de moverla fuera del tablero como está ahora
-            if (arena_->combateTerminado()) 
-            {
-                int perdedor = arena_->obtenerPerdedor();
-                Animal* animalPerdedor = jugadores_[perdedor]->getAnimalEnCombate();
-                animalPerdedor->vida_ = 0;
-                animalPerdedor->posx_ = -100;
-                animalPerdedor->posy_ = -100;
-                estado_actual = TABLERO;
-            }
+        arena_->actualizar(dt);
+        if (arena_->combateTerminado())
+        {
+            int perdedor = arena_->obtenerPerdedor();
+            Animal* animalPerdedor = jugadores_[perdedor]->getAnimalEnCombate();
+            animalPerdedor->vida_ = 0;
+            animalPerdedor->posx_ = -100;
+            animalPerdedor->posy_ = -100;
+            estado_actual = TABLERO;
+        }
         break;
 
     case CREDITOS:
@@ -99,21 +104,21 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
 }
 
 void Juego::renderizarGraficos() // FASE 2: pintar en pantalla
-{   
+{
     renderizador_->limpiarPantalla();
 
-    switch (estado_actual) 
+    switch (estado_actual)
     {
     case MENU:
         menu_->dibujar(renderizador_);
         break;
 
-    case TABLERO:  
+    case TABLERO:
         tablero_->dibujar(renderizador_);
         break;
 
     case BATALLA:
-        arena_->dibujar(renderizador_);  
+        arena_->dibujar(renderizador_);
         break;
 
     case CREDITOS:
@@ -130,9 +135,9 @@ void Juego::renderizarGraficos() // FASE 2: pintar en pantalla
 
 void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo se procese si transicion.activo = false
 {
-    if (key == 27) exit(0); // Esc siempre cierra el juego, aunque en un futuro molaría poner un menú de pausa
+    if (key == 27) exit(0); // Esc siempre cierra el juego
 
-	if (key == 'b' || key == 'B') // temporalmente, para saltar el menú y probar la batalla directamente
+    if (key == 'b' || key == 'B') // atajo temporal para saltar al menú/batalla
     {
         arena_->inicioCombate(jugadores_[0]->getAnimalEnCombate(), jugadores_[1]->getAnimalEnCombate());
         transicion_.empieza();
@@ -140,22 +145,18 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
         return;
     }
 
-    switch (estado_actual) 
+    switch (estado_actual)
     {
-        case MENU:
+    case MENU:
 
         if (key == 13) { // Intro para elegir una opción
 
             switch (menu_->getOpcionActual()) {
 
-            case Selector::JUGAR: 
+            case Selector::JUGAR:
                 transicion_.empieza();
                 proximo_estado = TABLERO;
                 break;
-
-            //case Selector::OPCIONES: // en opciones puede estar el volumen o quizá algo del juego
-            //    estado_actual = OPCIONES; // no sé si los submenús del ménu son un estado 
-            //    break;
 
             case Selector::CREDITOS:
                 creditos_->reset();
@@ -177,39 +178,36 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
         }
         break;
 
-		case TABLERO: // movimiento discreto en el tablero, no hace falta procesar la tecla al levantarla, el movimiento se hace una vez al pulsar y ya está
-         
-         if (key == 'w' || key == 'W') tablero_->recibirMovimiento(0, 0, 1); // tablero->recibirMovimiento(jugador, dx, dy);
-         if (key == 's' || key == 'S') tablero_->recibirMovimiento(0, 0, -1);
-         if (key == 'a' || key == 'A') tablero_->recibirMovimiento(0, -1, 0);
-         if (key == 'd' || key == 'D') tablero_->recibirMovimiento(0, 1, 0);
-		 if (key == 'q' || key == 'Q') tablero_->seleccionarPieza(0); // Selección para J1
-         if (key == 'm' || key == 'M') tablero_->seleccionarPieza(1); // Selección para J2
+    case TABLERO:
+        if (key == 'w' || key == 'W') tablero_->recibirMovimiento(0, 0, 1);
+        if (key == 's' || key == 'S') tablero_->recibirMovimiento(0, 0, -1);
+        if (key == 'a' || key == 'A') tablero_->recibirMovimiento(0, -1, 0);
+        if (key == 'd' || key == 'D') tablero_->recibirMovimiento(0, 1, 0);
+        if (key == 'q' || key == 'Q') tablero_->seleccionarPieza(0);
+        if (key == 'm' || key == 'M') tablero_->seleccionarPieza(1);
         break;
 
-		case BATALLA: // movimiento continuo en la batalla, se procesa al pulsar la tecla y al levantarla, hay movimiento mientras se mantenga pulsada la tecla
-         if (key == 'w' || key == 'W') arena_->recibirMovimiento(0, ARRIBA, true);
-         if (key == 's' || key == 'S') arena_->recibirMovimiento(0, ABAJO, true);
-         if (key == 'a' || key == 'A') arena_->recibirMovimiento(0, IZQUIERDA, true);
-         if (key == 'd' || key == 'D') arena_->recibirMovimiento(0, DERECHA, true);                
-		 if (key == 'q' || key == 'Q') arena_->recibirAtaque(0); // Ataque para J1
-         if (key == 'm' || key == 'M') arena_->recibirAtaque(1); // Ataque para J2
+    case BATALLA:
+        if (key == 'w' || key == 'W') arena_->recibirMovimiento(0, ARRIBA, true);
+        if (key == 's' || key == 'S') arena_->recibirMovimiento(0, ABAJO, true);
+        if (key == 'a' || key == 'A') arena_->recibirMovimiento(0, IZQUIERDA, true);
+        if (key == 'd' || key == 'D') arena_->recibirMovimiento(0, DERECHA, true);
+        if (key == 'q' || key == 'Q') arena_->recibirAtaque(0);
+        if (key == 'm' || key == 'M') arena_->recibirAtaque(1);
 
-         if (key == 'b') {
-             transicion_.empieza();
-             proximo_estado = MENU;
-         }
-         break;
+        if (key == 'b') {
+            transicion_.empieza();
+            proximo_estado = MENU;
+        }
+        break;
     }
 }
 
 void Juego::procesarTeclaLevantada(unsigned char key)
 {
-    switch (estado_actual) 
+    switch (estado_actual)
     {
     case TABLERO:
-        // como en el tablero el movimiento es discreto, no hay que hacer nada
-        // cuando se levanta la tecla, ya se ha hecho todo al pulsarla.
         break;
 
     case BATALLA:
@@ -223,16 +221,16 @@ void Juego::procesarTeclaLevantada(unsigned char key)
 
 void Juego::procesarTeclaEspecialPresionada(int key) // JUGADOR 2 (FLECHAS)
 {
- 
-    switch (estado_actual) 
+
+    switch (estado_actual)
     {
     case MENU:
-        if (key == GLUT_KEY_UP) menu_->moverSelector(-1); // arriba resta 1 (se acerca a 0 que es JUGAR)
-        if (key == GLUT_KEY_DOWN) menu_->moverSelector(1); // abajo suma 1 (bajándo hacia el 3 que es CREDITOS)
+        if (key == GLUT_KEY_UP) menu_->moverSelector(-1);
+        if (key == GLUT_KEY_DOWN) menu_->moverSelector(1);
         break;
 
     case TABLERO:
-        if (key == GLUT_KEY_UP)    tablero_->recibirMovimiento(1, 0, 1); // tablero->recibirMovimiento(jugador, dx, dy);
+        if (key == GLUT_KEY_UP)    tablero_->recibirMovimiento(1, 0, 1);
         if (key == GLUT_KEY_DOWN)  tablero_->recibirMovimiento(1, 0, -1);
         if (key == GLUT_KEY_LEFT)  tablero_->recibirMovimiento(1, -1, 0);
         if (key == GLUT_KEY_RIGHT) tablero_->recibirMovimiento(1, 1, 0);
@@ -249,10 +247,9 @@ void Juego::procesarTeclaEspecialPresionada(int key) // JUGADOR 2 (FLECHAS)
 
 void Juego::procesarTeclaEspecialLevantada(int key)
 {
-    switch (estado_actual) 
+    switch (estado_actual)
     {
     case TABLERO:
-        // igual que antes, aquí no hay que poner nada
         break;
 
     case BATALLA:

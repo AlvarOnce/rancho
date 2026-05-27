@@ -22,7 +22,6 @@ Jugador::Jugador(int equipo) : equipo_(equipo)
          for (int i = 9; i < 18; i++)
             animales_[i] = new Gallina(480.0f + 15.0f * (i - 9.0f) - 11.0f,36.0f + 176.0f - (22.0f * (i - 9.0f)) + 11.0f,-3.0f - 0.01f * (i - 9.0f) - 0.08f,20.0f,152.0f + 22.0f * 7.0f,1);
     }
-    animalEnCombate_ = animales_[9];
 }
 
 Jugador::~Jugador() 

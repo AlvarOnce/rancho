@@ -1,7 +1,7 @@
 #pragma once
 #include "animal.h"
 #include "estructuras.h"
-#include "golpe.h"
+#include "disparo.h"
 
 class Gallina : public Animal {
 
@@ -12,10 +12,7 @@ public:
         max_casillas_movidas_ = 2;
         nFrames = 8;
 
-        ataque_ = new Golpe(15, 30.0f, 0.5f,
-            "../assets/Sprites/ataques/golpe.png",
-            32.0f, 0.2f,
-            1.0f, 0.5f, 0.0f);
+        ataque_ = new Disparo(12,140.0f,0.8f,"../assets/Sprites/ataques/botella.png",20.0f,0.35f,1.0f, 1.0f, 0.0f);
     }
 
     const char* getTipoAtaque() const override { return "Golpe"; }

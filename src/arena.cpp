@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <ctime>
 
-Arena::Arena() 
+Arena::Arena()
 {
 	srand(time(nullptr));
 	combatientes_[0] = nullptr;
@@ -11,7 +11,7 @@ Arena::Arena()
 	ganador_ = -1;
 	combate_terminado_ = false;
 
-	for (int i = 0; i < 2; i++){
+	for (int i = 0; i < 2; i++) {
 		pos_x_[i] = pos_y_[i] = 0;
 		vivo_[i] = false;
 		movimiento_arriba_[i] = movimiento_abajo_[i] = false;
@@ -28,7 +28,7 @@ Arena::Arena()
 	}
 }
 
-Arena::~Arena() 
+Arena::~Arena()
 {
 	//las piezas se deben de destruir en tablero.
 }
@@ -47,7 +47,7 @@ void Arena::inicioCombate(Animal* pieza_luz, Animal* pieza_oscuridad)
 		combatientes_[i]->casillas_movidas_y_ = 0;
 		combatientes_[i]->velx_ = 0;
 		combatientes_[i]->vely_ = 0;
-	}	
+	}
 
 	// colocacion en la arena
 	pos_x_[0] = ARENA_MARGEN_X + 30.0f;
@@ -55,22 +55,27 @@ void Arena::inicioCombate(Animal* pieza_luz, Animal* pieza_oscuridad)
 	pos_x_[1] = ARENA_MARGEN_X + ZONA_DE_COMBATE_X - 30.0f;
 	pos_y_[1] = ARENA_MARGEN_Y + ZONA_DE_COMBATE_Y / 2.0f;
 
+	// Direcciones iniciales: J1 mira a la derecha (hacia J2), J2 a la izquierda (hacia J1)
+	ultima_direccion_x_[0] = 1.0f;  ultima_direccion_y_[0] = 0.0f;
+	ultima_direccion_x_[1] = -1.0f;  ultima_direccion_y_[1] = 0.0f;
+
 	for (int i = 0; i < 2; i++) {
 		combatientes_[i]->posx_ = pos_x_[i];
 		combatientes_[i]->posy_ = pos_y_[i];
+		combatientes_[i]->capaz_ = -4.5f;
 
 		vivo_[i] = true;
 		recarga_de_ataque_[i] = 0;
 		if (combatientes_[i]->getAtaque())
 			combatientes_[i]->getAtaque()->desactivar();
-	}	
+	}
 	ganador_ = -1;
 	combate_terminado_ = false;
 
 	colocarBarrerasAleatorias();
 }
 
-void Arena::actualizar(float dt) 
+void Arena::actualizar(float dt)
 {
 	if (combate_terminado_) return;
 	actualizarBarreras(dt);
@@ -84,7 +89,6 @@ void Arena::actualizar(float dt)
 void Arena::dibujar(Renderizador* renderizador) const
 {
 	renderizador->dibujarArena(ARENA_MARGEN_X, ARENA_MARGEN_Y, ZONA_DE_COMBATE_X, ZONA_DE_COMBATE_Y, 0.1f, 0.2f, 0.6f, -5.0f);
-	//dibujamos torres con rectangulos
 
 	for (int i = 0; i < NUM_DE_BARRERAS; i++)
 	{
@@ -102,26 +106,23 @@ void Arena::dibujar(Renderizador* renderizador) const
 	for (int i = 0; i < 2; i++) {
 		Ataque* ataque = combatientes_[i] ? combatientes_[i]->getAtaque() : nullptr;
 		if (ataque && ataque->isActivo()) {
-			float r, g, b;
-			ataque->getColor(r, g, b);
-			float tam = ataque->getTamanio();
-			renderizador->dibujarBarreras(
-				ataque->getX() - tam / 2, ataque->getY() - tam / 2, tam, tam, r, g, b, -2.0f);
+			ataque->dibujar(renderizador); // cada ataque dibuja su propio sprite
 		}
 	}
 
-		glDisable(GL_DEPTH_TEST);
-		for (int i = 0; i < 2; i++) {
-			if (vivo_[i] && combatientes_[i] != nullptr) {
-				renderizador->dibujarSprite("../assets/Sprites/gallina/gallinaSpritesheet.png", 256, 32, combatientes_[i]->posx_, combatientes_[i]->posy_, -4.5f, 1, 8, combatientes_[i]->frameActualX_, combatientes_[i]->frameActualY_, true);
-			}
-			glEnable(GL_DEPTH_TEST);
+	// CORRECCIÓN: glDisable fuera del bucle y glEnable también fuera,
+	// así ambos animales se dibujan sin que el depth test oculte al segundo.
+	glDisable(GL_DEPTH_TEST);
+	for (int i = 0; i < 2; i++) {
+		if (vivo_[i] && combatientes_[i] != nullptr) {
+			combatientes_[i]->dibujar(renderizador); // polimorfismo: cada animal dibuja su propio sprite
 		}
-		glEnable(GL_DEPTH_TEST);
+	}
+	glEnable(GL_DEPTH_TEST); // fuera del bucle
 }
 
 
-void Arena::recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada) 
+void Arena::recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada)
 {
 	if (movimiento == ARRIBA)    movimiento_arriba_[jugador] = tecla_pulsada;
 	if (movimiento == ABAJO)     movimiento_abajo_[jugador] = tecla_pulsada;
@@ -129,7 +130,7 @@ void Arena::recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada)
 	if (movimiento == DERECHA)   movimiento_dch_[jugador] = tecla_pulsada;
 }
 
-bool Arena::recibirAtaque(int jugador) 
+bool Arena::recibirAtaque(int jugador)
 {
 	if (combate_terminado_) return false;
 	if (!vivo_[jugador]) return false;
@@ -140,7 +141,7 @@ bool Arena::recibirAtaque(int jugador)
 
 	float offsetX = pos_x_[jugador] + ultima_direccion_x_[jugador] * 18.0f;
 	float offsetY = pos_y_[jugador] + ultima_direccion_y_[jugador] * 18.0f;
-	ataque->activar(offsetX, offsetY,ultima_direccion_x_[jugador],ultima_direccion_y_[jugador]);
+	ataque->activar(offsetX, offsetY, ultima_direccion_x_[jugador], ultima_direccion_y_[jugador]);
 	recarga_de_ataque_[jugador] = ataque->getRecarga();
 
 	return true;
@@ -176,12 +177,12 @@ void Arena::actualizarMovimiento(float dt)
 			pos_y_[i] = pos_antigua_y_[i];
 		}
 
-	
+
 		int rival = (i == 0) ? 1 : 0;
 		float dx = pos_x_[i] - pos_x_[rival];
 		float dy = pos_y_[i] - pos_y_[rival];
 		float dist = sqrt(dx * dx + dy * dy);
-		if (dist < 22.0f) 
+		if (dist < 22.0f)
 		{
 			pos_x_[i] = pos_antigua_x_[i];
 			pos_y_[i] = pos_antigua_y_[i];
@@ -195,7 +196,7 @@ void Arena::actualizarMovimiento(float dt)
 	}
 }
 
-void Arena::actualizarAtaques(float dt) 
+void Arena::actualizarAtaques(float dt)
 {
 	for (int i = 0; i < 2; i++) {
 		Ataque* ataque = combatientes_[i] ? combatientes_[i]->getAtaque() : nullptr;
@@ -216,41 +217,38 @@ void Arena::actualizarAtaques(float dt)
 	}
 }
 
-void Arena::actualizarRecarga(float dt) 
+void Arena::actualizarRecarga(float dt)
 {
 	for (int i = 0; i < 2; i++) {
 		if (recarga_de_ataque_[i] > 0)
-			recarga_de_ataque_[i] -= dt/1000;
+			recarga_de_ataque_[i] -= dt / 1000;
 	}
 }
 
-void Arena::actualizarBarreras(float dt) 
+void Arena::actualizarBarreras(float dt)
 {
 	for (int i = 0; i < NUM_DE_BARRERAS; i++) {
 		contador_ciclo_barrera_[i] += dt;
-		if (contador_ciclo_barrera_[i] >= ciclo_maximo_barrera_[i]) 
+		if (contador_ciclo_barrera_[i] >= ciclo_maximo_barrera_[i])
 		{
 			contador_ciclo_barrera_[i] = 0.0f;
 			barrera_visible_[i] = !barrera_visible_[i];
 			ciclo_maximo_barrera_[i] = 10000.0f + (rand() % 10);
 
-			if (barrera_visible_[i]) 
+			if (barrera_visible_[i])
 			{
 				for (int j = 0; j < 2; j++) {
 					if (!vivo_[j]) continue;
 					float dx = pos_x_[j] - barrera_x_[i];
 					float dy = pos_y_[j] - barrera_y_[i];
-					if (dx > -10 && dx < 10 && dy > -12 && dy < 12) 
+					if (dx > -10 && dx < 10 && dy > -12 && dy < 12)
 					{
-						// empujamos al jugador fuera de la barrera
-						// lo movemos hacia el lado mas cercano
 						if (abs(dx) > abs(dy))
 							pos_x_[j] += (dx > 0) ? 12.0f : -12.0f;
 						else
 							pos_y_[j] += (dy > 0) ? 14.0f : -14.0f;
 
-						// sincronizamos con el animal
-						if (combatientes_[j] != nullptr) 
+						if (combatientes_[j] != nullptr)
 						{
 							combatientes_[j]->posx_ = pos_x_[j];
 							combatientes_[j]->posy_ = pos_y_[j];
@@ -263,7 +261,7 @@ void Arena::actualizarBarreras(float dt)
 }
 
 
-void Arena::confirmarImpacto() 
+void Arena::confirmarImpacto()
 {
 	for (int i = 0; i < 2; i++) {
 		Ataque* ataque = combatientes_[i] ? combatientes_[i]->getAtaque() : nullptr;
@@ -284,7 +282,7 @@ void Arena::confirmarImpacto()
 	}
 }
 
-void Arena::confirmarFinCombate() 
+void Arena::confirmarFinCombate()
 {
 	for (int i = 0; i < 2; i++) {
 		if (combatientes_[i] != nullptr && combatientes_[i]->vida_ <= 0) {
@@ -311,9 +309,9 @@ void Arena::mantenerLimites(int jugador)
 		std::cout << "LIMITE ACTIVADO J" << jugador << ": de (" << antes_x << "," << antes_y << ") a (" << pos_x_[jugador] << "," << pos_y_[jugador] << ")" << std::endl;
 }
 
-bool Arena::colisionBarrera(float x, float y) 
+bool Arena::colisionBarrera(float x, float y)
 {
-	for (int i = 0; i < NUM_DE_BARRERAS; i++) 
+	for (int i = 0; i < NUM_DE_BARRERAS; i++)
 	{
 		if (!barrera_visible_[i]) continue;
 		float dx = x - barrera_x_[i];
@@ -324,7 +322,7 @@ bool Arena::colisionBarrera(float x, float y)
 	return false;
 }
 
-void Arena::colocarBarrerasAleatorias() 
+void Arena::colocarBarrerasAleatorias()
 {
 	float margen = 15.0f;
 	float zona_x = (ZONA_DE_COMBATE_X - margen * 2) / 4.0f;
@@ -334,20 +332,16 @@ void Arena::colocarBarrerasAleatorias()
 		int columna = i % 4;
 		int fila = i / 4;
 
-		// esquina de cada zona dentro del cuadrado azul
 		float origen_x = ARENA_MARGEN_X + margen + (columna * zona_x);
 		float origen_y = ARENA_MARGEN_Y + margen + (fila * zona_y);
 
-		// posicion aleatoria dentro de esa zona
 		barrera_x_[i] = origen_x + (rand() % (int)(zona_x * 0.7f));
 		barrera_y_[i] = origen_y + (rand() % (int)(zona_y * 0.7f));
-
 	}
 }
 
-	
-int Arena::obtenerPerdedor() const 
+
+int Arena::obtenerPerdedor() const
 {
 	return (ganador_ == 0) ? 1 : 0;
 }
-
