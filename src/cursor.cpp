@@ -1,5 +1,4 @@
 #include "cursor.h"
-#include "renderizador.h"
 
 Cursor::Cursor(float col, float fil, int id) : 
     columna(col), fila(fil), idJugador_(id)
@@ -21,10 +20,3 @@ void Cursor::mover(int x, int y)
     if (fila > 8) { fila = 8;     posy_ = 36 + 11; }
 }
 
-void Cursor::dibujar(Renderizador* motor)
-{
-    if (idJugador_ == 0)
-        motor->dibujarSprite("../assets/Sprites/tablero/cursor.png", 32, 32, posx_, posy_, -5.0f);
-    else
-        motor->dibujarSprite("../assets/Sprites/tablero/cursor.png", 32, 32, posx_, posy_, -5.0f);
-}

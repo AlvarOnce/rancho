@@ -6,10 +6,7 @@
 #include "renderizador.h" 
 #include "animal.h"
 #include "cabra.h"
-#include "cerdo.h"
 #include "gallina.h"
-#include "oveja.h"
-#include "granjero.h"
 #include "transicion.h" 
 #include "creditos.h"
 #include "controles.h"
@@ -18,7 +15,7 @@
 
 class Juego 
 {   
-    Transicion transicion_;
+    Transicion* transicion_;
     Menu* menu_;
     Tablero* tablero_;
     Arena* arena_;

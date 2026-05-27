@@ -1,9 +1,7 @@
 #pragma once
 #include "animal.h"
-#include "renderizador.h"
 
 //dimensiones que ocupa la arena en la pantalla
-
 const int ANCHO_DE_LA_ARENA = 480;
 const int ALTO_DE_LA_ARENA = 270;
 
@@ -84,16 +82,27 @@ class Arena
 	void actualizarAtaque(float dt);
 	
 public:
+
 	Arena();
 	~Arena();
 
 	void inicioCombate(Animal* pieza_luz, Animal* pieza_oscuridad);
 	void actualizar(float dt);
-	void dibujar(Renderizador* renderizador) const;
 	void recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada);
 	bool recibirAtaque(int jugador);
 	int obtenerPerdedor() const; 
 	bool combateTerminado() const;
 	int ganadorCombate() const;
+
+	bool isBarreraVisible(int indice) const { return barrera_visible_[indice]; }
+	float getBarreraX(int indice) const { return barrera_x_[indice]; }
+	float getBarreraY(int indice) const { return barrera_y_[indice]; }
+
+	bool isAtaqueActivo(int jugador) const { return ataque_activo_[jugador]; }
+	float getAtaqueX(int jugador) const { return ataque_x_[jugador]; }
+	float getAtaqueY(int jugador) const { return ataque_y_[jugador]; }
+
+	bool isVivo(int jugador) const { return vivo_[jugador]; }
+	const Animal* getCombatiente(int jugador) const { return combatientes_[jugador]; }
 };
 

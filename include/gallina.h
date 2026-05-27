@@ -1,6 +1,5 @@
 #pragma once
 #include "animal.h"
-#include "estructuras.h"
 
 class Gallina : public Animal 
 {
@@ -13,6 +12,4 @@ public:
 		ataque_ = 5;
 
 	}
-
-	void dibujar(Renderizador* motor) override;
 };

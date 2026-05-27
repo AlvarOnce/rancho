@@ -1,5 +1,4 @@
 #include "jugador.h"
-#include "oveja.h"
 #include "gallina.h"
 #include "cabra.h"
 

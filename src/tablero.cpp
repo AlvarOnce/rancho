@@ -21,16 +21,6 @@ Tablero::Tablero(Jugador* jugador1, Jugador* jugador2)
 
 Tablero::~Tablero() {} // las piezas se destruyen en el jugador, no en el tablero
 
-Cursor& Tablero::getCursorActivo()
-{
-    return turno_actual_ == 0 ? cursorJ1_ : cursorJ2_;
-}
-
-Jugador* Tablero::getJugadorActivo()
-{
-    return jugadores_[turno_actual_];
-}
-
 void Tablero::inicializarTablero()
 {
     for (int i = 0; i < Constantes::FILAS_TABLERO; i++)
@@ -60,64 +50,8 @@ void Tablero::actualizar(float dt)
     actualizarColision();
     //if(getHayColision())
 
-    letreroTurnos_.posx = 102 + turno_actual_ * 273;
+    setLetreroPosX(102 + turno_actual_ * 273);
     letreroTurnos_.animar(dt);
-}
-
-void Tablero::dibujar(Renderizador* motor)
-{
-    motor->dibujarSprite("../assets/Sprites/tablero/tableroFondo.png", 512, 512, 480 / 2, 270 / 2, -1);
-    motor->dibujarSprite("../assets/Sprites/tablero/tablero.png", 256, 256, 480 / 2, 270 / 2, -2);
-    motor->dibujarSprite("../assets/Sprites/tablero/turnos.png", 256, 128, letreroTurnos_.posx, 270 / 2, -5, 4, 8, letreroTurnos_.frameActualX_, letreroTurnos_.frameActualY_);
-
-    // NO MODIFICAR ESTO, ilumina casillas posibles
-    if (casillas_[getCursorActivo().fila][getCursorActivo().columna] != nullptr || getJugadorActivo()->tienePiezaAgarrada()) { // si cursor encima de animal o animal seleccionado
-
-        int max;
-        int equipo;
-
-        if (casillas_[getCursorActivo().fila][getCursorActivo().columna] != nullptr)
-        {
-            max = casillas_[getCursorActivo().fila][getCursorActivo().columna]->max_casillas_movidas_;
-            equipo = casillas_[getCursorActivo().fila][getCursorActivo().columna]->equipo_;
-        }
-
-        if (getJugadorActivo()->tienePiezaAgarrada()) {
-           max = getJugadorActivo()->getPiezaSeleccionada()->max_casillas_movidas_;
-           equipo = getJugadorActivo()->getPiezaSeleccionada()->equipo_;
-        }
-      
-        for (int i = 0; i < Constantes::FILAS_TABLERO; i++)
-            for (int j = 0; j < Constantes::COLUMNAS_TABLERO; j++)
-
-                if (abs(i - getCursorActivo().fila) + abs(j - getCursorActivo().columna) <= max) // solo si es alcanzable
-                {
-                    if (equipo == getJugadorActivo()->getEquipo()) // solo si es mi animal
-                    {
-                        if (casillas_[i][j] == nullptr || casillas_[i][j]->equipo_ != getJugadorActivo()->getEquipo()) // solo si esta vacia o animal contrario, EVALUACION DE CORTOCIRCUITO
-                        { 
-
-                        int posPosibleX = 141 + 11 + 22 * j;
-                        int posPosibleY = 36 + 11 + 22 * (8 - i);
-                         motor->dibujarSprite("../assets/Sprites/tablero/casillaPosible.png", 32, 32, posPosibleX, posPosibleY, -2.5);
-                         }
-                    }
-                }
-    }
-
-    for (int i = 0; i < Constantes::FILAS_TABLERO; i++)
-        for (int j = 0; j < Constantes::COLUMNAS_TABLERO; j++)
-            if (casillas_[i][j] != nullptr)
-                casillas_[i][j]->dibujar(motor);
-
-    if (getJugadorActivo()->tienePiezaAgarrada())
-        getJugadorActivo()->getPiezaSeleccionada()->dibujar(motor);
-
-	Cursor& cursor_activo = getCursorActivo();
-	cursor_activo.dibujar(motor);
-
-    if (getCursorActivo().getPosX() > 150 && getCursorActivo().getPosX() < 170)
-        tarjeta.dibujar(motor);
 }
 
 void Tablero::recibirMovimiento(int jugador, int dx, int dy)
@@ -346,13 +280,12 @@ void Tablero::mover(const Movimiento& m)
 	float nuevaPosY = 36.0f + 11.0f + (22.0f * (8 - m.destino.fila)); // invertir el eje Y para que la fila 0 esté en la parte inferior del tablero
     // esto es porque en la lógica del tablero, la fila 0 es la inferior, pero en el dibujo, la fila 0 está en la parte superior.
     // habría que cambiar alguna de las dos cosas para que no haya que hacer esta conversión, pero es un detalle menor y no afecta a la lógica del juego
-                                                                            
-    pieza->setPosX(nuevaPosX);
-    pieza->setPosy(nuevaPosY);
+                                    
+	pieza->setPosicion(Vector2D(nuevaPosX, nuevaPosY)); // este tipo de uso de vector2D hay que hacerlo en todo el código
 
-	// parar el movimiento de la pieza, por si acaso
-    pieza->setVelX(0);
-    pieza->setVelY(0);
+	// parar el movimiento de la pieza, por si acasoS
+	pieza->setVelocidad(Vector2D(0, 0));
+
     pieza->setEnMovimiento(false);
     pieza->avanzando_casilla_ = 0;
 

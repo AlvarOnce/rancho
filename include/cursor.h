@@ -1,5 +1,4 @@
 #pragma once
-#include "renderizador.h"
 
 class Cursor 
 {
@@ -16,8 +15,9 @@ public:
     Cursor(float x_inicial, float y_inicial, int id);
 
     void mover(int x, int y);
-    void dibujar(Renderizador* motor);
 
     float getPosX() const { return posx_; }
     float getPosY() const { return posy_; }
+	int getFila() const { return fila; }
+	int getColumna() const { return columna; }
 };

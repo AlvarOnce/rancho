@@ -5,23 +5,23 @@ void Animal::actualizar(float dt)
     if (intro_tablero_) {
 
         if (equipo_ == 0)
-        if (posx_ < xinicial_) {
-            posx_ += dt/25; 
+        if (posicion_.x < xinicial_) {
+            posicion_.x += dt/25;
             animar(dt);
         }
         else {
-            posx_ = xinicial_; // Aseguramos que quede clavado en la posición exacta
+            posicion_.x = xinicial_; // Aseguramos que quede clavado en la posición exacta
             intro_tablero_ = false; 
             setState(0, 0);     
         }
 
         if (equipo_ == 1)
-        if (posx_ > xinicial_) {
-            posx_ -= dt / 25;
+        if (posicion_.x > xinicial_) {
+            posicion_.x -= dt / 25;
             animar(dt);
         }
         else {
-            posx_ = xinicial_; // Aseguramos que quede clavado en la posición exacta
+            posicion_.x = xinicial_; // Aseguramos que quede clavado en la posición exacta
             intro_tablero_ = false;
             setState(0, 1);
         }
@@ -33,24 +33,23 @@ void Animal::actualizar(float dt)
 		setState(0, equipo_);
         return;
     }
-    // movimiento podriamos usar Vector 2D
-	posx_ += velx_*dt/25;     
-    posy_ += vely_*dt/25;      
+    // movimiento usando el Vector 2D
+    posicion_ += velocidad_ * (dt / 25);	    
 
-    avanzando_casilla_ += abs(velx_ )*dt/25 + abs(vely_)*dt/25;
+    avanzando_casilla_ += velocidad_.modulo() * (dt / 25);
 
     if (avanzando_casilla_ >= 22) { // si el animal se ha movido más de una casilla, se para
-        velx_ = 0;
-        vely_ = 0;
+        velocidad_.x = 0;
+        velocidad_.y = 0;
         avanzando_casilla_ = 0;
 		en_movimiento_ = false;
 	}
 
     //cuando te vas a una casilla fuera del cuadrado, el juego mueve otra vez automaticamente a la casilla de antes
-	if (posx_ <= 130) int trash = mover(TABLERO, 1, 0); // Limite izquierdo del tablero
-	if (posx_ >= 130 + 22 * 10) int trash = mover(TABLERO, -1, 0); // Limite derecho del tablero
-	if (posy_ <= 25) int trash = mover(TABLERO, 0, 1); // Limite inferior del tablero
-	if (posy_ >= 25 + 22 * 10) int trash = mover(TABLERO, 0, -1); // Limite superior del tablero
+	if (posicion_.x <= 130) int trash = mover(TABLERO, 1, 0); // Limite izquierdo del tablero
+	if (posicion_.x >= 130 + 22 * 10) int trash = mover(TABLERO, -1, 0); // Limite derecho del tablero
+	if (posicion_.y <= 25) int trash = mover(TABLERO, 0, 1); // Limite inferior del tablero
+	if (posicion_.y >= 25 + 22 * 10) int trash = mover(TABLERO, 0, -1); // Limite superior del tablero
 
     animar(dt);
 }
@@ -73,11 +72,11 @@ bool Animal::mover(modoJuego modo, int dx, int dy) // Para que el animal sepa qu
         casillas_movidas_x_ += dx;
         casillas_movidas_y_ += dy;
 
-        velx_ = dx;
-        vely_ = dy;
-        if (velx_ != 0 && vely_ != 0) {
-			velx_ *= 0.7071f;
-			vely_ *= 0.7071f;
+        velocidad_.x = dx;
+        velocidad_.y = dy;
+        if (velocidad_.x != 0 && velocidad_.y != 0) {
+            velocidad_.x *= 0.7071f;
+            velocidad_.y *= 0.7071f;
 		}       
 		
         casillas_movidas_ = abs(casillas_movidas_x_) + abs(casillas_movidas_y_);
@@ -89,8 +88,8 @@ bool Animal::mover(modoJuego modo, int dx, int dy) // Para que el animal sepa qu
         return false;
 
 	case CANCELAR: 
-        velx_ = 0;
-        vely_ = 0;
+        velocidad_.x = 0;
+        velocidad_.y = 0;
 		casillas_movidas_x_ -= dx;
 		casillas_movidas_y_ -= dy;
         en_movimiento_ = false;
@@ -118,11 +117,6 @@ void Animal::setState(int frameX, int frameY)
     frameActualY_ = frameY;
     pausa = true;
 
-}
-
-void Animal::dibujar(Renderizador* motor)
-{
-    
 }
 
 std::vector<Movimiento> Animal::movimientosPosibles() const
