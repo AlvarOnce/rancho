@@ -1,6 +1,5 @@
 #pragma once
 #include "animal.h"
-#include "estructuras.h"
 
 class Gallina : public Animal 
 {
@@ -11,8 +10,6 @@ public:
 		max_casillas_movidas_ = 2;
 		nFrames = 8;
 		ataque_ = 5;
-
+		especie_ = GALLINA;
 	}
-
-	void dibujar(Renderizador* motor) override;
 };

@@ -40,27 +40,7 @@ void Menu::actualizar(float dt)
 	selector.tamano_actual = selector.tamano_base + 1.0f * sin(angulo * 3.0f); // latido del selector
 }
 
-void Menu::dibujar(Renderizador* motor)
-{
 
-	motor->dibujarSprite("../assets/Sprites/menu/fondo.png", 512, 512, ancho/2, alto/2, 0); // FONDO en posicion (ancho/2, alto/2)
-
-	for (auto& n : nube) // NUBES
-		motor->dibujarSprite("../assets/Sprites/menu/nube2.png", 512, 128, n.posx, n.posy, n.capa);
-
-	motor->dibujarSprite("../assets/Sprites/menu/granerovallas.png", 512, 512, ancho / 2, alto / 2, -1.9); // GRANERO Y VALLAS
-
-	for (int i = 0; i < 6; i++) // LETRAS
-	{
-		const std::string ruta = std::string("../assets/Sprites/menu/titulo") + std::to_string(i) + ".png";
-		motor->dibujarSprite(ruta.c_str(), 64, 64, 0.1625 * ancho + titulo[i].horiz, titulo[i].altura, titulo[i].capa);
-	}
-
-	motor->dibujarSprite("../assets/Sprites/menu/opciones.png", 512, 128, 245, 103, -2.8,1,4,selector.opcionActual,0); // OPCIONES
-	motor->dibujarSprite("../assets/Sprites/menu/selector.png", selector.tamano_actual, selector.tamano_actual, selector.posx, selector.posy, -3.2); // SELECTOR
-	motor->dibujarSprite("../assets/Sprites/menu/palomaSpritesheet.png", 128, 64, paloma.posx, paloma.posy, -3, 2, 4, paloma.frameActualX_, paloma.frameActualY_); // PALOMA
-	motor->dibujarSprite("../assets/Sprites/menu/tractorSpritesheet.png", 512, 128, tractor.posx, tractor.posy, -5, 1, 2, tractor.frameActualX_, tractor.frameActualY_); // TRACTOR
-}
 
 void Menu::moverSelector(int direccion) 
 {

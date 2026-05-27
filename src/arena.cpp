@@ -53,8 +53,8 @@ void Arena::inicioCombate(Animal* pieza_luz, Animal* pieza_oscuridad)
 		combatientes_[i]->casillas_movidas_ = 0;
 		combatientes_[i]->casillas_movidas_x_ = 0;
 		combatientes_[i]->casillas_movidas_y_ = 0;
-		combatientes_[i]->velx_ = 0;
-		combatientes_[i]->vely_ = 0;
+		combatientes_[i]->velocidad_.x = 0;
+		combatientes_[i]->velocidad_.y = 0;
 	}	
 
 	// colocacion en la arena
@@ -64,8 +64,8 @@ void Arena::inicioCombate(Animal* pieza_luz, Animal* pieza_oscuridad)
 	pos_y_[1] = ARENA_MARGEN_Y + ZONA_DE_COMBATE_Y / 2.0f;
 
 	for (int i = 0; i < 2; i++) {
-		combatientes_[i]->posx_ = pos_x_[i];
-		combatientes_[i]->posy_ = pos_y_[i];
+		combatientes_[i]->setPosicion(Vector2D(pos_x_[i], pos_y_[i]));
+		combatientes_[i]->setVelocidad(Vector2D(0, 0));
 
 		vivo_[i] = true;
 	}	
@@ -94,50 +94,6 @@ void Arena::actualizar(float dt)
 	actualizarRecarga(dt);
 	confirmarImpacto();
 	confirmarFinCombate();
-}
-
-void Arena::dibujar(Renderizador* renderizador) const
-{
-	renderizador->dibujarArena(ARENA_MARGEN_X, ARENA_MARGEN_Y, ZONA_DE_COMBATE_X, ZONA_DE_COMBATE_Y, 0.1f, 0.2f, 0.6f, -5.0f);
-	//dibujamos torres con rectangulos
-
-	for (int i = 0; i < NUM_DE_BARRERAS; i++)
-	{
-		if (barrera_visible_[i])
-		{
-			renderizador->dibujarBarreras(barrera_x_[i] - 7, barrera_y_[i] - 9, 14, 18, 0.6f, 0.6f, 0.6f, -3.0f);
-			renderizador->dibujarBarreras(barrera_x_[i] - 8, barrera_y_[i] - 11, 16, 4, 0.8f, 0.8f, 0.8f, 0.1f);
-		}
-		else
-		{
-			renderizador->dibujarBarreras(barrera_x_[i] - 6, barrera_y_[i] - 11, 12, 3, 0.2f, 0.2f, 0.2f, -0.9f);
-		}
-	}
-
-	for (int i = 0; i < 2; i++) {
-		if (ataque_activo_[i]) {
-			renderizador->dibujarBarreras(ataque_x_[i] - 4, ataque_y_[i] - 8, 8, 16, 0.55f, 0.27f, 0.07f, -2.0f);
-		}
-	}
-
-	// gallinas
-	glDisable(GL_DEPTH_TEST);
-	for (int i = 0; i < 2; i++) {
-		if (vivo_[i] && combatientes_[i] != nullptr) {
-			renderizador->dibujarSprite(
-				"../assets/Sprites/gallina/gallinaSpritesheet.png",
-				256, 32,  // doble de tamaño solo en la arena
-				combatientes_[i]->posx_,
-				combatientes_[i]->posy_,
-				-4.5f,
-				1, 8,
-				combatientes_[i]->frameActualX_,
-				combatientes_[i]->frameActualY_,
-				true
-			);
-		}
-	}
-	glEnable(GL_DEPTH_TEST);
 }
 
 void Arena::recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada) 
@@ -247,8 +203,8 @@ void Arena::actualizarMovimiento(float dt)
 		mantenerLimites(i);
 
 		if (combatientes_[i] != nullptr) {
-			combatientes_[i]->posx_ = pos_x_[i];
-			combatientes_[i]->posy_ = pos_y_[i];
+			combatientes_[i]->posicion_.x = pos_x_[i];
+			combatientes_[i]->posicion_.y = pos_y_[i];
 		}
 	}
 }
@@ -265,7 +221,7 @@ void Arena::actualizarDisparo(float dt)
 
 		// si sale de la pantalla lo desactivamos
 		if (disparo_x_[i] < 0 || disparo_x_[i] > ANCHO_DE_LA_ARENA ||
-			disparo_x_[i] < 0 || disparo_y_[i] > ALTO_DE_LA_ARENA) {
+			disparo_y_[i] < 0 || disparo_y_[i] > ALTO_DE_LA_ARENA) {
 			disparo_disparado_[i] = false;
 		}
 
@@ -313,8 +269,8 @@ void Arena::actualizarBarreras(float dt)
 						// sincronizamos con el animal
 						if (combatientes_[j] != nullptr) 
 						{
-							combatientes_[j]->posx_ = pos_x_[j];
-							combatientes_[j]->posy_ = pos_y_[j];
+							combatientes_[j]->posicion_.x = pos_x_[j];
+							combatientes_[j]->posicion_.y = pos_y_[j];
 						}
 					}
 				}

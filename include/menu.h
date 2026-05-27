@@ -1,5 +1,4 @@
 #pragma once
-#include "renderizador.h"
 
 struct Letra 
 {
@@ -47,14 +46,12 @@ struct Selector
     Opcion opcionActual = JUGAR;
 };
 
-class Menu 
+class Menu
 {
-public:
-
-    Letra titulo[6] = {{0,0,-2.0},{0,0,-2.1},{0,0,-2.2},{0,0,-2.3},{0,0,-2.4},{0,0,-2.5}};
+    Letra titulo[6] = { {0,0,-2.0},{0,0,-2.1},{0,0,-2.2},{0,0,-2.3},{0,0,-2.4},{0,0,-2.5} };
     Tractor tractor;
     Paloma paloma;
-    Nube nube[2] = {{0,210,-1}, {240,210,-1.1} };
+    Nube nube[2] = { {0,210,-1}, {240,210,-1.1} };
     Selector selector;
 
     float dt;
@@ -62,12 +59,19 @@ public:
     double ancho = 480;
     double alto = 270;
 
-    //enum Estado { BANDO, OPCIONES, CONTROLES, CREDITOS };
-    //Estado estado_menu;
+public:
 
     void actualizar(float dt);
-    void dibujar(Renderizador* motor);
     void moverSelector(int direccion);
-    Selector::Opcion getOpcionActual() { return selector.opcionActual; }
+    Selector::Opcion getOpcionActual() const { return selector.opcionActual; }
+
+    float getAncho() const { return ancho; }
+    float getAlto() const { return alto; }
+    int getNumeroNubes() const { return 2; }
+    const Nube& getNube(int indice) const { return nube[indice]; }
+    const Letra& getLetra(int indice) const { return titulo[indice]; }
+    const Selector& getSelector() const { return selector; }
+    const Paloma& getPaloma() const { return paloma; }
+    const Tractor& getTractor() const { return tractor; }
 };
 

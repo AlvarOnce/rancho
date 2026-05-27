@@ -1,21 +1,24 @@
 #pragma once
-#include "renderizador.h"
 
-class Transicion 
+class Transicion
 {
 public:
 
+    enum Estado { ESPERANDO, CERRANDO, CERRADO, ABRIENDO };
+
+private:
+
     bool activo = false;
     float tamano = 600;
-
-    enum Estado{ESPERANDO, CERRANDO, CERRADO, ABRIENDO};
     Estado estado = ESPERANDO;
-   
- 
-    Estado getEstado() { return estado; }
-    void empieza() { activo = true;}
-    void termina() { activo = false;}
 
+public:
+
+    void empieza() { activo = true; }
+    void termina() { activo = false; }
     void actualizar(float dt);
-    void dibujar(Renderizador* motor) const;
+
+    bool getActivo() const { return activo; }
+    float getTamano() const { return tamano; }
+    Estado getEstado() const { return estado; }
 };
