@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "arena.h"
 #include "juego.h"
-
+#include "ETSIDI.h"
 Juego::Juego() 
 {
     estado_actual = MENU;
@@ -148,7 +148,8 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
 
             switch (menu_->getOpcionActual()) {
 
-            case Selector::JUGAR: 
+            case Selector::JUGAR:
+                ETSIDI::stopMusica();
                 transicion_.empieza();
                 proximo_estado = TABLERO;
                 break;

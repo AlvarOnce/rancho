@@ -1,6 +1,6 @@
 #pragma once
 #include "renderizador.h"
-
+#include "ETSIDI.h"
 struct Letra 
 {
     float horiz;
@@ -50,7 +50,8 @@ struct Selector
 class Menu 
 {
 public:
-
+    Menu();
+    ~Menu();
     Letra titulo[6] = {{0,0,-2.0},{0,0,-2.1},{0,0,-2.2},{0,0,-2.3},{0,0,-2.4},{0,0,-2.5}};
     Tractor tractor;
     Paloma paloma;

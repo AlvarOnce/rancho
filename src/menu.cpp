@@ -4,6 +4,14 @@
 #include <iostream>
 #include "math.h"
 
+
+Menu::Menu() {
+	ETSIDI::playMusica("../assets/Audio/menu.mp3", true);
+}
+
+Menu::~Menu() {
+	ETSIDI::stopMusica();
+}
 void Menu::actualizar(float dt) 
 {
 	angulo += 0.05; 
