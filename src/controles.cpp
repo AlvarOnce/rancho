@@ -36,7 +36,7 @@ void Controles::actualizar(float dt) {
     else
         fin_ = true;
 
-    if (paloma_.getPosX() > 53) {
+    if (paloma_.getPosY() > 53) {
 
         paloma_.setPosY(paloma_.getPosY() - 2);
         paloma_.animar(dt);
