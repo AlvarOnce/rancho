@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 #include "math.h"
-
+//seguridad
 void Menu::actualizar(float dt) 
 {
 	angulo += 0.05; 
