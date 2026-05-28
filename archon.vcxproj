@@ -144,7 +144,6 @@
     <ClInclude Include="include\golpe.h" />
     <ClInclude Include="include\granjero.h" />
     <ClInclude Include="include\interaccion.h" />
-    <ClInclude Include="include\interaccion.h" />
     <ClInclude Include="include\juego.h" />
     <ClInclude Include="include\jugador.h" />
     <ClInclude Include="include\menu.h" />
@@ -175,7 +174,6 @@
     <ClCompile Include="src\cursor.cpp" />
     <ClCompile Include="src\gallina.cpp" />
     <ClCompile Include="src\juego.cpp" />
-    <ClCompile Include="src\jugador.cpp" />
     <ClCompile Include="src\jugador.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\menu.cpp" />
