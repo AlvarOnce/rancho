@@ -13,6 +13,8 @@ Juego::Juego()
     renderizador_ = new Renderizador();
     creditos_ = new Creditos();
     controles_ = new Controles();
+    audio_ = new RenderizadorAudio();
+    audio_->playMusica("../assets/Audio/menu.mp3");
 
     for (int i = 0; i < 2; i++)
         jugadores_[i] = new Jugador(i);
@@ -46,6 +48,8 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
 
         if (tablero_->enBatalla)
         {
+            audio_->stopMusica();
+            audio_->playMusica("../assets/Audio/musica_combate.mp3");
             arena_->inicioCombate(tablero_->animalesEnBatalla[0], tablero_->animalesEnBatalla[1]);
 
             // CORRECCIÓN: guardar referencia a los animales en combate en cada jugador,
@@ -64,6 +68,7 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
         arena_->actualizar(dt); // conexión entre el tablero y la arena
             if (arena_->combateTerminado()) 
             {
+                audio_->stopMusica();
                 int perdedor = arena_->obtenerPerdedor();
                 Animal* animalPerdedor = tablero_->animalesEnBatalla[perdedor]; // esto hay que ponerlo así accediendo desde el tablero
                 // porque poniendo como estaba antesjugadores_[perdedor]->getAnimalEnCombate(); 
@@ -102,7 +107,11 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
         transicion_.actualizar(dt);
 
     if (transicion_.getEstado() == Transicion::CERRADO)
+    {
+        if (proximo_estado == TABLERO && estado_actual != TABLERO)
+            audio_->playMusica("../assets/Audio/musica_tablero.mp3");
         estado_actual = proximo_estado;
+    }
 }
 
 void Juego::renderizarGraficos() // FASE 2: pintar en pantalla
@@ -155,6 +164,8 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
             switch (menu_->getOpcionActual()) {
 
             case Selector::JUGAR:
+                audio_->stopMusica();
+                audio_->playSonido("../assets/Audio/transicion.mp3");
                 transicion_.empieza();
                 proximo_estado = TABLERO;
                 break;
@@ -179,28 +190,29 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
         }
         break;
 
-    case TABLERO:
-        if (key == 'w' || key == 'W') tablero_->recibirMovimiento(0, 0, 1);
-        if (key == 's' || key == 'S') tablero_->recibirMovimiento(0, 0, -1);
-        if (key == 'a' || key == 'A') tablero_->recibirMovimiento(0, -1, 0);
-        if (key == 'd' || key == 'D') tablero_->recibirMovimiento(0, 1, 0);
-        if (key == 'q' || key == 'Q') tablero_->seleccionarPieza(0);
-        if (key == 'm' || key == 'M') tablero_->seleccionarPieza(1);
+		case TABLERO: // movimiento discreto en el tablero, no hace falta procesar la tecla al levantarla, el movimiento se hace una vez al pulsar y ya está
+         
+         if (key == 'w' || key == 'W') tablero_->recibirMovimiento(0, 0, 1); // tablero->recibirMovimiento(jugador, dx, dy);
+         if (key == 's' || key == 'S') tablero_->recibirMovimiento(0, 0, -1);
+         if (key == 'a' || key == 'A') tablero_->recibirMovimiento(0, -1, 0);
+         if (key == 'd' || key == 'D') tablero_->recibirMovimiento(0, 1, 0);
+		 if (key == 'q' || key == 'Q') tablero_->seleccionarPieza(0,audio_); // Selección para J1
+         if (key == 'm' || key == 'M') tablero_->seleccionarPieza(1,audio_); // Selección para J2
         break;
 
-    case BATALLA:
-        if (key == 'w' || key == 'W') arena_->recibirMovimiento(0, ARRIBA, true);
-        if (key == 's' || key == 'S') arena_->recibirMovimiento(0, ABAJO, true);
-        if (key == 'a' || key == 'A') arena_->recibirMovimiento(0, IZQUIERDA, true);
-        if (key == 'd' || key == 'D') arena_->recibirMovimiento(0, DERECHA, true);
-        if (key == 'q' || key == 'Q') arena_->recibirAtaque(0);
-        if (key == 'm' || key == 'M') arena_->recibirAtaque(1);
+		case BATALLA: // movimiento continuo en la batalla, se procesa al pulsar la tecla y al levantarla, hay movimiento mientras se mantenga pulsada la tecla
+         if (key == 'w' || key == 'W') arena_->recibirMovimiento(0, ARRIBA, true);
+         if (key == 's' || key == 'S') arena_->recibirMovimiento(0, ABAJO, true);
+         if (key == 'a' || key == 'A') arena_->recibirMovimiento(0, IZQUIERDA, true);
+         if (key == 'd' || key == 'D') arena_->recibirMovimiento(0, DERECHA, true);                
+		 if (key == 'q' || key == 'Q') arena_->recibirAtaque(0,audio_); // Ataque para J1
+         if (key == 'm' || key == 'M') arena_->recibirAtaque(1,audio_); // Ataque para J2
 
-        if (key == 'b') {
-            transicion_.empieza();
-            proximo_estado = MENU;
-        }
-        break;
+         if (key == 'b') {
+             transicion_.empieza();
+             proximo_estado = MENU;
+         }
+         break;
     }
 }
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "animal.h"
-// interaccion.h va en arena.cpp, no aquí
-
+#include "RenderizadorAudio.h"
+//dimensiones que ocupa la arena en la pantalla
 const int ANCHO_DE_LA_ARENA = 480;
 const int ALTO_DE_LA_ARENA = 270;
 const int ZONA_DE_COMBATE_X = 198;
