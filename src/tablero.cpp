@@ -88,7 +88,7 @@ void Tablero::recibirMovimiento(int jugador, int dx, int dy)
     }
 }
 
-void Tablero::seleccionarPieza(int jugador)
+void Tablero::seleccionarPieza(int jugador, RenderizadorAudio* audio)
 {
     if (turno_actual_ == jugador)
     {
@@ -107,6 +107,11 @@ void Tablero::seleccionarPieza(int jugador)
 
                 jugadorActivo->agarrarPieza(casilla);
                 casillas_[cursor.fila][cursor.columna] = nullptr;
+
+                if (casilla->getEspecie() == GALLINA)
+                    audio->playSonido("../assets/Audio/sonidoPickeoGallina.mp3");
+                else if (casilla->getEspecie() == CABRA)
+                    audio->playSonido("../assets/Audio/sonidoPickeoCabra.mp3");
             }
         }
         // CASO 2: SOLTAR UNA PIEZA (Intentar movimiento)

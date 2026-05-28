@@ -104,7 +104,7 @@ void Arena::recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada)
 	if (movimiento == DERECHA)   movimiento_dch_[jugador] = tecla_pulsada;
 }
 
-bool Arena::recibirAtaque(int jugador) 
+bool Arena::recibirAtaque(int jugador, RenderizadorAudio* audio) 
 {
 	if (combate_terminado_) return false;
 	if (!vivo_[jugador]) return false;
@@ -130,6 +130,8 @@ bool Arena::recibirAtaque(int jugador)
 		ataque_activo_[jugador] = true;
 		ataque_visible_tiempo_[jugador] = 0;
 
+		audio->playSonido("../assets/Audio/golpe.mp3");
+
 		// comprobamos si el rival esta en rango de golpe
 		float dx = pos_x_[jugador] - pos_x_[rival];
 		float dy = pos_y_[jugador] - pos_y_[rival];
@@ -137,6 +139,11 @@ bool Arena::recibirAtaque(int jugador)
 
 		if (dist < 30.0f) {
 			combatientes_[rival]->vida_ -= combatientes_[jugador]->ataque_;
+
+			if (combatientes_[rival]->getEspecie() == GALLINA)
+				audio->playSonido("../assets/Audio/damage_Gallina.mp3");
+			else if (combatientes_[rival]->getEspecie() == CABRA)
+				audio->playSonido("../assets/Audio/damage_Cabra.mp3");
 			std::cout << "Jugador " << rival + 1 << " recibe golpe. Vida restante: "
 				<< combatientes_[rival]->vida_ << std::endl;
 		}

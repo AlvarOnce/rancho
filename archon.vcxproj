@@ -142,6 +142,7 @@
     <ClInclude Include="include\jugador.h" />
     <ClInclude Include="include\menu.h" />
     <ClInclude Include="include\renderizador.h" />
+    <ClInclude Include="include\RenderizadorAudio.h" />
     <ClInclude Include="include\tablero.h" />
     <ClInclude Include="include\tarjetaID.h" />
     <ClInclude Include="include\transicion.h" />
@@ -169,6 +170,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\menu.cpp" />
     <ClCompile Include="src\renderizador.cpp" />
+    <ClCompile Include="src\RenderizadorAudio.cpp" />
     <ClCompile Include="src\tablero.cpp" />
     <ClCompile Include="src\tarjetaID.cpp" />
     <ClCompile Include="src\transicion.cpp" />

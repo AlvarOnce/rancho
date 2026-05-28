@@ -12,6 +12,7 @@
 #include "controles.h"
 #include "jugador.h"
 #include "estructuras.h"
+#include "RenderizadorAudio.h"
 
 class Juego 
 {   
@@ -19,6 +20,7 @@ class Juego
     Menu* menu_;
     Tablero* tablero_;
     Arena* arena_;
+    RenderizadorAudio* audio_;
     Renderizador* renderizador_;
     Jugador* jugadores_[2];
     Creditos* creditos_;

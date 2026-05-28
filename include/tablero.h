@@ -4,7 +4,7 @@
 #include "tarjetaID.h" 
 #include "jugador.h"
 #include "estructuras.h"
-
+#include "RenderizadorAudio.h"
 const int BANDO_LUZ = 0;
 const int BANDO_OSCURIDAD = 1;
 const int CASILLA_LUZ = 0;
@@ -51,7 +51,7 @@ public:
 
     void inicializarTablero();
     void recibirMovimiento(int jugador, int dx, int dy);
-    void seleccionarPieza(int jugador);
+    void seleccionarPieza(int jugador, RenderizadorAudio* audio);
     void actualizar(float dt);
     void actualizarColision();
 

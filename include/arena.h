@@ -1,6 +1,6 @@
 #pragma once
 #include "animal.h"
-
+#include "RenderizadorAudio.h"
 //dimensiones que ocupa la arena en la pantalla
 const int ANCHO_DE_LA_ARENA = 480;
 const int ALTO_DE_LA_ARENA = 270;
@@ -89,7 +89,7 @@ public:
 	void inicioCombate(Animal* pieza_luz, Animal* pieza_oscuridad);
 	void actualizar(float dt);
 	void recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada);
-	bool recibirAtaque(int jugador);
+	bool recibirAtaque(int jugador, RenderizadorAudio* audio);
 	int obtenerPerdedor() const; 
 	bool combateTerminado() const;
 	int ganadorCombate() const;
