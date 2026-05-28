@@ -8,7 +8,7 @@ protected:
     int         dano_;
     float       alcance_;
     float       recarga_;
-    const char* sprite_;
+    const char* sprite_;      
     float       tamanio_;
     float       duracion_visual_;
     float       r_, g_, b_;
