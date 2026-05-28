@@ -130,7 +130,7 @@
   <ItemGroup>
     <ClInclude Include="include\animal.h" />
     <ClInclude Include="include\arena.h" />
-    <ClInclude Include="include\ataquee.h" />
+    <ClInclude Include="include\ataque.h" />
     <ClInclude Include="include\cabra.h" />
     <ClInclude Include="include\cerdo.h" />
     <ClInclude Include="include\controles.h" />
@@ -140,15 +140,15 @@
     <ClInclude Include="include\estructuras.h" />
     <ClInclude Include="include\ETSIDI.h" />
     <ClInclude Include="include\freeglut.h" />
-    <ClInclude Include="include\gallinaa.h" />
-    <ClInclude Include="include\golpee.h" />
+    <ClInclude Include="include\gallina.h" />
+    <ClInclude Include="include\golpe.h" />
     <ClInclude Include="include\granjero.h" />
     <ClInclude Include="include\interaccionn.h" />
     <ClInclude Include="include\juego.h" />
     <ClInclude Include="include\jugador.h" />
     <ClInclude Include="include\llama.h" />
     <ClInclude Include="include\menu.h" />
-    <ClInclude Include="include\ondaa.h" />
+    <ClInclude Include="include\onda.h" />
     <ClInclude Include="include\oveja.h" />
     <ClInclude Include="include\renderizador.h" />
     <ClInclude Include="include\tablero.h" />

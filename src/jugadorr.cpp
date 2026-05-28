@@ -1,7 +1,7 @@
 #include "jugador.h"
 #include "oveja.h"
-#include "gallinaa.h"
-#include "cabraa.h"
+#include "gallina.h"
+#include "cabra.h"
 
 Jugador::Jugador(int equipo) : equipo_(equipo)
 {

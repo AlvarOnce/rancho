@@ -1,6 +1,6 @@
 #pragma once
 #include <cmath>
-#include "ataquee.h"
+#include "ataque.h"
 #include "animal.h"
 
 class Interaccion {

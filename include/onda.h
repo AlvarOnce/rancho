@@ -1,5 +1,5 @@
 #pragma once
-#include "ataquee.h"
+#include "ataque.h"
 
 class Onda : public Ataque {
 

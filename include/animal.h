@@ -4,7 +4,7 @@
 #include "ETSIDI.h"
 #include "renderizador.h"
 #include "estructuras.h"
-#include "ataquee.h"
+#include "ataque.h"
 
 enum modoJuego { TABLERO, BATALLA, CANCELAR };
 enum animacionTipo { QUIETO, CAMINAR, ATACAR };

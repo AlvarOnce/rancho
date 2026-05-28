@@ -1,6 +1,6 @@
 #pragma once
 #include "animal.h"
-#include "ondaa.h"
+#include "onda.h"
 
 class Cabra : public Animal {
 
