@@ -1,6 +1,6 @@
 #pragma once
 #include "animal.h"
-#include "interaccion.h"
+#include "interaccionn.h"
 #include "renderizador.h"
 
 //dimensiones que ocupa la arena en la pantalla

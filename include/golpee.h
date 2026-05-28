@@ -1,5 +1,5 @@
 #pragma once
-#include "ataque.h"
+#include "ataquee.h"
 
 class Golpe : public Ataque {
 

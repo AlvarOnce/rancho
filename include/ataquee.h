@@ -55,7 +55,7 @@ public:
     // Dibuja el sprite del ataque en su posición actual
     virtual void dibujar(Renderizador* renderizador) const {
         if (!activo_) return;
-        renderizador->dibujarSprite(sprite_,tamanio_,tamanio_,x_, y_,-2.0f,1, 1,0, 0,true);
+        renderizador->dibujarSprite(sprite_, tamanio_, tamanio_, x_, y_, -2.0f, 1, 1, 0, 0, true);
     }
 
     // Activar el ataque en una posición con una dirección

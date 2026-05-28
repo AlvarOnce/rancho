@@ -103,15 +103,16 @@ void Arena::dibujar(Renderizador* renderizador) const
 		}
 	}
 
+	// Dibujar ataques con su sprite
 	for (int i = 0; i < 2; i++) {
 		Ataque* ataque = combatientes_[i] ? combatientes_[i]->getAtaque() : nullptr;
 		if (ataque && ataque->isActivo()) {
-			ataque->dibujar(renderizador); // cada ataque dibuja su propio sprite
+			float tam = ataque->getTamanio();
+			renderizador->dibujarSprite(ataque->getSprite(), tam, tam, ataque->getX(), ataque->getY(), -10.0f, 1, 1, 0, 0, true);
 		}
 	}
 
-	// CORRECCIÓN: glDisable fuera del bucle y glEnable también fuera,
-	// así ambos animales se dibujan sin que el depth test oculte al segundo.
+	// Dibujar animales — glEnable fuera del bucle para que ambos se rendericen
 	glDisable(GL_DEPTH_TEST);
 	for (int i = 0; i < 2; i++) {
 		if (vivo_[i] && combatientes_[i] != nullptr) {
@@ -270,13 +271,12 @@ void Arena::confirmarImpacto()
 		int rival = (i == 0) ? 1 : 0;
 		if (!vivo_[rival]) continue;
 
-		if (Interaccion::hayColision(ataque, combatientes_[rival])) {
-			combatientes_[rival]->recibirDano(ataque->getDano());
-			ataque->desactivar();
+		// Interaccion se encarga de detectar colisión, aplicar daño y desactivar el ataque
+		if (Interaccion::procesarImpacto(ataque, combatientes_[rival])) {
 			std::cout << "Jugador " << rival + 1 << " recibe "
 				<< combatientes_[i]->getTipoAtaque()
 				<< " de " << ataque->getDano()
-				<< " daño. Vida restante: " << combatientes_[rival]->vida_
+				<< " dano. Vida restante: " << combatientes_[rival]->vida_
 				<< std::endl;
 		}
 	}

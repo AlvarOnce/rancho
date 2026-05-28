@@ -1,5 +1,5 @@
 #pragma once
-#include "ataque.h"
+#include "ataquee.h"
 
 class Onda : public Ataque {
 
@@ -7,7 +7,7 @@ class Onda : public Ataque {
     float tamanioInicial_;
 
 public:
-    Onda(int dano, float alcance, float recarga,const char* sprite, float tamanio, float duracion,float r, float g, float b)
+    Onda(int dano, float alcance, float recarga, const char* sprite, float tamanio, float duracion, float r, float g, float b)
         : Ataque(dano, alcance, recarga, sprite, tamanio, duracion, r, g, b),
         tamanioInicial_(tamanio) {}
 
