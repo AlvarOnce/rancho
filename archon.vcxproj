@@ -131,7 +131,7 @@
     <ClInclude Include="include\animal.h" />
     <ClInclude Include="include\arena.h" />
     <ClInclude Include="include\ataquee.h" />
-    <ClInclude Include="include\cabraa.h" />
+    <ClInclude Include="include\cabra.h" />
     <ClInclude Include="include\cerdo.h" />
     <ClInclude Include="include\controles.h" />
     <ClInclude Include="include\creditos.h" />
