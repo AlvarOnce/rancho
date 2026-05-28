@@ -3,6 +3,7 @@
 #include "cursor.h" 
 #include "tarjetaID.h" 
 #include "jugador.h"
+#include "estructuras.h"
 
 const int BANDO_LUZ = 0;
 const int BANDO_OSCURIDAD = 1;
@@ -11,8 +12,8 @@ const int CASILLA_OSCURA = 1;
 
 struct Letrero
 {
-    float posx = 550;
-    float posy = 65;
+    Vector2D posicion = { 550.0f, 65.0f };
+    
     int frameActualX_ = 0, frameActualY_ = 0;
     float timer{}, msStep = 65;
     int nFrames = 8;
@@ -32,7 +33,6 @@ class Tablero
     Jugador* jugadores_[2];
     Cursor cursorJ1_ = Cursor(2, 4, 0);
     Cursor cursorJ2_ = Cursor(6, 4, 1);
-    Cursor& getCursorActivo();
 
     static const int TAMANO_CASILLA = 22;
     static const int X_INICIO = 141;
@@ -52,10 +52,22 @@ public:
     void recibirMovimiento(int jugador, int dx, int dy);
     void seleccionarPieza(int jugador);
     void actualizar(float dt);
-    void dibujar(Renderizador* motor);
     void actualizarColision();
+
     bool getHayColision() const { return hay_colision_; }
-    Jugador* getJugadorActivo();
+    const Cursor& getCursorActivo() const { return turno_actual_ == 0 ? cursorJ1_ : cursorJ2_; }
+    Cursor& getCursorActivo() { return turno_actual_ == 0 ? cursorJ1_ : cursorJ2_; }
+    const Jugador* getJugadorActivo() const { return jugadores_[turno_actual_]; }
+	Jugador* getJugadorActivo() { return jugadores_[turno_actual_]; }
+	float getLetreroPosX() const { return letreroTurnos_.posicion.x; }
+	float getLetreroPosY() const { return letreroTurnos_.posicion.y; }
+	int getLetreroFrameX() const { return letreroTurnos_.frameActualX_; }
+	int getLetreroFrameY() const { return letreroTurnos_.frameActualY_; }
+	void setLetreroPosX(float x) { letreroTurnos_.posicion.x = x; }
+	void setLetreroPosY(float y) { letreroTurnos_.posicion.y = y; }
+
+	Animal* getAnimalEnCasilla(int fila, int columna) const { return casillas_[fila][columna]; }
+	const Tarjeta* getTarjeta() const { return &tarjeta; }
 
     Tarjeta tarjeta;
 

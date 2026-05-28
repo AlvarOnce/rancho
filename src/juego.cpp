@@ -56,25 +56,27 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
             tablero_->enBatalla = false;
             transicion_.empieza();
             proximo_estado = BATALLA;
+            tablero_->enBatalla = false; // para que no haya un bucle infinido de batallas
         }
         break;
 
     case BATALLA:
-        arena_->actualizar(dt);
-        if (arena_->combateTerminado())
-        {
-            int perdedor = arena_->obtenerPerdedor();
-            Animal* animalPerdedor = jugadores_[perdedor]->getAnimalEnCombate();
-            animalPerdedor->vida_ = 0;
-            animalPerdedor->posx_ = -100;
-            animalPerdedor->posy_ = -100;
-            estado_actual = TABLERO;
-        }
+        arena_->actualizar(dt); // conexión entre el tablero y la arena
+            if (arena_->combateTerminado()) 
+            {
+                int perdedor = arena_->obtenerPerdedor();
+                Animal* animalPerdedor = tablero_->animalesEnBatalla[perdedor]; // esto hay que ponerlo así accediendo desde el tablero
+                // porque poniendo como estaba antesjugadores_[perdedor]->getAnimalEnCombate(); 
+                // siempre davuelve el mismo porque en jugador no se actualiza nada, habría que actualizar en jugador
+                animalPerdedor->vida_ = 0;
+                animalPerdedor->setPosicion(Vector2D(-100, -100));
+                estado_actual = TABLERO;
+            }
         break;
 
     case CREDITOS:
 
-        if (!transicion_.activo)
+        if (!transicion_.getActivo())
             creditos_->actualizar(25);
 
         if (creditos_->getFinalizado())
@@ -86,7 +88,7 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
 
     case CONTROLES:
 
-        if (!transicion_.activo)
+        if (!transicion_.getActivo())
             controles_->actualizar(25);
         if (controles_->getFinalizado())
         {
@@ -96,7 +98,7 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
         break;
     }
 
-    if (transicion_.activo)
+    if (transicion_.getActivo())
         transicion_.actualizar(dt);
 
     if (transicion_.getEstado() == Transicion::CERRADO)
@@ -110,27 +112,26 @@ void Juego::renderizarGraficos() // FASE 2: pintar en pantalla
     switch (estado_actual)
     {
     case MENU:
-        menu_->dibujar(renderizador_);
+		renderizador_->dibujar(menu_);
         break;
 
-    case TABLERO:
-        tablero_->dibujar(renderizador_);
+    case TABLERO:  
+		renderizador_->dibujar(tablero_);
         break;
 
     case BATALLA:
-        arena_->dibujar(renderizador_);
+		renderizador_->dibujar(arena_);
         break;
 
     case CREDITOS:
-        creditos_->dibujar(renderizador_);
+		renderizador_->dibujar(creditos_);
         break;
 
     case CONTROLES:
-        controles_->dibujar(renderizador_);
+        renderizador_->dibujar(controles_);
         break;
     }
-
-    if (transicion_.activo) transicion_.dibujar(renderizador_);
+    renderizador_->dibujar(&transicion_);
 }
 
 void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo se procese si transicion.activo = false

@@ -6,11 +6,30 @@
 #include "freeglut.h"
 #include "ETSIDI.h"
 
+#include "animal.h"
+#include "tablero.h"
+#include "menu.h"
+#include "controles.h"
+#include "creditos.h"
+#include "transicion.h"
+#include "arena.h"
+
 class Renderizador 
 {
 public:
 
     void limpiarPantalla();
+
+    void dibujar(const Animal* animal) const;
+	void dibujar(const Tablero* tablero) const;
+	void dibujar(const Menu* menu) const;
+	void dibujar(const Controles* controles) const;
+    void dibujar(const Creditos* creditos) const;
+    void dibujar(const Transicion* transicion) const;
+    void dibujar(const Arena* arena) const;
+
+    void dibujarArena(float x, float y, float ancho, float alto, float r, float g, float b, float profundidad) const;
+    void dibujarBarreras(float x, float y, float ancho, float alto, float r, float g, float b, float profundidad) const;
 
     void dibujarSprite(
         const char* rutaImagen, // ruta del sprite a dibujar
@@ -25,8 +44,5 @@ public:
         int stateY = 0,
         bool transparencia = true // si el sprite tiene transparencia, se activa el alpha test para no dibujar los píxeles completamente transparentes,
                                  // esto mejora rendimiento y evita artefactos raros entre animales
-    );
-
-    void dibujarArena(float x, float y, float ancho, float alto, float r, float g, float b, float profundidad);
-    void dibujarBarreras(float x, float y, float ancho, float alto, float r, float g, float b, float profundidad);
+    ) const;
 };

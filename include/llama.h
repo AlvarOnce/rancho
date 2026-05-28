@@ -1,12 +1,12 @@
 #pragma once
 #include "animal.h"
 
-class Llama : public Animal 
+class Llama : public Animal
 {
 public:
 
-	Llama(float posx, float posy, float capa, int vida, float xinicial, int equipo) 
-		: Animal(posx, posy, capa, vida, xinicial, equipo) 
+	Llama(float posx, float posy, float capa, int vida, float xinicial, int equipo)
+		: Animal(posx, posy, capa, vida, xinicial, equipo)
 	{
 		nFrames = 5;
 

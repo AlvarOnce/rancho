@@ -18,16 +18,6 @@ Tablero::Tablero(Jugador* jugador1, Jugador* jugador2)
 
 Tablero::~Tablero() {}
 
-Cursor& Tablero::getCursorActivo()
-{
-    return turno_actual_ == 0 ? cursorJ1_ : cursorJ2_;
-}
-
-Jugador* Tablero::getJugadorActivo()
-{
-    return jugadores_[turno_actual_];
-}
-
 void Tablero::inicializarTablero()
 {
     for (int i = 0; i < Constantes::FILAS_TABLERO; i++)
@@ -56,61 +46,8 @@ void Tablero::actualizar(float dt)
 
     actualizarColision();
 
-    letreroTurnos_.posx = 102 + turno_actual_ * 273;
+    setLetreroPosX(102 + turno_actual_ * 273);
     letreroTurnos_.animar(dt);
-}
-
-void Tablero::dibujar(Renderizador* motor)
-{
-    motor->dibujarSprite("../assets/Sprites/tablero/tableroFondo.png", 512, 512, 480 / 2, 270 / 2, -1);
-    motor->dibujarSprite("../assets/Sprites/tablero/tablero.png", 256, 256, 480 / 2, 270 / 2, -2);
-    motor->dibujarSprite("../assets/Sprites/tablero/turnos.png", 256, 128, letreroTurnos_.posx, 270 / 2, -5, 4, 8, letreroTurnos_.frameActualX_, letreroTurnos_.frameActualY_);
-
-    if (casillas_[getCursorActivo().fila][getCursorActivo().columna] != nullptr || getJugadorActivo()->tienePiezaAgarrada()) {
-
-        int max;
-        int equipo;
-
-        if (casillas_[getCursorActivo().fila][getCursorActivo().columna] != nullptr)
-        {
-            max = casillas_[getCursorActivo().fila][getCursorActivo().columna]->max_casillas_movidas_;
-            equipo = casillas_[getCursorActivo().fila][getCursorActivo().columna]->equipo_;
-        }
-
-        if (getJugadorActivo()->tienePiezaAgarrada()) {
-            max = getJugadorActivo()->getPiezaSeleccionada()->max_casillas_movidas_;
-            equipo = getJugadorActivo()->getPiezaSeleccionada()->equipo_;
-        }
-
-        for (int i = 0; i < Constantes::FILAS_TABLERO; i++)
-            for (int j = 0; j < Constantes::COLUMNAS_TABLERO; j++)
-                if (abs(i - getCursorActivo().fila) + abs(j - getCursorActivo().columna) <= max)
-                {
-                    if (equipo == getJugadorActivo()->getEquipo())
-                    {
-                        if (casillas_[i][j] == nullptr || casillas_[i][j]->equipo_ != getJugadorActivo()->getEquipo())
-                        {
-                            int posPosibleX = 141 + 11 + 22 * j;
-                            int posPosibleY = 36 + 11 + 22 * (8 - i);
-                            motor->dibujarSprite("../assets/Sprites/tablero/casillaPosible.png", 32, 32, posPosibleX, posPosibleY, -2.5);
-                        }
-                    }
-                }
-    }
-
-    for (int i = 0; i < Constantes::FILAS_TABLERO; i++)
-        for (int j = 0; j < Constantes::COLUMNAS_TABLERO; j++)
-            if (casillas_[i][j] != nullptr)
-                casillas_[i][j]->dibujar(motor);
-
-    if (getJugadorActivo()->tienePiezaAgarrada())
-        getJugadorActivo()->getPiezaSeleccionada()->dibujar(motor);
-
-    Cursor& cursor_activo = getCursorActivo();
-    cursor_activo.dibujar(motor);
-
-    if (getCursorActivo().getPosX() > 150 && getCursorActivo().getPosX() < 170)
-        tarjeta.dibujar(motor);
 }
 
 void Tablero::recibirMovimiento(int jugador, int dx, int dy)
