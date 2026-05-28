@@ -246,7 +246,7 @@ void Renderizador::dibujar(const Arena* arena) const
             float tam = ataque->getTamanio();
             dibujarSprite(ataque->getSprite(), tam, tam,
                 ataque->getX(), ataque->getY(),
-                -2.0f, 1, 1, 0, 0, true);
+                -10.0f, 1, 1, 0, 0, true);
         }
     }
 
