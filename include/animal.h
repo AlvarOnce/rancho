@@ -54,7 +54,7 @@ public:
 
 	int casillaInicial_[2] = { 0,0 };
 
-	especieAnimal especie_ = {};
+	especieAnimal especie_;
 	
 	bool mover(modoJuego modo, int dx, int dy);	//ahora es un bool, si devuelve true se ha movido bien,
 												// si devuelve false, no se ha movido

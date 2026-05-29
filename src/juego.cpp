@@ -14,11 +14,11 @@ Juego::Juego()
     creditos_ = new Creditos();
     controles_ = new Controles();
     audio_ = new RenderizadorAudio();
-    audio_->playMusica("../assets/Audio/menu.mp3");
 
     for (int i = 0; i < 2; i++)
         jugadores_[i] = new Jugador(i);
     tablero_ = new Tablero(jugadores_[0], jugadores_[1]);
+    audio_->sonar(menu_);
 }
 
 Juego::~Juego() 
@@ -34,49 +34,43 @@ Juego::~Juego()
 }
 
 void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reglas del juego
-{    
-    switch (estado_actual) 
+{
+    switch (estado_actual)
     {
     case MENU:
         menu_->actualizar(dt);
         break;
 
     case TABLERO:
-
-        //if (!transicion_.activo)
         tablero_->actualizar(dt);
-
         if (tablero_->enBatalla)
         {
-            audio_->stopMusica();
-            audio_->playMusica("../assets/Audio/musica_combate.mp3");
             arena_->inicioCombate(tablero_->animalesEnBatalla[0], tablero_->animalesEnBatalla[1]);
             transicion_.empieza();
             proximo_estado = BATALLA;
-            tablero_->enBatalla = false; // para que no haya un bucle infinido de batallas
+            tablero_->enBatalla = false;
         }
         break;
 
     case BATALLA:
-        arena_->actualizar(dt); // conexión entre el tablero y la arena
-            if (arena_->combateTerminado()) 
-            {
-                audio_->stopMusica();
-                int perdedor = arena_->obtenerPerdedor();
-                Animal* animalPerdedor = tablero_->animalesEnBatalla[perdedor]; // esto hay que ponerlo así accediendo desde el tablero
-                // porque poniendo como estaba antesjugadores_[perdedor]->getAnimalEnCombate(); 
-                // siempre davuelve el mismo porque en jugador no se actualiza nada, habría que actualizar en jugador
-                animalPerdedor->vida_ = 0;
-                animalPerdedor->setPosicion(Vector2D(-100, -100));
-                estado_actual = TABLERO;
-            }
+        arena_->actualizar(dt);
+        if (arena_->combateTerminado())
+        {
+            int perdedor = arena_->obtenerPerdedor();
+            Animal* animalPerdedor = tablero_->animalesEnBatalla[perdedor];
+        
+  
+            animalPerdedor->vida_ = 0;
+            animalPerdedor->setPosicion(Vector2D(-100, -100));
+      
+            transicion_.empieza();
+            proximo_estado = TABLERO;
+        }
         break;
 
     case CREDITOS:
-
         if (!transicion_.getActivo())
             creditos_->actualizar(25);
-
         if (creditos_->getFinalizado())
         {
             transicion_.empieza();
@@ -85,7 +79,6 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
         break;
 
     case CONTROLES:
-
         if (!transicion_.getActivo())
             controles_->actualizar(25);
         if (controles_->getFinalizado())
@@ -101,9 +94,15 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
 
     if (transicion_.getEstado() == Transicion::CERRADO)
     {
-        if (proximo_estado == TABLERO && estado_actual != TABLERO)
-            audio_->playMusica("../assets/Audio/musica_tablero.mp3");
-        estado_actual = proximo_estado;
+        estado_actual = proximo_estado; // solo aqui, una sola vez
+        switch (estado_actual)
+        {
+        case MENU:     audio_->sonar(menu_);    break;
+        case TABLERO:  audio_->sonar(tablero_); break;
+        case BATALLA:  audio_->sonar(arena_);   break;
+        case CREDITOS: audio_->sonar(creditos_); break;
+        case CONTROLES: audio_->sonar(controles_); break;
+        }
     }
 }
 
@@ -158,7 +157,7 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
 
             case Selector::JUGAR:
                 audio_->stopMusica();
-                audio_->playSonido("../assets/Audio/transicion.mp3");
+                audio_->sonarTransicion();
                 transicion_.empieza();
                 proximo_estado = TABLERO;
                 break;
