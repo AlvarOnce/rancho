@@ -47,10 +47,11 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
         tablero_->actualizar(dt);
         if (tablero_->enBatalla)
         {
-            arena_->inicioCombate(jugadores_[0]->getAnimalEnCombate(), jugadores_[1]->getAnimalEnCombate());
             transicion_.empieza();
             proximo_estado = BATALLA;
             tablero_->enBatalla = false;
+
+            arena_->setCombatientes(jugadores_[0]->getAnimalEnCombate(), jugadores_[1]->getAnimalEnCombate());
         }
 
         if (tablero_->determinarGanador() != -1)
@@ -61,7 +62,9 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
         break;
 
     case BATALLA:
+
         arena_->actualizar(dt);
+
         if (arena_->combateTerminado())
         {
             int perdedor = arena_->obtenerPerdedor();
@@ -158,9 +161,10 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
 
 	if (key == 'b' || key == 'B') // temporalmente, para saltar el menú y probar la batalla directamente
     {
-        arena_->inicioCombate(jugadores_[0]->getAnimalEnCombate(), jugadores_[1]->getAnimalEnCombate());
         transicion_.empieza();
         proximo_estado = BATALLA;
+        arena_->setCombatientes(jugadores_[0]->getAnimalEnCombate(), jugadores_[1]->getAnimalEnCombate());
+        arena_->inicioCombate();
         return;
     }
 

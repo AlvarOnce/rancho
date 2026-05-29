@@ -283,6 +283,13 @@ void Renderizador::dibujar(const Arena* arena) const
 
 }
 
+void Renderizador::dibujar(const Ganador* ganador) const
+{
+    // DIBUJAR FONDO Y LETRERO DE TURNOS
+    dibujarSprite("../assets/Sprites/pantallaGanador/ganador.png", 512, 512, 480 / 2, 270 / 2, -1);
+
+}
+
 // FUNCION GENERAL PARA DIBUJAR UN SPRITE, SE USA PARA TODO
 void Renderizador::dibujarSprite(const char* rutaImagen, float ancho, float alto, float posx, float posy, float capa, int rows, int cols, int stateX, int stateY, bool transparencia) const
 {
@@ -330,9 +337,3 @@ void Renderizador::dibujarSprite(const char* rutaImagen, float ancho, float alto
     glDisable(GL_TEXTURE_2D);   
 }
 
-void Renderizador::dibujar(const Ganador* ganador) const
-{
-    // DIBUJAR FONDO Y LETRERO DE TURNOS
-    dibujarSprite("../assets/Sprites/pantallaGanador/ganador.png", 512, 512, 480 / 2, 270 / 2, -1);
-
-}

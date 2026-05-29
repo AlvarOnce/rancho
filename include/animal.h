@@ -102,7 +102,8 @@ public:
 	void setState(int frameX, int frameY);
 	void animar(float dt);
 
-	virtual void actualizar(float dt);
+	virtual void actualizarEnTablero(float dt);
+	virtual void actualizarEnBatalla(float dt);
 
 	// funcion virtual
 	virtual std::vector<Movimiento> movimientosPosibles() const; 

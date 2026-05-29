@@ -1,6 +1,7 @@
 #pragma once
 #include "animal.h"
 #include "RenderizadorAudio.h"
+
 //dimensiones que ocupa la arena en la pantalla
 const int ANCHO_DE_LA_ARENA = 480;
 const int ALTO_DE_LA_ARENA = 270;
@@ -32,6 +33,8 @@ const int ATAQUE_EN_AREA = 3;
 
 class Arena
 {	
+	bool intro_arena = true;
+
 	Animal* combatientes_[2]{}; // si quereis Bnado Luz [0], [1] para el otro bando.
 	float pos_x_[2] = {};
 	float pos_y_[2] = {};
@@ -86,7 +89,7 @@ public:
 	Arena();
 	~Arena();
 
-	void inicioCombate(Animal* pieza_luz, Animal* pieza_oscuridad);
+	void inicioCombate();
 	void actualizar(float dt);
 	void recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada);
 	bool recibirAtaque(int jugador, RenderizadorAudio* audio);
@@ -104,5 +107,11 @@ public:
 
 	bool isVivo(int jugador) const { return vivo_[jugador]; }
 	const Animal* getCombatiente(int jugador) const { return combatientes_[jugador]; }
+
+	void setCombatientes(Animal* animal1, Animal* animal2) {
+
+		combatientes_[0] = animal1;
+		combatientes_[1] = animal2;
+	}
 };
 

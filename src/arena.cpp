@@ -41,11 +41,8 @@ Arena::~Arena()
 	//las piezas se deben de destruir en tablero.
 }
 
-void Arena::inicioCombate(Animal* animalJ1, Animal* animalJ2)
+void Arena::inicioCombate()
 {
-	combatientes_[0] = animalJ1;
-	combatientes_[1] = animalJ2;
-
 	// desactivamos toda la logica del tablero para estos animales
 	for (int i = 0; i < 2; i++) {
 		combatientes_[i]->intro_tablero_ = false;
@@ -82,9 +79,18 @@ void Arena::inicioCombate(Animal* animalJ1, Animal* animalJ2)
 	colocarBarrerasAleatorias();
 }
 
-void Arena::actualizar(float dt) 
+void Arena::actualizar(float dt)
 {
-	if (combate_terminado_) return;
+	if (combate_terminado_) {
+		intro_arena = true;
+		return;
+	}
+
+	if (intro_arena)
+	{
+		inicioCombate();
+		intro_arena = false;
+	}
 
 	actualizarBarreras(dt);
 	actualizarMovimiento(dt);
@@ -93,6 +99,9 @@ void Arena::actualizar(float dt)
 	actualizarRecarga(dt);
 	confirmarImpacto();
 	confirmarFinCombate();
+
+	combatientes_[0]->actualizarEnBatalla(dt);
+	combatientes_[1]->actualizarEnBatalla(dt);
 }
 
 void Arena::recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada) 
@@ -152,6 +161,7 @@ bool Arena::recibirAtaque(int jugador, RenderizadorAudio* audio)
 		float dx = pos_x_[jugador] - pos_x_[rival];
 		float dy = pos_y_[jugador] - pos_y_[rival];
 		float dist = sqrt(dx * dx + dy * dy);
+
 		/*
 		* float alcance = combatientes[jugador]->getAlcance();
 		* if(dist<alcance){
@@ -195,7 +205,6 @@ void Arena::actualizarMovimiento(float dt)
 			pos_x_[i] = pos_antigua_x_[i];
 			pos_y_[i] = pos_antigua_y_[i];
 		}
-
 	
 		int rival = (i == 0) ? 1 : 0;
 		float dx = pos_x_[i] - pos_x_[rival];

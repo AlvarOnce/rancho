@@ -39,10 +39,10 @@ void Tablero::actualizar(float dt)
     for (int i = 0; i < Constantes::FILAS_TABLERO; i++)
         for (int j = 0; j < Constantes::COLUMNAS_TABLERO; j++)
             if (casillas_[i][j] != nullptr)
-                casillas_[i][j]->actualizar(dt);
+                casillas_[i][j]->actualizarEnTablero(dt);
 
     if (getJugadorActivo()->tienePiezaAgarrada())
-        getJugadorActivo()->getPiezaSeleccionada()->actualizar(dt);
+        getJugadorActivo()->getPiezaSeleccionada()->actualizarEnTablero(dt);
 
     actualizarColision();
 
@@ -50,7 +50,6 @@ void Tablero::actualizar(float dt)
     letreroTurnos_.animar(dt);
 
     determinarGanador();
-
 }
 
 void Tablero::recibirMovimiento(int jugador, int dx, int dy)
@@ -96,8 +95,6 @@ void Tablero::seleccionarPieza(int jugador, RenderizadorAudio* audio)
             if (casilla->equipo_ == jugador)
             {
                 // guardar el origen antes de levantarla físicamente
-                // casilla->casillaInicial_[0] = cursor.fila;
-                // casilla->casillaInicial_[1] = cursor.columna;
                 casilla->casillaInicial_ = {cursor.fila, cursor.columna};
 
                 jugadorActivo->agarrarPieza(casilla);
@@ -115,8 +112,6 @@ void Tablero::seleccionarPieza(int jugador, RenderizadorAudio* audio)
             if (pieza->getEnMovimiento()) return;
 
             Movimiento m;
-           // m.origen.fila = pieza->casillaInicial_[0];
-           // m.origen.columna = pieza->casillaInicial_[1];
             m.origen = pieza->casillaInicial_;
 
             // leer la coordenada destino matemática a partir de los píxeles

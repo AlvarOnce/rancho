@@ -1,7 +1,8 @@
 #include "animal.h"
 
-void Animal::actualizar(float dt) 
+void Animal::actualizarEnTablero(float dt) 
 {
+
     if (intro_tablero_) {
 
         if (equipo_ == 0)
@@ -51,6 +52,15 @@ void Animal::actualizar(float dt)
 	if (posicion_.x >= 130 + 22 * 10) int trash = mover(TABLERO, -1, 0); // Limite derecho del tablero
 	if (posicion_.y <= 25) int trash = mover(TABLERO, 0, 1); // Limite inferior del tablero
 	if (posicion_.y >= 25 + 22 * 10) int trash = mover(TABLERO, 0, -1); // Limite superior del tablero
+
+    animar(dt);
+}
+
+void Animal::actualizarEnBatalla(float dt)
+{
+
+    // movimiento usando el Vector 2D
+    posicion_ += velocidad_ * (dt / 25);
 
     animar(dt);
 }

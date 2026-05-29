@@ -19,7 +19,7 @@ Jugador::Jugador(int equipo) : equipo_(equipo) // esto de construir los animales
         animales_.push_back(new Oveja({ 1,0 }, 0));
         animales_.push_back(new Cerdo({ 2,0 }, 0));
         animales_.push_back(new Llama({ 3,0 }, 0));
-        animales_.push_back(new Gallina({4,0}, 0));
+        animales_.push_back(new Granjero({4,0}, 0));
         animales_.push_back(new Llama({ 5,0 }, 0));
         animales_.push_back(new Cerdo({ 6,0 }, 0));
         animales_.push_back(new Oveja({ 7,0 }, 0));
@@ -35,7 +35,7 @@ Jugador::Jugador(int equipo) : equipo_(equipo) // esto de construir los animales
         animales_.push_back(new Oveja({ 1,8 }, 1));
         animales_.push_back(new Cerdo({ 2,8 }, 1));
         animales_.push_back(new Llama({ 3,8 }, 1));
-        animales_.push_back(new Gallina({ 4,8 }, 1));
+        animales_.push_back(new Granjero({ 4,8 }, 1));
         animales_.push_back(new Llama({ 5,8 }, 1));
         animales_.push_back(new Cerdo({ 6,8 }, 1));
         animales_.push_back(new Oveja({ 7,8 }, 1));
