@@ -6,6 +6,8 @@
 
 Juego rancho; // FALTA IMPLEMENTAR EL PATRÓN SINGLETON PARA QUE SOLO HAYA UNA INSTANCIA DE JUEGO
 
+//test
+
 // los callback, funciones que seran llamadas automaticamente por la glut cuando sucedan eventos
 void OnDraw(void);		 // llamada para dibujar
 void OnTimer(int value); // llamada cuando transcurra una temporizacion
