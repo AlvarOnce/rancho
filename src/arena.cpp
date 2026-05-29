@@ -104,7 +104,12 @@ bool Arena::recibirAtaque(int jugador)
     ataque->activar(offsetX, offsetY,
         ultima_direccion_x_[jugador],
         ultima_direccion_y_[jugador]);
+  audio->sonarAtaque(combatientes_[jugador]);
     recarga_de_ataque_[jugador] = ataque->getRecarga();
+  		//if (combatientes_[rival]->getEspecie() == GALLINA)
+				//audio->sonarDanoGallina();
+			//else if (combatientes_[rival]->getEspecie() == CABRA)
+				//audio->sonarDanoCabra();
     return true;
 }
 
