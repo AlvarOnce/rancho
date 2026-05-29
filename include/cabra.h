@@ -12,7 +12,7 @@ public:
 		max_casillas_movidas_ = 4;
 		nFrames = 5;
 		especie_ = CABRA;
-		ataque_ = new Onda(7, 100.0f, 0.6f, "../assets/Sprites/creditos/botella.png", 48.0f, 0.4f);
+		ataque_ = new Onda(7, 100.0f, 0.6f, "../assets/Sprites/menu/selector.png", 16.0f, 0.4f);
 	} 
 
     const char* getTipoAtaque() const override { return "Onda"; }
