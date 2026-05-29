@@ -205,8 +205,8 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
          if (key == 's' || key == 'S') arena_->recibirMovimiento(0, ABAJO, true);
          if (key == 'a' || key == 'A') arena_->recibirMovimiento(0, IZQUIERDA, true);
          if (key == 'd' || key == 'D') arena_->recibirMovimiento(0, DERECHA, true);                
-		 if (key == 'q' || key == 'Q') arena_->recibirAtaque(0,audio_); // Ataque para J1
-         if (key == 'm' || key == 'M') arena_->recibirAtaque(1,audio_); // Ataque para J2
+		 if (key == 'q' || key == 'Q') arena_->recibirAtaque(0); // Ataque para J1
+         if (key == 'm' || key == 'M') arena_->recibirAtaque(1); // Ataque para J2
 
          if (key == 'b') {
              transicion_.empieza();

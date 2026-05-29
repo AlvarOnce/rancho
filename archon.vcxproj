@@ -136,7 +136,6 @@
     <ClInclude Include="include\creditos.h" />
     <ClInclude Include="include\cursor.h" />
     <ClInclude Include="include\disparo.h" />
-    <ClInclude Include="include\disparoo.h" />
     <ClInclude Include="include\estructuras.h" />
     <ClInclude Include="include\ETSIDI.h" />
     <ClInclude Include="include\freeglut.h" />
@@ -146,6 +145,7 @@
     <ClInclude Include="include\interaccion.h" />
     <ClInclude Include="include\juego.h" />
     <ClInclude Include="include\jugador.h" />
+    <ClInclude Include="include\llama.h" />
     <ClInclude Include="include\menu.h" />
     <ClInclude Include="include\onda.h" />
     <ClInclude Include="include\oveja.h" />

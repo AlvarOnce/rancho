@@ -104,7 +104,6 @@ bool Arena::recibirAtaque(int jugador)
     ataque->activar(offsetX, offsetY,
         ultima_direccion_x_[jugador],
         ultima_direccion_y_[jugador]);
-    audio->playSonido(combatientes_[jugador]->getSonidoAtaque());
     recarga_de_ataque_[jugador] = ataque->getRecarga();
     return true;
 }
