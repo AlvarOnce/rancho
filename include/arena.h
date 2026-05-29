@@ -57,7 +57,6 @@ class Arena
 	int ganador_ = -1;
 	bool combate_terminado_=false;
 
-	
 	void actualizarMovimiento(float dt);
 	void actualizarAtaques(float dt);
 	void actualizarRecarga(float dt);
@@ -67,7 +66,6 @@ class Arena
 	void mantenerLimites(int jugador);
 	bool colisionBarrera(float x, float y);
 	void colocarBarrerasAleatorias();
-	
 	
 public:
 

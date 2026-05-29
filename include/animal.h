@@ -46,7 +46,7 @@ public:
 	Casilla casillaInicial_{};
 	especieAnimal especie_;
 
-	float capaz_;
+	float capaz_{};
 	int equipo_;
 	int vida_;
 	Ataque* ataque_;
@@ -114,7 +114,6 @@ public:
 	int   getDanoAtaque()    const { return ataque_ ? ataque_->getDano() : 0; }
 	float getAlcanceAtaque() const { return ataque_ ? ataque_->getAlcance() : 0.f; }
 	float getRecargaAtaque() const { return ataque_ ? ataque_->getRecarga() : 0.f; }
-	virtual const char* getTipoAtaque() const = 0;
+	virtual const char* getTipoAtaque() const { return "No estoy definido"; };
 	void recibirDano(int dano) { vida_ -= dano; }
-
 };

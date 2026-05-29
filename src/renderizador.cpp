@@ -273,14 +273,13 @@ void Renderizador::dibujar(const Arena* arena) const
         if (atq && atq->isActivo()) 
             dibujarSprite(atq->getSprite(), atq->getTamanio(), atq->getTamanio(),atq->getX(), atq->getY(),-10.0f,1, 1, 0, 0,true);
   
-}
+    }
 
     // DIBUJAR COMBATIENTES
     for (int i = 0; i < 2; i++) 
         if (arena->isVivo(i)) 
             if (arena->getCombatiente(i) != nullptr) 
                 this->dibujar(arena->getCombatiente(i));
-
 }
 
 void Renderizador::dibujar(const Ganador* ganador) const
@@ -288,33 +287,6 @@ void Renderizador::dibujar(const Ganador* ganador) const
     // DIBUJAR FONDO Y LETRERO DE TURNOS
     dibujarSprite("../assets/Sprites/pantallaGanador/ganador.png", 512, 512, 480 / 2, 270 / 2, -1);
 
-                );
-            }
-        }
-    }
-
-    glEnable(GL_DEPTH_TEST);
-              
-                );
-            }
-        }
-    }
-
-    glEnable(GL_DEPTH_TEST);
-                    true
-                );
-            }
-        }
-    }
-
-    glEnable(GL_DEPTH_TEST);
-                    true
-                );
-            }
-        }
-    }
-
-    glEnable(GL_DEPTH_TEST);
 }
 
 // FUNCION GENERAL PARA DIBUJAR UN SPRITE, SE USA PARA TODO

@@ -199,7 +199,6 @@ void Arena::actualizarAtaques(float dt)
 	}
 }
 
-
 void Arena::actualizarBarreras(float dt) 
 {
 	for (int i = 0; i < NUM_DE_BARRERAS; i++) {
@@ -232,14 +231,13 @@ void Arena::actualizarBarreras(float dt)
 						{
 							combatientes_[j]->posicion_.x = pos_x_[j];
 							combatientes_[j]->posicion_.y = pos_y_[j];
-						}
+						
 					}
 				}
 			}
 		}
 	}
 }
-
 
 void Arena::confirmarImpacto() 
 {

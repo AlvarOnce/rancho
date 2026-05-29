@@ -11,7 +11,6 @@ protected:
     const char* sprite_;
     float       tamanio_;
     float       duracion_visual_;
-    float       r_, g_, b_;
 
     float x_ = 0, y_ = 0;
     float dirX_ = 0, dirY_ = 0;
@@ -19,10 +18,9 @@ protected:
     float tiempoActivo_ = 0;
 
 public:
-    Ataque(int dano, float alcance, float recarga, const char* sprite, float tamanio, float duracion_visual, float r, float g, float b)
+    Ataque(int dano, float alcance, float recarga, const char* sprite, float tamanio, float duracion_visual)
         : dano_(dano), alcance_(alcance), recarga_(recarga),
-        sprite_(sprite), tamanio_(tamanio), duracion_visual_(duracion_visual),
-        r_(r), g_(g), b_(b) {}
+        sprite_(sprite), tamanio_(tamanio), duracion_visual_(duracion_visual) {}
 
     virtual ~Ataque() {}
 
@@ -34,7 +32,6 @@ public:
     float       getX()       const { return x_; }
     float       getY()       const { return y_; }
     bool        isActivo()   const { return activo_; }
-    void getColor(float& r, float& g, float& b) const { r = r_; g = g_; b = b_; }
 
     virtual void activar(float x, float y, float dirX, float dirY) {
         x_ = x; y_ = y; dirX_ = dirX; dirY_ = dirY;
