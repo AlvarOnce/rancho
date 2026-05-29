@@ -24,8 +24,6 @@ public:
     virtual const char* getTipoAtaque() const = 0;
     void recibirDano(int dano) { vida_ -= dano; }
 
-    bool mover(modoJuego modo, int dx, int dy);
-
     void setState(int frameX, int frameY);
     void animar(float dt);
 
@@ -106,11 +104,7 @@ public:
 	bool pausa = true;
 	int ancho = 0;
 	int alto = 0;
-	void setState(int frameX, int frameY);
-	void animar(float dt);
 
-	virtual void actualizar(float dt);
 
 	// funcion virtual
-	virtual std::vector<Movimiento> movimientosPosibles() const; 
 };
