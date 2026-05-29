@@ -56,7 +56,7 @@ Jugador::Jugador(int equipo) : equipo_(equipo) // esto de construir los animales
     
     // al haber hecho push_back en orden (primero 9 cabras y luego 9 gallinas), 
     // la primera gallina sigue estando en el índice 9, así que esta línea funciona igual
-    animalEnCombate_ = animales_[9]; // de todas formas, esta variable se actualiza en el tablero cada vez que hay un combate, así que no es importante
+    // de todas formas, esta variable se actualiza en el tablero cada vez que hay un combate, así que no es importante
 }
 
 Jugador::~Jugador()

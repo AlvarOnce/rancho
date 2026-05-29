@@ -77,6 +77,13 @@ void Tablero::recibirMovimiento(int jugador, int dx, int dy)
             // Ahora es solo una linea pieza->mover(dx, dy); 
             // vamos a probar a que el cursor se quede quiero mientras se mueve la pieza
             // if (movimiento_valido) cursor.mover(dx, dy);
+
+ 
+
+
+
+
+
         }
     }
 }
@@ -92,34 +99,6 @@ void Tablero::seleccionarPieza(int jugador, RenderizadorAudio* audio)
         // CASO 1: LEVANTAR UNA PIEZA
         if (!jugadorActivo->tienePiezaAgarrada() && casilla != nullptr)
         {
-            if (casilla->equipo_ == jugador)
-            {
-                // guardar el origen antes de levantarla físicamente
-                casilla->casillaInicial_ = {cursor.fila, cursor.columna};
-
-                jugadorActivo->agarrarPieza(casilla);
-                casillas_[cursor.fila][cursor.columna] = nullptr;
-
-                audio->sonarPickeo(casilla);
-            }
-        }
-        // CASO 2: SOLTAR UNA PIEZA (Intentar movimiento)
-        else if (jugadorActivo->tienePiezaAgarrada())
-        {
-            Animal* pieza = jugadorActivo->getPiezaSeleccionada();
-
-            // si la pieza sigue desplazándose visualmente, evitar soltarla
-            if (pieza->getEnMovimiento()) return;
-
-            Movimiento m;
-            m.origen = pieza->casillaInicial_;
-
-            // leer la coordenada destino matemática a partir de los píxeles
-            m.destino.columna = std::round((pieza->getPosX() - 152.0f) / 22.0f);
-            m.destino.fila = 8 - std::round((pieza->getPosY() - 47.0f) / 22.0f);
-
-            if (esMovimientoLegal(m))
-            {
                 if (getHayColision()) // asignar animales de combate a piezas chocantes (J1 izquierda, J2 derecha siempre)
                 {
                     if (pieza->equipo_ == 0)
@@ -135,6 +114,26 @@ void Tablero::seleccionarPieza(int jugador, RenderizadorAudio* audio)
 
                     enBatalla = true;
                 }
+            if (casilla->equipo_ == jugador)
+            {
+                // guardar el origen antes de levantarla físicamente
+                casilla->casillaInicial_ = {cursor.fila, cursor.columna};
+
+                jugadorActivo->agarrarPieza(casilla);
+                casillas_[cursor.fila][cursor.columna] = nullptr;
+
+                audio->sonarPickeo(casilla);
+                }
+
+                }
+
+                }
+
+                }
+
+
+            if (esMovimientoLegal(m))
+            {
                 mover(m);
 
                 // teletransporta el cursor a la nueva casilla
@@ -143,6 +142,14 @@ void Tablero::seleccionarPieza(int jugador, RenderizadorAudio* audio)
                 while (cursor.columna > m.destino.columna) cursor.mover(-1, 0);
                 while (cursor.fila > m.destino.fila) cursor.mover(0, 1);  // dy=1 es ARRIBA (resta fila)
                 while (cursor.fila < m.destino.fila) cursor.mover(0, -1);
+
+
+                if (getHayColision())
+                {
+                    animalesEnBatalla[0] = pieza;
+                    animalesEnBatalla[1] = casillas_[m.destino.fila][m.destino.columna];
+                    enBatalla = true;
+                }
 
                  jugadorActivo->soltarPieza();
                  turno_actual_ = (turno_actual_ == 0) ? 1 : 0;

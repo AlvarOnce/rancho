@@ -1,7 +1,9 @@
 #include "arena.h"
+#include "interaccion.h"
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
 
 Arena::Arena() 
 {
@@ -16,15 +18,9 @@ Arena::Arena()
 		vivo_[i] = false;
 		movimiento_arriba_[i] = movimiento_abajo_[i] = false;
 		movimiento_dch_[i] = movimiento_izq_[i] = false;
-		disparo_disparado_[i] = false;
-		disparo_x_[i] = disparo_y_[i] = 0;
-		direccion_disparo_x_[i] = direccion_disparo_y_[i] = 0;
-		recarga_de_ataque_[i] = 0;//tiempo que falta para poder atacar
-		recarga_maxima_de_ataque_[i] = 1.0f;//tiempo que tiene que pasar para poder atacar de nuevo.
-		ataque_activo_[i] = false;
-		ataque_x_[i] = 0;
-		ataque_y_[i] = 0;
-		ataque_visible_tiempo_[i] = 0;
+		recarga_de_ataque_[i] = 0;
+		ultima_direccion_x_[i] = 0;
+		ultima_direccion_y_[i] = 0;
 	}
 
 	for (int i = 0; i < NUM_DE_BARRERAS; i++) {
@@ -50,32 +46,30 @@ void Arena::inicioCombate()
 		combatientes_[i]->casillas_movidas_ = 0;
 		combatientes_[i]->casillas_movidas_x_ = 0;
 		combatientes_[i]->casillas_movidas_y_ = 0;
+
+		combatientes_[i]->setVelocidad(Vector2D(0, 0)); // por resolver
 	}	
 
 	// colocacion en la arena
-	pos_x_[0] =ARENA_MARGEN_X + 30.0f;
-	pos_y_[0] =ARENA_MARGEN_Y + ZONA_DE_COMBATE_Y / 2.0f;
-	pos_x_[1] =ARENA_MARGEN_X + ZONA_DE_COMBATE_X - 30.0f;
+	pos_x_[0] = ARENA_MARGEN_X + 30.0f;
+	pos_y_[0] = ARENA_MARGEN_Y + ZONA_DE_COMBATE_Y / 2.0f;
+	pos_x_[1] = ARENA_MARGEN_X + ZONA_DE_COMBATE_X - 30.0f;
 	pos_y_[1] = ARENA_MARGEN_Y + ZONA_DE_COMBATE_Y / 2.0f;
 
-	for (int i = 0; i < 2; i++) {
-		combatientes_[i]->setPosicion(Vector2D(pos_x_[i], pos_y_[i]));
-		combatientes_[i]->setVelocidad(Vector2D(0, 0));
+	ultima_direccion_x_[0] = 1.0f; ultima_direccion_y_[0] = 0.0f;
+	ultima_direccion_x_[1] = -1.0f; ultima_direccion_y_[1] = 0.0f;
 
-		vivo_[i] = true;
-	}	
-	
 	for (int i = 0; i < 2; i++) {
-		int tipo_de_ataque = ATAQUE_TIPO_GOLPE;
-		if (tipo_de_ataque == ATAQUE_TIPO_GOLPE)   recarga_maxima_de_ataque_[i] = 0.5f;
-		if (tipo_de_ataque == ATAQUE_TIPO_DISPARO) recarga_maxima_de_ataque_[i] = 1.0f;
-		if (tipo_de_ataque == ATAQUE_EN_AREA)      recarga_maxima_de_ataque_[i] = 2.0f;
+		combatientes_[i]->setPosicion(Vector2D(pos_x_[i], pos_y_[i])); // develop: Vector2D
+		combatientes_[i]->capaz_ = -4.5f;
+		vivo_[i] = true;
 		recarga_de_ataque_[i] = 0;
+		if (combatientes_[i]->getAtaque())
+			combatientes_[i]->getAtaque()->desactivar();
 	}
 
 	ganador_ = -1;
 	combate_terminado_ = false;
-
 	colocarBarrerasAleatorias();
 }
 
@@ -94,8 +88,7 @@ void Arena::actualizar(float dt)
 
 	actualizarBarreras(dt);
 	actualizarMovimiento(dt);
-	actualizarDisparo(dt);
-	actualizarAtaque(dt);
+	actualizarAtaques(dt);
 	actualizarRecarga(dt);
 	confirmarImpacto();
 	confirmarFinCombate();
@@ -104,73 +97,31 @@ void Arena::actualizar(float dt)
 	combatientes_[1]->actualizarEnBatalla(dt);
 }
 
-void Arena::recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada) 
+void Arena::recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada)
 {
 	if (movimiento == ARRIBA)    movimiento_arriba_[jugador] = tecla_pulsada;
 	if (movimiento == ABAJO)     movimiento_abajo_[jugador] = tecla_pulsada;
 	if (movimiento == IZQUIERDA) movimiento_izq_[jugador] = tecla_pulsada;
 	if (movimiento == DERECHA)   movimiento_dch_[jugador] = tecla_pulsada;
 }
-
-bool Arena::recibirAtaque(int jugador, RenderizadorAudio* audio) 
+bool Arena::recibirAtaque(int jugador)
 {
 	if (combate_terminado_) return false;
 	if (!vivo_[jugador]) return false;
 	if (recarga_de_ataque_[jugador] > 0) return false;
 
-	int tipo = ATAQUE_TIPO_GOLPE; //combatientes[jugador]->getTipoAtaque();
+	Ataque* ataque = combatientes_[jugador]->getAtaque();
+	if (!ataque) return false;
 
-	if (tipo == ATAQUE_TIPO_DISPARO) {
-		direccion_disparo_x_[jugador] = ultima_direccion_x_[jugador];
-		direccion_disparo_y_[jugador] = ultima_direccion_y_[jugador];
-		disparo_x_[jugador] = pos_x_[jugador];
-		disparo_y_[jugador] = pos_y_[jugador];
-		disparo_disparado_[jugador] = true;
-
-	}
-	else if (tipo == ATAQUE_TIPO_GOLPE) {
-		int rival = (jugador == 0) ? 1 : 0;
-
-		// colocamos el palo delante de la gallina segun donde mire
-		float offset = 18.0f;
-		ataque_x_[jugador] = pos_x_[jugador] + ultima_direccion_x_[jugador] * offset;
-		ataque_y_[jugador] = pos_y_[jugador] + ultima_direccion_y_[jugador] * offset;
-		ataque_activo_[jugador] = true;
-		ataque_visible_tiempo_[jugador] = 0;
-
-		audio->sonarAtaque(combatientes_[jugador]);
-
-		// comprobamos si el rival esta en rango de golpe
-		float dx = pos_x_[jugador] - pos_x_[rival];
-		float dy = pos_y_[jugador] - pos_y_[rival];
-		float dist = sqrt(dx * dx + dy * dy);
-
-		if (dist < 30.0f) {
-			combatientes_[rival]->vida_ -= combatientes_[jugador]->ataque_;
-			
-			//if (combatientes_[rival]->getEspecie() == GALLINA)
-				//audio->sonarDanoGallina();
-			//else if (combatientes_[rival]->getEspecie() == CABRA)
-				//audio->sonarDanoCabra();
-			std::cout << "Jugador " << rival + 1 << " recibe golpe. Vida restante: "
-				<< combatientes_[rival]->vida_ << std::endl;
-		}
-	}
-	else if (tipo == ATAQUE_EN_AREA) {
-		int rival = (jugador == 0) ? 1 : 0;
-		float dx = pos_x_[jugador] - pos_x_[rival];
-		float dy = pos_y_[jugador] - pos_y_[rival];
-		float dist = sqrt(dx * dx + dy * dy);
-
-		/*
-		* float alcance = combatientes[jugador]->getAlcance();
-		* if(dist<alcance){
-		*   combatientes[rival]->recibirDano(combatientes[jugador]->getDano());
-		* }
-		*/
-	}
-
-	recarga_de_ataque_[jugador] = recarga_maxima_de_ataque_[jugador];
+	float offsetX = pos_x_[jugador] + ultima_direccion_x_[jugador] * 18.0f;
+	float offsetY = pos_y_[jugador] + ultima_direccion_y_[jugador] * 18.0f;
+	ataque->activar(offsetX, offsetY,ultima_direccion_x_[jugador],ultima_direccion_y_[jugador]);
+	//audio->sonarAtaque(combatientes_[jugador]);
+	recarga_de_ataque_[jugador] = ataque->getRecarga();
+	//if (combatientes_[rival]->getEspecie() == GALLINA)
+			//audio->sonarDanoGallina();
+		//else if (combatientes_[rival]->getEspecie() == CABRA)
+			//audio->sonarDanoCabra();
 	return true;
 }
 
@@ -187,8 +138,8 @@ void Arena::actualizarMovimiento(float dt)
 		pos_antigua_x_[i] = pos_x_[i];
 		pos_antigua_y_[i] = pos_y_[i];
 
-		float velocidad = 100.0f;
-		float dt_seg = dt / 1000.0f;  // convertimos a segundos
+		const float velocidad = 100.0f;
+		const float dt_seg = dt / 1000.0f;  // convertimos a segundos
 
 		if (movimiento_arriba_[i]) pos_y_[i] += velocidad * dt_seg;
 		if (movimiento_abajo_[i])  pos_y_[i] -= velocidad * dt_seg;
@@ -218,31 +169,7 @@ void Arena::actualizarMovimiento(float dt)
 		mantenerLimites(i);
 
 		if (combatientes_[i] != nullptr) {
-			combatientes_[i]->posicion_.x = pos_x_[i];
-			combatientes_[i]->posicion_.y = pos_y_[i];
-		}
-	}
-}
-
-void Arena::actualizarDisparo(float dt) 
-{
-	float velocidad_proyectil = 200.0f;
-
-	for (int i = 0; i < 2; i++) {
-		if (!disparo_disparado_[i]) continue;
-
-		disparo_x_[i] += direccion_disparo_x_[i] * velocidad_proyectil * dt;
-		disparo_y_[i] += direccion_disparo_y_[i] * velocidad_proyectil * dt;
-
-		// si sale de la pantalla lo desactivamos
-		if (disparo_x_[i] < 0 || disparo_x_[i] > ANCHO_DE_LA_ARENA ||
-			disparo_y_[i] < 0 || disparo_y_[i] > ALTO_DE_LA_ARENA) {
-			disparo_disparado_[i] = false;
-		}
-
-		// si choca con una barrera lo desactivamos
-		if (colisionBarrera(disparo_x_[i], disparo_y_[i])) {
-			disparo_disparado_[i] = false;
+			combatientes_[i]->setPosicion(Vector2D(pos_x_[i], pos_y_[i]));
 		}
 	}
 }
@@ -254,13 +181,32 @@ void Arena::actualizarRecarga(float dt)
 			recarga_de_ataque_[i] -= dt/1000;
 	}
 }
+void Arena::actualizarAtaques(float dt)
+{
+	for (int i = 0; i < 2; i++) {
+		Ataque* ataque = combatientes_[i] ? combatientes_[i]->getAtaque() : nullptr;
+		if (!ataque || !ataque->isActivo()) continue;
+
+		ataque->mover(dt);
+		if (!ataque->isActivo()) continue;
+
+		if (ataque->getX() < LIMITE_IZQ_ARENA || ataque->getX() > LIMITE_DCH_ARENA ||
+			ataque->getY() < LIMITE_ARRIBA_ARENA || ataque->getY() > LIMITE_ABAJO_ARENA)
+			ataque->desactivar();
+
+		if (colisionBarrera(ataque->getX(), ataque->getY()))
+			ataque->desactivar();
+	}
+}
+
 
 void Arena::actualizarBarreras(float dt) 
 {
 	for (int i = 0; i < NUM_DE_BARRERAS; i++) {
 		contador_ciclo_barrera_[i] += dt;
 		if (contador_ciclo_barrera_[i] >= ciclo_maximo_barrera_[i]) 
-		{
+
+	
 			contador_ciclo_barrera_[i] = 0.0f;
 			barrera_visible_[i] = !barrera_visible_[i];
 			ciclo_maximo_barrera_[i] = 10000.0f + (rand() % 10);
@@ -298,18 +244,17 @@ void Arena::actualizarBarreras(float dt)
 void Arena::confirmarImpacto() 
 {
 	for (int i = 0; i < 2; i++) {
-		if (!disparo_disparado_[i]) continue;
+		Ataque* ataque = combatientes_[i] ? combatientes_[i]->getAtaque() : nullptr;
+		if (!ataque || !ataque->isActivo()) continue;
 
 		int rival = (i == 0) ? 1 : 0;
 		if (!vivo_[rival]) continue;
 
-		float dx = disparo_x_[i] - pos_x_[rival];
-		float dy = disparo_y_[i] - pos_y_[rival];
-		float dist = sqrt(dx * dx + dy * dy);
-
-		if (dist < 15.0f) { // radio de impacto
-			//combatientes[rival]->recibirDano(combatientes[i]->getDano());
-			disparo_disparado_[i] = false;
+		if (Interaccion::procesarImpacto(ataque, combatientes_[rival])) {
+			std::cout << "Jugador " << rival + 1 << " recibe "
+				<< combatientes_[i]->getTipoAtaque()
+				<< " de " << ataque->getDano()
+				<< " dano. Vida: " << combatientes_[rival]->vida_ << std::endl;
 		}
 	}
 }
@@ -329,16 +274,11 @@ void Arena::confirmarFinCombate()
 void Arena::mantenerLimites(int jugador)
 {
 	float radio = 11.0f;
-	float antes_x = pos_x_[jugador];
-	float antes_y = pos_y_[jugador];
 
 	if (pos_x_[jugador] < ARENA_MARGEN_X + radio) pos_x_[jugador] = ARENA_MARGEN_X + radio;
 	if (pos_x_[jugador] > ARENA_MARGEN_X + ZONA_DE_COMBATE_X - radio) pos_x_[jugador] = ARENA_MARGEN_X + ZONA_DE_COMBATE_X - radio;
 	if (pos_y_[jugador] < ARENA_MARGEN_Y + radio) pos_y_[jugador] = ARENA_MARGEN_Y + radio;
 	if (pos_y_[jugador] > ARENA_MARGEN_Y + ZONA_DE_COMBATE_Y - radio) pos_y_[jugador] = ARENA_MARGEN_Y + ZONA_DE_COMBATE_Y - radio;
-
-	if (antes_x != pos_x_[jugador] || antes_y != pos_y_[jugador])
-		std::cout << "LIMITE ACTIVADO J" << jugador << ": de (" << antes_x << "," << antes_y << ") a (" << pos_x_[jugador] << "," << pos_y_[jugador] << ")" << std::endl;
 }
 
 bool Arena::colisionBarrera(float x, float y) 
@@ -374,25 +314,15 @@ void Arena::colocarBarrerasAleatorias()
 
 	}
 }
-
-void Arena::actualizarAtaque(float dt)
+int Arena::obtenerPerdedor() const
 {
-	for (int i = 0; i < 2; i++) {
-		if (!ataque_activo_[i]) continue;
+	// Si el combate no ha terminado, no hay perdedor todavía
+	if (!combate_terminado_) return -1;
 
-		ataque_visible_tiempo_[i] += dt/1000;
+	// Si el ganador es el jugador 0 (Luz), el perdedor es el 1 (Oscuridad)
+	// Si el ganador es el jugador 1, el perdedor es el 0
+	if (ganador_ == 0) return 1;
+	if (ganador_ == 1) return 0;
 
-		// el palo desaparece despues de DURACION_ATAQUE segundos
-		if (ataque_visible_tiempo_[i] >= DURACION_ATAQUE)
-		{
-			ataque_activo_[i] = false;
-			ataque_visible_tiempo_[i] = 0;
-		}
-	}
+	return -1; // Por si acaso hubo un empate o error
 }
-	
-int Arena::obtenerPerdedor() const 
-{
-	return (ganador_ == 0) ? 1 : 0;
-}
-

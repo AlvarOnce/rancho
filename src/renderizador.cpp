@@ -54,7 +54,7 @@ void Renderizador::dibujar(const Animal* animal) const
     }
 
     dibujarSprite(
-        ruta_sprite.c_str(),
+       ruta_sprite.c_str(),
         256, 128,
         animal->getPosX(), animal->getPosY(),
         animal->getCapaz(),
@@ -248,6 +248,7 @@ void Renderizador::dibujar(const Arena* arena) const
 {
  
     dibujarSprite("../assets/Sprites/batalla/fondoBatalla.png", 512, 512, 480 / 2, 270 / 2, -1);
+    //dibujarArena(ARENA_MARGEN_X, ARENA_MARGEN_Y, ZONA_DE_COMBATE_X, ZONA_DE_COMBATE_Y, 0.1f, 0.2f, 0.6f, -5.0f);
 
     // DIBUJAR BARRERAS
     for (int i = 0; i < NUM_DE_BARRERAS; i++)
@@ -255,9 +256,8 @@ void Renderizador::dibujar(const Arena* arena) const
         if (arena->isBarreraVisible(i))
         {
             dibujarSprite("../assets/Sprites/batalla/obstaculos.png", 32, 32, arena->getBarreraX(i) - 7, arena->getBarreraY(i) - 9, -3);
-
-           // dibujarBarreras(arena->getBarreraX(i) - 7, arena->getBarreraY(i) - 9, 14, 18, 0.6f, 0.6f, 0.6f, -3.0f);
-            //dibujarBarreras(arena->getBarreraX(i) - 8, arena->getBarreraY(i) - 11, 16, 4, 0.8f, 0.8f, 0.8f, 0.1f);
+           //dibujarBarreras(arena->getBarreraX(i) - 7, arena->getBarreraY(i) - 9, 14, 18, 0.6f, 0.6f, 0.6f, -3.0f);
+           //dibujarBarreras(arena->getBarreraX(i) - 8, arena->getBarreraY(i) - 11, 16, 4, 0.8f, 0.8f, 0.8f, 0.1f);
         }
         else
         {
@@ -268,12 +268,12 @@ void Renderizador::dibujar(const Arena* arena) const
 
     // DIBUJAR ATAQUES ACTIVOS
     for (int i = 0; i < 2; i++) {
-        if (arena->isAtaqueActivo(i)) {
-
-           // dibujarBarreras(arena->getAtaqueX(i) - 4, arena->getAtaqueY(i) - 8, 8, 16, 0.55f, 0.27f, 0.07f, -2.0f);
-            dibujarSprite("../assets/Sprites/batalla/obstaculos.png", 32, 32, arena->getAtaqueX(i) - 4, arena->getAtaqueY(i) - 8, -2.5);
-        }
-    }
+        const Ataque* atq = arena->getAtaqueObjeto(i);
+        
+        if (atq && atq->isActivo()) 
+            dibujarSprite(atq->getSprite(), atq->getTamanio(), atq->getTamanio(),atq->getX(), atq->getY(),-10.0f,1, 1, 0, 0,true);
+  
+}
 
     // DIBUJAR COMBATIENTES
     for (int i = 0; i < 2; i++) 
@@ -288,6 +288,33 @@ void Renderizador::dibujar(const Ganador* ganador) const
     // DIBUJAR FONDO Y LETRERO DE TURNOS
     dibujarSprite("../assets/Sprites/pantallaGanador/ganador.png", 512, 512, 480 / 2, 270 / 2, -1);
 
+                );
+            }
+        }
+    }
+
+    glEnable(GL_DEPTH_TEST);
+              
+                );
+            }
+        }
+    }
+
+    glEnable(GL_DEPTH_TEST);
+                    true
+                );
+            }
+        }
+    }
+
+    glEnable(GL_DEPTH_TEST);
+                    true
+                );
+            }
+        }
+    }
+
+    glEnable(GL_DEPTH_TEST);
 }
 
 // FUNCION GENERAL PARA DIBUJAR UN SPRITE, SE USA PARA TODO

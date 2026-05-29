@@ -3,6 +3,7 @@
 #include <vector>
 #include "ETSIDI.h"
 #include "estructuras.h"
+#include "ataque.h"
 
 enum modoJuego 
 {
@@ -31,9 +32,10 @@ public:
 		{
 			posicion_ = { 480.0f + 15.0f * casillaInicial_.fila - 11.0f + 44.0f * (casillaInicial_.columna - 7), 36.0f + 176.0f - (22.0f * casillaInicial_.fila) + 11.0f };
 			capaz_ = -3.5f + 0.01f * casillaInicial_.fila + 0.01f * casillaInicial_.columna;
+			//480.0f + 44.0f + 15.0f * casillaInicial_.fila - 11.0f 
 			setState(0, 1);
 		}
-		//480.0f + 44.0f + 15.0f * casillaInicial_.fila - 11.0f 
+		ataque_ = nullptr;
 	}
 
 	virtual ~Animal() {}
@@ -47,7 +49,7 @@ public:
 	float capaz_;
 	int equipo_;
 	int vida_;
-	int ataque_{0};
+	Ataque* ataque_;
 	float avanzando_casilla_ = 0;	// para saber cuando ha terminado de moverse
 	bool en_movimiento_ = false;	// para bloquear el teclado si se esta moviendo
 	int casillas_movidas_x_ = 0;
@@ -107,4 +109,12 @@ public:
 
 	// funcion virtual
 	virtual std::vector<Movimiento> movimientosPosibles() const; 
+	// ATAQUE
+	Ataque* getAtaque() const { return ataque_; }
+	int   getDanoAtaque()    const { return ataque_ ? ataque_->getDano() : 0; }
+	float getAlcanceAtaque() const { return ataque_ ? ataque_->getAlcance() : 0.f; }
+	float getRecargaAtaque() const { return ataque_ ? ataque_->getRecarga() : 0.f; }
+	virtual const char* getTipoAtaque() const = 0;
+	void recibirDano(int dano) { vida_ -= dano; }
+
 };
