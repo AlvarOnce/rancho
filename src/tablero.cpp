@@ -123,20 +123,6 @@ void Tablero::seleccionarPieza(int jugador, RenderizadorAudio* audio)
             m.destino.columna = std::round((pieza->getPosX() - 152.0f) / 22.0f);
             m.destino.fila = 8 - std::round((pieza->getPosY() - 47.0f) / 22.0f);
 
-            {  //esto es para el en passant, especial para ti Pablo
-
-                if (pieza->especie_ == GALLINA && jugadorActivo->getEquipo() == 0 && (ultimoMovimiento_.destino.columna - m.destino.columna) == -1 && ultimoMovimiento_.destino.fila == m.destino.fila
-                    || (pieza->especie_ == GALLINA && jugadorActivo->getEquipo() == 1 && (ultimoMovimiento_.destino.columna - m.destino.columna) == 1 && ultimoMovimiento_.destino.fila == m.destino.fila)) {
-                    
-                    anadirPiezaMuerta(casillas_[ultimoMovimiento_.destino.fila][ultimoMovimiento_.destino.columna]);
-                    casillas_[ultimoMovimiento_.destino.fila][ultimoMovimiento_.destino.columna]= nullptr;
-                }
-                if (pieza->especie_ == GALLINA && (m.origen.columna == 7 && m.destino.columna == 5) || (m.origen.columna == 1 && m.destino.columna == 3)) {
-                    ultimoMovimiento_ = m;
-                }
-                else ultimoMovimiento_.destino.columna = 10; // lo suyo seria vaciarlo, que no tenga nada, pero hago esto de momento
-            }
-
             if (esMovimientoLegal(m))
             {
                 if (getHayColision()) // asignar animales de combate a piezas chocantes (J1 izquierda, J2 derecha siempre)
