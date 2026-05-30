@@ -35,9 +35,8 @@ class Tablero
     Cursor cursorJ2_ = Cursor(6,4,1);
 
 
-    //miguel
 	Movimiento ultimoMovimiento_;
-	//Vector2D piezas_muertas_ = { 120.0f, 80.0f }; // para colocar las piezas muertas en la esquina del tablero, se va actualizando cada vez que muere una pieza
+	Vector2D posicion_piezas_muertas_ = { 0.0f, 247.0f }; 
 	std::vector<Animal*> piezas_muertas_; 
 
     static const int TAMANO_CASILLA = 22;
@@ -73,8 +72,11 @@ public:
 	float getLetreroPosY() const { return letreroTurnos_.posicion.y; }
 	int getLetreroFrameX() const { return letreroTurnos_.frameActualX_; }
 	int getLetreroFrameY() const { return letreroTurnos_.frameActualY_; }
+    const std::vector<Animal*>& getPiezasMuertas() const { return piezas_muertas_; } 
 	void setLetreroPosX(float x) { letreroTurnos_.posicion.x = x; }
 	void setLetreroPosY(float y) { letreroTurnos_.posicion.y = y; }
+
+    void anadirPiezaMuerta(Animal* pieza);
 
 	Animal* getAnimalEnCasilla(int fila, int columna) const { return casillas_[fila][columna]; }
     void acomodarGanador(Animal* animalGanador);

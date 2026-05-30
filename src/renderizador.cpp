@@ -132,6 +132,11 @@ void Renderizador::dibujar(const Tablero* tablero) const
             }
         }
     }
+    
+    // DIBUJAR LOS ANIMALES MUERTOS
+    for (Animal* muerto : tablero->getPiezasMuertas()) {
+        this->dibujar(muerto); 
+    }
 
     // DIBUJAR LA PIEZA AGARRADA
     if (jugadorActivo->tienePiezaAgarrada()) {

@@ -44,6 +44,11 @@ void Tablero::actualizar(float dt)
     if (getJugadorActivo()->tienePiezaAgarrada())
         getJugadorActivo()->getPiezaSeleccionada()->actualizarEnTablero(dt);
 
+    for (Animal* muerto : piezas_muertas_)
+    {
+        muerto->actualizarEnTablero(dt);
+    }
+
     actualizarColision();
 
     setLetreroPosX(102 + turno_actual_ * 273);
@@ -118,16 +123,18 @@ void Tablero::seleccionarPieza(int jugador, RenderizadorAudio* audio)
             m.destino.columna = std::round((pieza->getPosX() - 152.0f) / 22.0f);
             m.destino.fila = 8 - std::round((pieza->getPosY() - 47.0f) / 22.0f);
 
-            {  //esto es para el en passant, especial para ti Pablo :3
+            {  //esto es para el en passant, especial para ti Pablo
+
+                if (pieza->especie_ == GALLINA && jugadorActivo->getEquipo() == 0 && (ultimoMovimiento_.destino.columna - m.destino.columna) == -1 && ultimoMovimiento_.destino.fila == m.destino.fila
+                    || (pieza->especie_ == GALLINA && jugadorActivo->getEquipo() == 1 && (ultimoMovimiento_.destino.columna - m.destino.columna) == 1 && ultimoMovimiento_.destino.fila == m.destino.fila)) {
+                    
+                    anadirPiezaMuerta(casillas_[ultimoMovimiento_.destino.fila][ultimoMovimiento_.destino.columna]);
+                    casillas_[ultimoMovimiento_.destino.fila][ultimoMovimiento_.destino.columna]= nullptr;
+                }
                 if (pieza->especie_ == GALLINA && (m.origen.columna == 7 && m.destino.columna == 5) || (m.origen.columna == 1 && m.destino.columna == 3)) {
                     ultimoMovimiento_ = m;
                 }
-                else ultimoMovimiento_.destino.columna == 10; // lo suyo seria vaciarlo, que no tenga nada, pero hago esto de momento
-                if (pieza->especie_ == GALLINA && jugadorActivo->getEquipo() == 0 && (ultimoMovimiento_.destino.columna - m.destino.columna) == -1 && ultimoMovimiento_.destino.fila == m.destino.fila
-                    || (pieza->especie_ == GALLINA && jugadorActivo->getEquipo() == 1 && (ultimoMovimiento_.destino.columna - m.destino.columna) == 1 && ultimoMovimiento_.destino.fila == m.destino.fila)) {
-					piezas_muertas_.push_back(casillas_[ultimoMovimiento_.destino.fila][ultimoMovimiento_.destino.columna]);
-                    casillas_[ultimoMovimiento_.destino.fila][ultimoMovimiento_.destino.columna]= nullptr;
-                }
+                else ultimoMovimiento_.destino.columna = 10; // lo suyo seria vaciarlo, que no tenga nada, pero hago esto de momento
             }
 
             if (esMovimientoLegal(m))
@@ -322,4 +329,32 @@ void Tablero::acomodarGanador(Animal* animalGanador)
     casillas_[casillaDisputada.fila][casillaDisputada.columna] = animalGanador;
     casillas_[casillaDisputada.fila][casillaDisputada.columna]->
     setPosicion({ 141.0f + 11.0f + 22.0f * casillaDisputada.columna, 36.0f + 11.0f + 22.0f * (8 - casillaDisputada.fila) });
+}
+
+void Tablero::anadirPiezaMuerta(Animal* pieza)
+{
+    piezas_muertas_.push_back(pieza);
+
+    int muertas_equipo = 0;
+    for (Animal* m : piezas_muertas_)
+    {
+        if (m->getEquipo() == pieza->getEquipo())
+        {
+            muertas_equipo++;
+        }
+    }
+
+    if (pieza->getEquipo() == 0)
+    {
+        posicion_piezas_muertas_.x = 40.0f + (muertas_equipo * 22.0f); 
+    }
+    else
+    {
+        posicion_piezas_muertas_.x = 450.0f - (muertas_equipo * 22.0f);
+    }
+
+    pieza->setPosicion(Vector2D(posicion_piezas_muertas_));
+    pieza->setVelocidad(Vector2D(0, 0));
+    pieza->setEnMovimiento(false);
+    pieza->setState(0, 0); 
 }
