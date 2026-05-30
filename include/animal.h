@@ -17,6 +17,16 @@ enum especieAnimal
 
 class Animal
 {
+protected:
+	// Lógica
+	Vector2D posicion_;
+	Vector2D velocidad_;
+	especieAnimal especie_;
+
+	float capaz_{};
+	int equipo_;
+	int vida_;
+
 public:
 
 	Animal(Casilla casillaInicial, int equipo) : casillaInicial_(casillaInicial), equipo_(equipo) {
@@ -40,15 +50,8 @@ public:
 
 	virtual ~Animal() {}
 
-	// Lógica
-	Vector2D posicion_;
-	Vector2D velocidad_;
 	Casilla casillaInicial_{};
-	especieAnimal especie_;
 
-	float capaz_{};
-	int equipo_;
-	int vida_;
 	Ataque* ataque_;
 	float avanzando_casilla_ = 0;	// para saber cuando ha terminado de moverse
 	bool en_movimiento_ = false;	// para bloquear el teclado si se esta moviendo
@@ -66,6 +69,8 @@ public:
 		std::cout << "Soy un animal genérico, mi ataque no está definido.";
 	}
 
+	float getVida() const { return vida_; }
+	float getEquipo() const { return equipo_; }
 	float getPosX() const { return posicion_.x; }
 	float getPosY() const { return posicion_.y; }
 	float getVelX() const { return velocidad_.x; }
@@ -80,13 +85,14 @@ public:
 
 	especieAnimal getEspecie() const { return especie_; }
 	bool getVivo() const { return vida_ > 0; }
-	int getEquipo() const { return equipo_; }
 
 //protected: // Solo los hijos animales pueden modificar sus posiciones
 
+	void setVida(const int vida) { vida_ = vida; }
 	void setPosicion(const Vector2D& pos) { posicion_ = pos; }
 	void setPosX(float posx) { posicion_.x  = posx; }
 	void setPosy(float posy) { posicion_.y  = posy; }
+	void setCapaz(float capaz) { capaz_ = capaz; }
 	void setVelocidad(const Vector2D& vel) { velocidad_ = vel; }
 	void setVelX(float velx) { velocidad_.x = velx; } 
 	void setVelY(float vely) { velocidad_.y = vely; }

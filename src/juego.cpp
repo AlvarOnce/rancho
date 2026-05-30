@@ -73,7 +73,7 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
 
             tablero_->acomodarGanador(animalGanador);
 
-            animalPerdedor->vida_ = 0;
+            animalPerdedor->setVida(0);
             animalPerdedor->setPosicion(Vector2D(-100, -100));
 
             transicion_.empieza();

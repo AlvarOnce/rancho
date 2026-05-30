@@ -18,6 +18,7 @@ protected:
     float tiempoActivo_ = 0;
 
 public:
+
     Ataque(int dano, float alcance, float recarga, const char* sprite, float tamanio, float duracion_visual)
         : dano_(dano), alcance_(alcance), recarga_(recarga),
         sprite_(sprite), tamanio_(tamanio), duracion_visual_(duracion_visual) {}
