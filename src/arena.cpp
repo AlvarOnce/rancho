@@ -107,8 +107,9 @@ void Arena::recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada)
 	if (movimiento == IZQUIERDA) movimiento_izq_[jugador] = tecla_pulsada;
 	if (movimiento == DERECHA)   movimiento_dch_[jugador] = tecla_pulsada;
 }
-bool Arena::recibirAtaque(int jugador)
+bool Arena::recibirAtaque(int jugador,RenderizadorAudio* audio)
 {
+	audio_ = audio;
 	if (combate_terminado_) return false;
 	if (!vivo_[jugador]) return false;
 	if (recarga_de_ataque_[jugador] > 0) return false;
@@ -125,7 +126,8 @@ bool Arena::recibirAtaque(int jugador)
 		offsetY += ultima_direccion_y_[jugador] * 18.0f;
 	}
 	ataque->activar(offsetX, offsetY,ultima_direccion_x_[jugador],ultima_direccion_y_[jugador]);
-		//audio->sonarAtaque(combatientes_[jugador]);
+	
+	audio->sonarAtaque(jugador, combatientes_[jugador]);
 		recarga_de_ataque_[jugador] = ataque->getRecarga();
 		//if (combatientes_[rival]->getEspecie() == GALLINA)
 				//audio->sonarDanoGallina();
@@ -260,11 +262,15 @@ void Arena::confirmarImpacto()
 		bool impacto = emb
 		? Interaccion::procesarEmbestida(emb, combatientes_[i], combatientes_[rival],pos_x_[i], pos_y_[i],pos_x_[rival], pos_y_[rival])
 			: Interaccion::procesarImpacto(ataque, combatientes_[rival]);
-		if(impacto)
+		if (impacto && audio_)
+		{
+			audio_->sonarHuevo(combatientes_[i]);
+			audio_->sonarAtacado(combatientes_[rival]);
 			std::cout << "Jugador " << rival + 1 << " recibe "
-			<< combatientes_[i]->getTipoAtaque()
-			<< " de " << ataque->getDano()
-			<< " dano. Vida: " << combatientes_[rival]->getVida() << std::endl;
+				<< combatientes_[i]->getTipoAtaque()
+				<< " de " << ataque->getDano()
+				<< " dano. Vida: " << combatientes_[rival]->getVida() << std::endl;
+		}
 	}
 }
 

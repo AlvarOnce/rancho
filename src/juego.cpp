@@ -176,7 +176,7 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
         case MENU:
 
         if (key == 13) { // Intro para elegir una opción
-
+            audio_->eleccionMenu();
             switch (menu_->getOpcionActual()) {
 
             case Selector::JUGAR:
@@ -229,8 +229,8 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
          if (key == 's' || key == 'S') arena_->recibirMovimiento(0, ABAJO, true);
          if (key == 'a' || key == 'A') arena_->recibirMovimiento(0, IZQUIERDA, true);
          if (key == 'd' || key == 'D') arena_->recibirMovimiento(0, DERECHA, true);                
-		 if (key == 'q' || key == 'Q') arena_->recibirAtaque(0); // Ataque para J1
-         if (key == 'm' || key == 'M') arena_->recibirAtaque(1); // Ataque para J2
+		 if (key == 'q' || key == 'Q') arena_->recibirAtaque(0,audio_); // Ataque para J1
+         if (key == 'm' || key == 'M') arena_->recibirAtaque(1,audio_); // Ataque para J2
 
          if (key == 'b') {
              transicion_.empieza();
@@ -263,8 +263,17 @@ void Juego::procesarTeclaEspecialPresionada(int key) // JUGADOR 2 (FLECHAS)
     switch (estado_actual) 
     {
     case MENU:
-        if (key == GLUT_KEY_UP) menu_->moverSelector(-1); // arriba resta 1 (se acerca a 0 que es JUGAR)
-        if (key == GLUT_KEY_DOWN) menu_->moverSelector(1); // abajo suma 1 (bajándo hacia el 3 que es CREDITOS)
+        if (key == GLUT_KEY_UP) 
+        {
+            menu_->moverSelector(-1); // arriba resta 1 (se acerca a 0 que es JUGAR)
+            audio_->sonidoMenu();
+        }
+        if (key == GLUT_KEY_DOWN) 
+        {
+            menu_->moverSelector(1); // abajo suma 1 (bajándo hacia el 3 que es CREDITOS)
+            audio_->sonidoMenu();
+        }
+            
         break;
 
     case TABLERO:
