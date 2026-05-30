@@ -10,15 +10,38 @@ const int BANDO_OSCURIDAD = 1;
 const int CASILLA_LUZ = 0;
 const int CASILLA_OSCURA = 1;
 
+enum EstadoHechizo { // para controlar el estado de los hechizos
+    INACTIVO,
+    TELETRANSPORTE_SELECCIONAR_ALIADO,
+    TELETRANSPORTE_SELECCIONAR_DESTINO,
+    CURAR_SELECCIONAR_ALIADO,
+    INTERCAMBIO_SELECCIONAR_ALIADO,
+    INTERCAMBIO_SELECCIONAR_ENEMIGO,
+    ATRAPAR_SELECCIONAR_ENEMIGO
+};
+
 struct Letrero 
 {
     Vector2D posicion = { 550.0f, 65.0f };
-    
+
     int frameActualX_ = 0, frameActualY_ = 0;
     float timer{}, msStep = 65;
     int nFrames = 8;
     void animar(float dt);
     bool loop = false;
+    void setState(int frameX, int frameY);
+};
+
+struct Pato 
+{
+    Vector2D posicion = { 60, 90 };
+    bool subiendo = true;
+    
+    int frameActualX_ = 0, frameActualY_ = 0;
+    float timer{}, msStep = 100;
+    int nFrames = 4;
+    void animar(float dt);
+    bool loop = true;
     void setState(int frameX, int frameY);
 };
 
@@ -45,6 +68,9 @@ class Tablero
   // devuelve el cursor del jugador con el turno
 
 public:
+
+    float angulo = 0;
+    Pato pato;
 
     Casilla casillaDisputada{};
     bool enBatalla = false;
@@ -91,4 +117,17 @@ public:
     bool esMovimientoLegal(const Movimiento& m) const;
     void mover(const Movimiento& m);
     //bool hayColisionEnemiga(const Movimiento& m) const;
+
+	// hechizos
+    EstadoHechizo estadoHechizo_ = INACTIVO;
+    int teclaHechizoActivo_ = -1;
+    Animal* primerObjetivoHechizo_ = nullptr;
+    bool hechizoDisponible_[2][5]; // matriz para controlar si un jugador tiene disponible cada hechizo
+
+    EstadoHechizo getEstadoHechizo() const { return estadoHechizo_; }
+
+    void procesarTeclaHechizo(int tecla);
+    void ejecutarPasoHechizo(Animal* casilla, int fila, int col);
+    void finalizarHechizo();
+    void avanzarTurnosAtrapados();
 };

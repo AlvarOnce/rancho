@@ -63,7 +63,7 @@ void Arena::inicioCombate()
 
 	for (int i = 0; i < 2; i++) {
 		combatientes_[i]->setPosicion(Vector2D(pos_x_[i], pos_y_[i])); // develop: Vector2D
-		combatientes_[i]->capaz_ = -4.5f;
+		combatientes_[i]->setCapaz(-4.5f);
 		vivo_[i] = true;
 		recarga_de_ataque_[i] = 0;
 		if (combatientes_[i]->getAtaque())
@@ -107,8 +107,9 @@ void Arena::recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada)
 	if (movimiento == IZQUIERDA) movimiento_izq_[jugador] = tecla_pulsada;
 	if (movimiento == DERECHA)   movimiento_dch_[jugador] = tecla_pulsada;
 }
-bool Arena::recibirAtaque(int jugador)
+bool Arena::recibirAtaque(int jugador,RenderizadorAudio* audio)
 {
+	audio_ = audio;
 	if (combate_terminado_) return false;
 	if (!vivo_[jugador]) return false;
 	if (recarga_de_ataque_[jugador] > 0) return false;
@@ -125,7 +126,8 @@ bool Arena::recibirAtaque(int jugador)
 		offsetY += ultima_direccion_y_[jugador] * 18.0f;
 	}
 	ataque->activar(offsetX, offsetY,ultima_direccion_x_[jugador],ultima_direccion_y_[jugador]);
-		//audio->sonarAtaque(combatientes_[jugador]);
+	
+	audio->sonarAtaque(jugador, combatientes_[jugador]);
 		recarga_de_ataque_[jugador] = ataque->getRecarga();
 		//if (combatientes_[rival]->getEspecie() == GALLINA)
 				//audio->sonarDanoGallina();
@@ -166,7 +168,7 @@ void Arena::actualizarMovimiento(float dt)
 		// Colisión animal con barreras uso la funcion Interaccion::animalChocaBarrera
 		for (int b = 0; b < NUM_DE_BARRERAS; b++) {
 			if (!barrera_visible_[b]) continue;
-			if (Interaccion::animalChocaBarrera(pos_x_[i], pos_y_[i],barrera_x_[b], barrera_y_[b])) {
+			if (Interaccion::animalChocaBarrera(pos_x_[i], pos_y_[i],barrera_x_[b], barrera_y_[b],16,12)) {
 				pos_x_[i] = pos_antigua_x_[i];
 				pos_y_[i] = pos_antigua_y_[i];
 				break;
@@ -186,8 +188,10 @@ void Arena::actualizarMovimiento(float dt)
 void Arena::actualizarRecarga(float dt) 
 {
 	for (int i = 0; i < 2; i++) {
-		if (recarga_de_ataque_[i] > 0)
-			recarga_de_ataque_[i] -= dt/1000;
+		if (recarga_de_ataque_[i] > 0) {
+			recarga_de_ataque_[i] -= dt / 1000;
+			std::cout << recarga_de_ataque_[i];
+		}
 	}
 }
 void Arena::actualizarAtaques(float dt)
@@ -204,7 +208,7 @@ void Arena::actualizarAtaques(float dt)
 		
 		for (int b = 0; b < NUM_DE_BARRERAS; b++) {
 			if (!barrera_visible_[b]) continue;
-			if (Interaccion::ataqueChocaBarrera(ataque, barrera_x_[b], barrera_y_[b])) {
+			if (Interaccion::ataqueChocaBarrera(ataque, barrera_x_[b], barrera_y_[b],16,12)) {
 				ataque->desactivar();
 				break;
 			}
@@ -226,13 +230,13 @@ void Arena::actualizarBarreras(float dt)
 				for (int j = 0; j < 2; j++)
 				{
 					if (!vivo_[j]) continue;
-					if (Interaccion::animalChocaBarrera(pos_x_[j], pos_y_[j], barrera_x_[i], barrera_y_[i])) {
+					if (Interaccion::animalChocaBarrera(pos_x_[j], pos_y_[j], barrera_x_[i], barrera_y_[i],16,12)) {
 						float dx = pos_x_[j] - barrera_x_[i];
 						float dy = pos_y_[j] - barrera_y_[i];
 						if (abs(dx) > abs(dy))
-							pos_x_[j] += (dx > 0) ? 12.0f : -12.0f;
+							pos_x_[j] += (dx > 0) ? 17.0f : -17.0f;
 						else
-							pos_y_[j] += (dy > 0) ? 14.0f : -14.0f;
+							pos_y_[j] += (dy > 0) ? 10.0f : -10.0f;
 
 						if (combatientes_[j])
 							combatientes_[j]->setPosicion(Vector2D(pos_x_[j], pos_y_[j]));
@@ -258,18 +262,22 @@ void Arena::confirmarImpacto()
 		bool impacto = emb
 		? Interaccion::procesarEmbestida(emb, combatientes_[i], combatientes_[rival],pos_x_[i], pos_y_[i],pos_x_[rival], pos_y_[rival])
 			: Interaccion::procesarImpacto(ataque, combatientes_[rival]);
-		if(impacto)
+		if (impacto && audio_)
+		{
+			audio_->sonarHuevo(combatientes_[i]);
+			audio_->sonarAtacado(combatientes_[rival]);
 			std::cout << "Jugador " << rival + 1 << " recibe "
-			<< combatientes_[i]->getTipoAtaque()
-			<< " de " << ataque->getDano()
-			<< " dano. Vida: " << combatientes_[rival]->vida_ << std::endl;
+				<< combatientes_[i]->getTipoAtaque()
+				<< " de " << ataque->getDano()
+				<< " dano. Vida: " << combatientes_[rival]->getVida() << std::endl;
+		}
 	}
 }
 
 void Arena::confirmarFinCombate() 
 {
 	for (int i = 0; i < 2; i++) {
-		if (combatientes_[i] != nullptr && combatientes_[i]->vida_ <= 0) {
+		if (combatientes_[i] != nullptr && combatientes_[i]->getVida() <= 0) {
 			vivo_[i] = false;
 			combate_terminado_ = true;
 			ganador_ = (i == 0) ? 1 : 0;

@@ -21,12 +21,14 @@ public:
     void sonar(const Creditos* creditos) const;
     void sonar(const Controles* controles) const;
 
-    void sonarDanoGallina() const;
-    void sonarDanoCabra() const;
+ 
     void sonarTransicion() const;
     void sonarPickeo(const Animal* animal) const;
-    void sonarAtaque(const Animal* animal) const;
-    void sonarDano(const Animal* animal) const;
+    void sonarAtaque(int jugador, const Animal* atacante) const;
+    void sonarHuevo(const Animal* atacante) const;
+    void sonarAtacado(const Animal* atacado) const;
+    void sonidoMenu() const;
+    void eleccionMenu() const;
     
     void playMusica(const char* rutaAudio, bool repitir = true) const;
     void stopMusica() const;

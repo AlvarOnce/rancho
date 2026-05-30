@@ -13,3 +13,5 @@ Eventos importantes:
 04/05/2026 - Creación de la memoria del proyecto
 
 13/05/2026 - Actualización del repositorio a Visual Studio 2026
+
+29/05/2026 - realease/v0.1: Menu, Tablero y arena funcionando en su forma más básica con imagen y sonido.

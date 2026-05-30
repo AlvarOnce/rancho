@@ -9,8 +9,8 @@ const int ANCHO_DE_LA_ARENA = 480;
 const int ALTO_DE_LA_ARENA = 270;
 
 //dimensiones de la zona de combate
-const int ZONA_DE_COMBATE_X = 198;
-const int ZONA_DE_COMBATE_Y = 198;
+const int ZONA_DE_COMBATE_X = 328;
+const int ZONA_DE_COMBATE_Y = 246;
 
 //calculo de margenes de la arena
 const float ARENA_MARGEN_X = (ANCHO_DE_LA_ARENA - ZONA_DE_COMBATE_X) / 2.0f;
@@ -32,6 +32,7 @@ const int DERECHA = 3;
 class Arena
 {	
 	bool intro_arena = true;
+	RenderizadorAudio* audio_ = nullptr;
 
 	Animal* combatientes_[2]{}; // si quereis Bnado Luz [0], [1] para el otro bando.
 	float pos_x_[2] = {};
@@ -75,7 +76,7 @@ public:
 	void inicioCombate();
 	void actualizar(float dt);
 	void recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada);
-	bool recibirAtaque(int jugador);
+	bool recibirAtaque(int jugador, RenderizadorAudio* audio);
 	int obtenerPerdedor() const; 
 	bool combateTerminado() const { return combate_terminado_; }
 	int ganadorCombate() const { return ganador_;};

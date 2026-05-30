@@ -53,11 +53,14 @@
     <ClInclude Include="include\llama.h" />
     <ClInclude Include="include\granjero.h" />
     <ClInclude Include="include\ganador.h" />
+    <ClInclude Include="include\ataque.h" />
+    <ClInclude Include="include\disparo.h" />
+    <ClInclude Include="include\embestida.h" />
+    <ClInclude Include="include\golpe.h" />
+    <ClInclude Include="include\interaccion.h" />
+    <ClInclude Include="include\onda.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="docs\cuadernoBitacora.md">
-      <Filter>docs</Filter>
-    </None>
     <None Include="bin\assets\Audio\ranchoMainTheme.mpeg">
       <Filter>assets\Audio</Filter>
     </None>
@@ -73,6 +76,7 @@
     <None Include="docs\GitFlow Workflow.pdf" />
     <None Include="lib\ETSIDI.exp" />
     <None Include="docs\ETSIDIlib.pdf" />
+    <None Include="docs\CHANGELOG" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -94,6 +98,8 @@
     <ClCompile Include="src\jugador.cpp" />
     <ClCompile Include="src\RenderizadorAudio.cpp" />
     <ClCompile Include="src\ganador.cpp" />
+    <ClCompile Include="src\interaccion.cpp" />
+    <ClCompile Include="src\hechizos.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib">
