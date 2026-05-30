@@ -78,44 +78,46 @@ void Renderizador::dibujar(const Tablero* tablero) const
 	// referencias constantes para no modificar los objetos originales
     const Cursor& cursorActivo = tablero->getCursorActivo();
     const Jugador* jugadorActivo = tablero->getJugadorActivo();
-
+    
     int filaCursor = cursorActivo.getFila();
     int colCursor = cursorActivo.getColumna();
-
+    
     const Animal* animalEnCursor = tablero->getAnimalEnCasilla(filaCursor, colCursor);
     bool tienePiezaAgarrada = jugadorActivo->tienePiezaAgarrada();
+    if (tablero->getEstadoHechizo() == INACTIVO) // para que no aparezcan mientras se usa un hechizo
+    {
+        if (animalEnCursor != nullptr || tienePiezaAgarrada) {
 
-    if (animalEnCursor != nullptr || tienePiezaAgarrada) {
+            int maxMovimientos = 0;
+            int equipoFicha = -1;
 
-        int maxMovimientos = 0;
-        int equipoFicha = -1;
+            if (animalEnCursor != nullptr) {
+                maxMovimientos = animalEnCursor->getMaxCasillasMovidas();
+                equipoFicha = animalEnCursor->getEquipo();
+            }
 
-        if (animalEnCursor != nullptr) {
-            maxMovimientos = animalEnCursor->getMaxCasillasMovidas();
-            equipoFicha = animalEnCursor->getEquipo();
-        }
+            if (tienePiezaAgarrada) {
+                const Animal* piezaSeleccionada = jugadorActivo->getPiezaSeleccionada();
+                maxMovimientos = piezaSeleccionada->getMaxCasillasMovidas();
+                equipoFicha = piezaSeleccionada->getEquipo();
+            }
 
-        if (tienePiezaAgarrada) {
-            const Animal* piezaSeleccionada = jugadorActivo->getPiezaSeleccionada();
-            maxMovimientos = piezaSeleccionada->getMaxCasillasMovidas();
-            equipoFicha = piezaSeleccionada->getEquipo();
-        }
+            for (int i = 0; i < Constantes::FILAS_TABLERO; i++) {
+                for (int j = 0; j < Constantes::COLUMNAS_TABLERO; j++) {
 
-        for (int i = 0; i < Constantes::FILAS_TABLERO; i++) {
-            for (int j = 0; j < Constantes::COLUMNAS_TABLERO; j++) {
-
-                if (abs(i - filaCursor) + abs(j - colCursor) <= maxMovimientos) // solo si es alcanzable
-                {
-                    if (equipoFicha == jugadorActivo->getEquipo()) // solo si es mi animal
+                    if (abs(i - filaCursor) + abs(j - colCursor) <= maxMovimientos) // solo si es alcanzable
                     {
-                        const Animal* animalDestino = tablero->getAnimalEnCasilla(i, j);
-
-                        // EVALUACION DE CORTOCIRCUITO: solo si esta vacia o animal contrario
-                        if (animalDestino == nullptr || animalDestino->getEquipo() != jugadorActivo->getEquipo())
+                        if (equipoFicha == jugadorActivo->getEquipo()) // solo si es mi animal
                         {
-                            int posPosibleX = 141 + 11 + 22 * j;
-                            int posPosibleY = 36 + 11 + 22 * (8 - i);
-                            dibujarSprite("../assets/Sprites/tablero/casillaPosible.png", 32, 32, posPosibleX, posPosibleY, -2.5);
+                            const Animal* animalDestino = tablero->getAnimalEnCasilla(i, j);
+
+                            // EVALUACION DE CORTOCIRCUITO: solo si esta vacia o animal contrario
+                            if (animalDestino == nullptr || animalDestino->getEquipo() != jugadorActivo->getEquipo())
+                            {
+                                int posPosibleX = 141 + 11 + 22 * j;
+                                int posPosibleY = 36 + 11 + 22 * (8 - i);
+                                dibujarSprite("../assets/Sprites/tablero/casillaPosible.png", 32, 32, posPosibleX, posPosibleY, -2.5);
+                            }
                         }
                     }
                 }

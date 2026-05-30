@@ -97,6 +97,8 @@ public:
     int teclaHechizoActivo_ = -1;
     Animal* primerObjetivoHechizo_ = nullptr;
 
+    EstadoHechizo getEstadoHechizo() const { return estadoHechizo_; }
+
     void procesarTeclaHechizo(int tecla);
     void ejecutarPasoHechizo(Animal* casilla, int fila, int col);
     void finalizarHechizo();
