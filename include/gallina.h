@@ -8,7 +8,7 @@ public:
 
 	Gallina(Casilla casillaInicial, int equipo) : Animal(casillaInicial, equipo)
 	{
-		vida_ = 14;
+		vida_ = 10;
 		max_casillas_movidas_ = 2;
 		nFrames = 8;
 		especie_ = GALLINA;

@@ -9,8 +9,8 @@ const int ANCHO_DE_LA_ARENA = 480;
 const int ALTO_DE_LA_ARENA = 270;
 
 //dimensiones de la zona de combate
-const int ZONA_DE_COMBATE_X = 198;
-const int ZONA_DE_COMBATE_Y = 198;
+const int ZONA_DE_COMBATE_X = 328;
+const int ZONA_DE_COMBATE_Y = 246;
 
 //calculo de margenes de la arena
 const float ARENA_MARGEN_X = (ANCHO_DE_LA_ARENA - ZONA_DE_COMBATE_X) / 2.0f;
