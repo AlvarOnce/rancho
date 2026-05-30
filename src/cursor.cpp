@@ -4,7 +4,7 @@ Cursor::Cursor(float col, float fil, int id) :
     columna(col), fila(fil), idJugador_(id)
 {
     posx_ = 141 + 11 + 22 * columna;
-    posy_ = 36 + 11 + 22 * fila;
+    posy_ = 36 + 11 + 22 * (8-fila);
 }
 
 void Cursor::mover(int x, int y)
@@ -13,6 +13,9 @@ void Cursor::mover(int x, int y)
     posy_ += 22 * y;
     columna += x;
     fila -= y;
+
+    //posx_ = 141 + 11 + 22 * columna;
+    //posy_ = 36 + 11 + 22 * fila;
 
     if (columna < 0) { columna = 0;  posx_ = 141 + 11; }
     if (columna > 8) { columna = 8;  posx_ = 141 + 11 + 22 * 8; }

@@ -47,6 +47,12 @@
     <ClInclude Include="include\controles.h" />
     <ClInclude Include="include\jugador.h" />
     <ClInclude Include="include\estructuras.h" />
+    <ClInclude Include="include\RenderizadorAudio.h" />
+    <ClInclude Include="include\oveja.h" />
+    <ClInclude Include="include\cerdo.h" />
+    <ClInclude Include="include\llama.h" />
+    <ClInclude Include="include\granjero.h" />
+    <ClInclude Include="include\ganador.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="docs\cuadernoBitacora.md">
@@ -86,6 +92,8 @@
     <ClCompile Include="src\creditos.cpp" />
     <ClCompile Include="src\controles.cpp" />
     <ClCompile Include="src\jugador.cpp" />
+    <ClCompile Include="src\RenderizadorAudio.cpp" />
+    <ClCompile Include="src\ganador.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib">

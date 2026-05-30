@@ -1,6 +1,7 @@
 #pragma once
 #include "animal.h"
 #include "RenderizadorAudio.h"
+
 //dimensiones que ocupa la arena en la pantalla
 const int ANCHO_DE_LA_ARENA = 480;
 const int ALTO_DE_LA_ARENA = 270;
@@ -28,6 +29,8 @@ const int DERECHA = 3;
 
 class Arena
 {	
+	bool intro_arena = true;
+
 	Animal* combatientes_[2]{}; // si quereis Bnado Luz [0], [1] para el otro bando.
 	float pos_x_[2] = {};
 	float pos_y_[2] = {};
@@ -43,7 +46,6 @@ class Arena
 	bool movimiento_dch_[2] = {};
 
 	float recarga_de_ataque_[2] = {};//tiempo que queda para poder atacar 
-	
 
 	float barrera_x_[NUM_DE_BARRERAS] = {};
 	float barrera_y_[NUM_DE_BARRERAS] = {};
@@ -52,9 +54,7 @@ class Arena
 	float ciclo_maximo_barrera_[8] = {};
 
 	int ganador_ = -1;
-	bool combate_terminado_=false;
 
-	
 	void actualizarMovimiento(float dt);
 	void actualizarAtaques(float dt);
 	void actualizarRecarga(float dt);
@@ -65,19 +65,20 @@ class Arena
 	bool colisionBarrera(float x, float y);
 	void colocarBarrerasAleatorias();
 	
-	
 public:
+
+	bool combate_terminado_ = false;
 
 	Arena();
 	~Arena();
 
-	void inicioCombate(Animal* pieza_luz, Animal* pieza_oscuridad);
+	void inicioCombate();
 	void actualizar(float dt);
 	void recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada);
 	bool recibirAtaque(int jugador);
 	int obtenerPerdedor() const; 
-	bool combateTerminado() const;
-	int ganadorCombate() const;
+	bool combateTerminado() const { return combate_terminado_; }
+	int ganadorCombate() const { return ganador_;};
 	bool isBarreraVisible(int indice) const { return barrera_visible_[indice]; }
 	float getBarreraX(int indice) const { return barrera_x_[indice]; }
 	float getBarreraY(int indice) const { return barrera_y_[indice]; }
@@ -86,6 +87,13 @@ public:
 
 	bool isVivo(int jugador) const { return vivo_[jugador]; }
 	const Animal* getCombatiente(int jugador) const { return combatientes_[jugador]; }
+
+	void setCombatientes(Animal* animal1, Animal* animal2) {
+
+		combate_terminado_ = false;
+		combatientes_[0] = animal1;
+		combatientes_[1] = animal2;
+	}
 	const Ataque* getAtaqueObjeto(int i) const {
 		return combatientes_[i] ? combatientes_[i]->getAtaque() : nullptr;
 	}

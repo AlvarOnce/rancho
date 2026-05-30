@@ -132,6 +132,7 @@
     <ClInclude Include="include\arena.h" />
     <ClInclude Include="include\ataque.h" />
     <ClInclude Include="include\cabra.h" />
+    <ClInclude Include="include\cerdo.h" />
     <ClInclude Include="include\controles.h" />
     <ClInclude Include="include\creditos.h" />
     <ClInclude Include="include\cursor.h" />
@@ -140,12 +141,16 @@
     <ClInclude Include="include\ETSIDI.h" />
     <ClInclude Include="include\freeglut.h" />
     <ClInclude Include="include\gallina.h" />
+    <ClInclude Include="include\ganador.h" />
+    <ClInclude Include="include\granjero.h" />
     <ClInclude Include="include\golpe.h" />
     <ClInclude Include="include\interaccion.h" />
     <ClInclude Include="include\juego.h" />
     <ClInclude Include="include\jugador.h" />
+    <ClInclude Include="include\llama.h" />
     <ClInclude Include="include\menu.h" />
     <ClInclude Include="include\onda.h" />
+    <ClInclude Include="include\oveja.h" />
     <ClInclude Include="include\renderizador.h" />
     <ClInclude Include="include\RenderizadorAudio.h" />
     <ClInclude Include="include\tablero.h" />
@@ -171,6 +176,7 @@
     <ClCompile Include="src\cursor.cpp" />
     <ClCompile Include="src\gallina.cpp" />
     <ClCompile Include="src\interaccion.cpp" />
+    <ClCompile Include="src\ganador.cpp" />
     <ClCompile Include="src\juego.cpp" />
     <ClCompile Include="src\jugador.cpp" />
     <ClCompile Include="src\main.cpp" />

@@ -12,7 +12,7 @@ public:
     int columna;
 
     Cursor() : posx_(240), posy_(135), idJugador_(0), fila(4), columna(4) {}
-    Cursor(float x_inicial, float y_inicial, int id);
+    Cursor(float col, float fil, int id);
 
     void mover(int x, int y);
 

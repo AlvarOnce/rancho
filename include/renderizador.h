@@ -12,6 +12,7 @@
 #include "controles.h"
 #include "creditos.h"
 #include "transicion.h"
+#include "ganador.h"
 #include "arena.h"
 
 class Renderizador 
@@ -27,11 +28,9 @@ public:
     void dibujar(const Creditos* creditos) const;
     void dibujar(const Transicion* transicion) const;
     void dibujar(const Arena* arena) const;
+    void dibujar(const Ganador* ganador) const;
 
-    void dibujarArena(float x, float y, float ancho, float alto, float r, float g, float b, float profundidad) const;
-    void dibujarBarreras(float x, float y, float ancho, float alto, float r, float g, float b, float profundidad) const;
-
-    void dibujarSprite(
+    void dibujarSprite (
         const char* rutaImagen, // ruta del sprite a dibujar
         float ancho, // ancho y alto del sprite, si es un sprite sheet, el ancho y alto total del sprite sheet, no del frame individual
         float alto,

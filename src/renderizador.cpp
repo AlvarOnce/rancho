@@ -14,17 +14,40 @@ void Renderizador::limpiarPantalla()
 void Renderizador::dibujar(const Animal* animal) const
 {
     if (!animal || !animal->getVivo()) return;
+
 	std::string ruta_sprite;
     switch (animal->getEspecie()) {
+
         case CABRA:
-            ruta_sprite = "../assets/Sprites/cabra/cabraSpritesheet.png";
+            if (animal->getEquipo() == 0) ruta_sprite = "../assets/Sprites/cabra/cabraSpritesheet.png";
+            else ruta_sprite = "../assets/Sprites/cabra/cabraSpritesheet1.png";
             break;
+
         case GALLINA:
-            ruta_sprite = "../assets/Sprites/gallina/gallinaSpritesheet.png";
+            if (animal->getEquipo() == 0) ruta_sprite = "../assets/Sprites/gallina/gallinaSpritesheet.png";
+            else ruta_sprite = "../assets/Sprites/gallina/gallinaSpritesheet1.png";
             break;
+
         case GRANJERO:
-            ruta_sprite = "../assets/Sprites/granjero/granjeroSpritesheet.png";
+            if(animal->getEquipo() == 0) ruta_sprite = "../assets/Sprites/granjero/granjeroSpritesheet.png";
+            else ruta_sprite = "../assets/Sprites/granjero/granjeroSpritesheet1.png";
             break;
+
+        case OVEJA:
+            if (animal->getEquipo() == 0) ruta_sprite = "../assets/Sprites/oveja/ovejaSpritesheet.png";
+            else ruta_sprite = "../assets/Sprites/oveja/ovejaSpritesheet1.png";
+            break;
+
+        case CERDO:
+            if (animal->getEquipo() == 0) ruta_sprite = "../assets/Sprites/cerdo/cerdoSpritesheet.png";
+            else ruta_sprite = "../assets/Sprites/cerdo/cerdoSpritesheet1.png";
+            break;
+
+        case LLAMA:
+            if (animal->getEquipo() == 0) ruta_sprite = "../assets/Sprites/llama/llamaSpritesheet.png";
+            else ruta_sprite = "../assets/Sprites/llama/llamaSpritesheet1.png";
+            break;
+
         default:
             ruta_sprite = "../assets/Sprites/gallina/gallinaSpritesheet.png";
             break;
@@ -32,7 +55,7 @@ void Renderizador::dibujar(const Animal* animal) const
 
     dibujarSprite(
        ruta_sprite.c_str(),
-        256.0f, 128.0f,
+        256, 128,
         animal->getPosX(), animal->getPosY(),
         animal->getCapaz(),
         4, 8,
@@ -223,43 +246,47 @@ void Renderizador::dibujar(const Transicion* transicion) const
 
 void Renderizador::dibujar(const Arena* arena) const
 {
-    // DIBUJAR FONDO DE LA ARENA
-    dibujarArena(ARENA_MARGEN_X, ARENA_MARGEN_Y, ZONA_DE_COMBATE_X, ZONA_DE_COMBATE_Y, 0.1f, 0.2f, 0.6f, -5.0f);
+ 
+    dibujarSprite("../assets/Sprites/batalla/fondoBatalla.png", 512, 512, 480 / 2, 270 / 2, -1);
+    //dibujarArena(ARENA_MARGEN_X, ARENA_MARGEN_Y, ZONA_DE_COMBATE_X, ZONA_DE_COMBATE_Y, 0.1f, 0.2f, 0.6f, -5.0f);
 
     // DIBUJAR BARRERAS
     for (int i = 0; i < NUM_DE_BARRERAS; i++)
     {
         if (arena->isBarreraVisible(i))
         {
-            dibujarBarreras(arena->getBarreraX(i) - 7, arena->getBarreraY(i) - 9, 14, 18, 0.6f, 0.6f, 0.6f, -3.0f);
-            dibujarBarreras(arena->getBarreraX(i) - 8, arena->getBarreraY(i) - 11, 16, 4, 0.8f, 0.8f, 0.8f, 0.1f);
+            dibujarSprite("../assets/Sprites/batalla/obstaculos.png", 32, 32, arena->getBarreraX(i) - 7, arena->getBarreraY(i) - 9, -3);
+           //dibujarBarreras(arena->getBarreraX(i) - 7, arena->getBarreraY(i) - 9, 14, 18, 0.6f, 0.6f, 0.6f, -3.0f);
+           //dibujarBarreras(arena->getBarreraX(i) - 8, arena->getBarreraY(i) - 11, 16, 4, 0.8f, 0.8f, 0.8f, 0.1f);
         }
         else
         {
-            dibujarBarreras(arena->getBarreraX(i) - 6, arena->getBarreraY(i) - 11, 12, 3, 0.2f, 0.2f, 0.2f, -0.9f);
+            //dibujarBarreras(arena->getBarreraX(i) - 6, arena->getBarreraY(i) - 11, 12, 3, 0.2f, 0.2f, 0.2f, -0.9f);
+            //dibujarSprite("../assets/Sprites/batalla/obstaculos.png", 32, 32, arena->getBarreraX(i) - 7, arena->getBarreraY(i) - 9, -3);
         }
     }
 
     // DIBUJAR ATAQUES ACTIVOS
     for (int i = 0; i < 2; i++) {
         const Ataque* atq = arena->getAtaqueObjeto(i);
-        if (atq && atq->isActivo()) {
-            float tam = atq->getTamanio();
-            dibujarSprite(atq->getSprite(),tam, tam,atq->getX(), atq->getY(),-10.0f,1, 1, 0, 0,true);
-        }
+        
+        if (atq && atq->isActivo()) 
+            dibujarSprite(atq->getSprite(), atq->getTamanio(), atq->getTamanio(),atq->getX(), atq->getY(),-10.0f,1, 1, 0, 0,true);
+  
     }
 
     // DIBUJAR COMBATIENTES
-    glDisable(GL_DEPTH_TEST); // esto de openGL hay que ver si es necesario o no, pero por lo menos ahora está aquí en renderizador
+    for (int i = 0; i < 2; i++) 
+        if (arena->isVivo(i)) 
+            if (arena->getCombatiente(i) != nullptr) 
+                this->dibujar(arena->getCombatiente(i));
+}
 
-    for (int i = 0; i < 2; i++) {
-        if (arena->isVivo(i)) {
-            const Animal* combatiente = arena->getCombatiente(i);
+void Renderizador::dibujar(const Ganador* ganador) const
+{
+    // DIBUJAR FONDO Y LETRERO DE TURNOS
+    dibujarSprite("../assets/Sprites/pantallaGanador/ganador.png", 512, 512, 480 / 2, 270 / 2, -1);
 
-            if (combatiente != nullptr) {this->dibujar(combatiente);}
-        }
-    }
-    glEnable(GL_DEPTH_TEST);
 }
 
 // FUNCION GENERAL PARA DIBUJAR UN SPRITE, SE USA PARA TODO
@@ -307,42 +334,5 @@ void Renderizador::dibujarSprite(const char* rutaImagen, float ancho, float alto
 
     //glEnable(GL_LIGHTING);
     glDisable(GL_TEXTURE_2D);   
-}
-
-// FUNCIONES ESPECÍFICAS PARA DIBUJAR ELEMENTOS DE LA ARENA
-void Renderizador::dibujarArena(float x, float y, float ancho, float alto, float r, float g, float b, float profundidad) const
-{
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_LIGHTING);
-    glColor3f(r, g, b);
-
-    glPushMatrix();
-    glTranslatef(x + ancho / 2, y + alto / 2, profundidad);
-    glBegin(GL_POLYGON);
-        glVertex3f(-ancho / 2, -alto / 2, 0);
-        glVertex3f(ancho / 2, -alto / 2, 0);
-        glVertex3f(ancho / 2, alto / 2, 0);
-        glVertex3f(-ancho / 2, alto / 2, 0);
-    glEnd();
-    glPopMatrix();
-}
-
-void Renderizador::dibujarBarreras(float x, float y, float ancho, float alto, float r, float g, float b, float profundidad) const
-{
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_LIGHTING);
-    glColor3f(r, g, b);
-
-    glPushMatrix();
-    glTranslatef(x + ancho / 2, y + alto / 2, profundidad);
-    glBegin(GL_POLYGON);
-        glVertex3f(-ancho / 2, -alto / 2, 0);
-        glVertex3f(ancho / 2, -alto / 2, 0);
-        glVertex3f(ancho / 2, alto / 2, 0);
-        glVertex3f(-ancho / 2, alto / 2, 0);
-    glEnd();
-    glPopMatrix();
-    glEnable(GL_DEPTH_TEST);
 }
 

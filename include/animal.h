@@ -10,29 +10,32 @@ enum modoJuego
 	TABLERO, BATALLA, CANCELAR
 };
 
-enum tipoAnimacion 
+enum especieAnimal
 {
-	QUIETO, CAMINAR, ATACAR,
-};
-
-enum especieAnimal 
-{
-	CABRA, CERDO, GALLINA, OVEJA, GRANJERO
+	GRANJERO, CABRA, OVEJA, CERDO, LLAMA, GALLINA
 };
 
 class Animal
 {
 public:
 
-	Animal(float posx, float posy, float capa, int vida, float xinicial, int equipo)
-		: posicion_(posx, posy), capaz_(capa), vida_(vida), xinicial_(xinicial), equipo_(equipo) {
+	Animal(Casilla casillaInicial, int equipo) : casillaInicial_(casillaInicial), equipo_(equipo) {
 
 		if (equipo_ == 0)
+		{
+			posicion_ = { -44.0f - 15.0f * casillaInicial_.fila + 11.0f + 44.0f * casillaInicial_.columna, 36.0f + 176.0f - (22.0f * casillaInicial_.fila) + 11.0f };
+			capaz_ = -3.0f + 0.01f * casillaInicial_.fila + 0.01f * casillaInicial_.columna;
 			setState(0, 0);
-		else if (equipo_ == 1)
-			setState(0, 1);
-		ataque_ = nullptr;
+		}
 
+		if (equipo_ == 1)
+		{
+			posicion_ = { 480.0f + 15.0f * casillaInicial_.fila - 11.0f + 44.0f * (casillaInicial_.columna - 7), 36.0f + 176.0f - (22.0f * casillaInicial_.fila) + 11.0f };
+			capaz_ = -3.5f + 0.01f * casillaInicial_.fila + 0.01f * casillaInicial_.columna;
+			//480.0f + 44.0f + 15.0f * casillaInicial_.fila - 11.0f 
+			setState(0, 1);
+		}
+		ataque_ = nullptr;
 	}
 
 	virtual ~Animal() {}
@@ -40,8 +43,10 @@ public:
 	// Lógica
 	Vector2D posicion_;
 	Vector2D velocidad_;
+	Casilla casillaInicial_{};
+	especieAnimal especie_;
 
-	float capaz_;
+	float capaz_{};
 	int equipo_;
 	int vida_;
 	Ataque* ataque_;
@@ -54,10 +59,6 @@ public:
 	bool intro_tablero_ = true;
 	float xinicial_ = 152;
 
-	int casillaInicial_[2] = { 0,0 };
-
-	especieAnimal especie_;
-	
 	bool mover(modoJuego modo, int dx, int dy);	//ahora es un bool, si devuelve true se ha movido bien,
 												// si devuelve false, no se ha movido
 	virtual void atacar()						
@@ -103,7 +104,8 @@ public:
 	void setState(int frameX, int frameY);
 	void animar(float dt);
 
-	virtual void actualizar(float dt);
+	virtual void actualizarEnTablero(float dt);
+	virtual void actualizarEnBatalla(float dt);
 
 	// funcion virtual
 	virtual std::vector<Movimiento> movimientosPosibles() const; 
@@ -112,7 +114,6 @@ public:
 	int   getDanoAtaque()    const { return ataque_ ? ataque_->getDano() : 0; }
 	float getAlcanceAtaque() const { return ataque_ ? ataque_->getAlcance() : 0.f; }
 	float getRecargaAtaque() const { return ataque_ ? ataque_->getRecarga() : 0.f; }
-	virtual const char* getTipoAtaque() const = 0;
+	virtual const char* getTipoAtaque() const { return "No estoy definido"; };
 	void recibirDano(int dano) { vida_ -= dano; }
-
 };

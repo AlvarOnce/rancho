@@ -6,8 +6,8 @@ class Disparo : public Ataque {
     float velocidad_ = 200.0f;  // píxeles por segundo
 
 public:
-    Disparo(int dano, float alcance, float recarga, const char* sprite, float tamanio, float duracion, float r, float g, float b)
-        : Ataque(dano, alcance, recarga, sprite, tamanio, duracion, r, g, b) {}
+    Disparo(int dano, float alcance, float recarga, const char* sprite, float tamanio, float duracion)
+        : Ataque(dano, alcance, recarga, sprite, tamanio, duracion) {}
 
     void mover(float dt) override {
         if (!activo_) return;

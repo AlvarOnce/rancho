@@ -37,11 +37,8 @@ Arena::~Arena()
 	//las piezas se deben de destruir en tablero.
 }
 
-void Arena::inicioCombate(Animal* pieza_luz, Animal* pieza_oscuridad)
+void Arena::inicioCombate()
 {
-	combatientes_[0] = pieza_luz;
-	combatientes_[1] = pieza_oscuridad;
-
 	// desactivamos toda la logica del tablero para estos animales
 	for (int i = 0; i < 2; i++) {
 		combatientes_[i]->intro_tablero_ = false;
@@ -49,7 +46,8 @@ void Arena::inicioCombate(Animal* pieza_luz, Animal* pieza_oscuridad)
 		combatientes_[i]->casillas_movidas_ = 0;
 		combatientes_[i]->casillas_movidas_x_ = 0;
 		combatientes_[i]->casillas_movidas_y_ = 0;
-		combatientes_[i]->setVelocidad(Vector2D(0, 0));
+
+		combatientes_[i]->setVelocidad(Vector2D(0, 0)); // por resolver
 	}	
 
 	// colocacion en la arena
@@ -75,15 +73,29 @@ void Arena::inicioCombate(Animal* pieza_luz, Animal* pieza_oscuridad)
 	colocarBarrerasAleatorias();
 }
 
-void Arena::actualizar(float dt) 
+void Arena::actualizar(float dt)
 {
-	if (combate_terminado_) return;
+
+	if (intro_arena)
+	{
+		inicioCombate();
+		intro_arena = false;
+	}
+
+	if (combate_terminado_) {
+		intro_arena = true;
+		return;
+	}
+
 	actualizarBarreras(dt);
 	actualizarMovimiento(dt);
 	actualizarAtaques(dt);
 	actualizarRecarga(dt);
 	confirmarImpacto();
 	confirmarFinCombate();
+
+	combatientes_[0]->actualizarEnBatalla(dt);
+	combatientes_[1]->actualizarEnBatalla(dt);
 }
 
 void Arena::recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada)
@@ -96,7 +108,7 @@ void Arena::recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada)
 bool Arena::recibirAtaque(int jugador)
 {
 	if (combate_terminado_) return false;
-	if (!vivo_[jugador])    return false;
+	if (!vivo_[jugador]) return false;
 	if (recarga_de_ataque_[jugador] > 0) return false;
 
 	Ataque* ataque = combatientes_[jugador]->getAtaque();
@@ -113,10 +125,6 @@ bool Arena::recibirAtaque(int jugador)
 			//audio->sonarDanoCabra();
 	return true;
 }
-
-bool Arena::combateTerminado() const { return combate_terminado_; }
-
-int Arena::ganadorCombate()const { return ganador_; }
 
 void Arena::actualizarMovimiento(float dt)
 {
@@ -145,7 +153,6 @@ void Arena::actualizarMovimiento(float dt)
 			pos_x_[i] = pos_antigua_x_[i];
 			pos_y_[i] = pos_antigua_y_[i];
 		}
-
 	
 		int rival = (i == 0) ? 1 : 0;
 		float dx = pos_x_[i] - pos_x_[rival];
@@ -189,13 +196,13 @@ void Arena::actualizarAtaques(float dt)
 	}
 }
 
-
 void Arena::actualizarBarreras(float dt) 
 {
 	for (int i = 0; i < NUM_DE_BARRERAS; i++) {
 		contador_ciclo_barrera_[i] += dt;
 		if (contador_ciclo_barrera_[i] >= ciclo_maximo_barrera_[i]) 
-		{
+
+	
 			contador_ciclo_barrera_[i] = 0.0f;
 			barrera_visible_[i] = !barrera_visible_[i];
 			ciclo_maximo_barrera_[i] = 10000.0f + (rand() % 10);
@@ -221,14 +228,13 @@ void Arena::actualizarBarreras(float dt)
 						{
 							combatientes_[j]->posicion_.x = pos_x_[j];
 							combatientes_[j]->posicion_.y = pos_y_[j];
-						}
+						
 					}
 				}
 			}
 		}
 	}
 }
-
 
 void Arena::confirmarImpacto() 
 {

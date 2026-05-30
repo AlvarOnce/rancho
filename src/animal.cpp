@@ -1,27 +1,28 @@
 #include "animal.h"
 
-void Animal::actualizar(float dt) 
+void Animal::actualizarEnTablero(float dt) 
 {
+
     if (intro_tablero_) {
 
         if (equipo_ == 0)
-        if (posicion_.x < xinicial_) {
+        if (posicion_.x < 141 + 11 + 22 * casillaInicial_.columna) {
             posicion_.x += dt/25;
             animar(dt);
         }
         else {
-            posicion_.x = xinicial_; // Aseguramos que quede clavado en la posición exacta
+            posicion_.x = 141 + 11 + 22 * casillaInicial_.columna; // Aseguramos que quede clavado en la posición exacta
             intro_tablero_ = false; 
             setState(0, 0);     
         }
 
         if (equipo_ == 1)
-        if (posicion_.x > xinicial_) {
+        if (posicion_.x > 141 + 11 + 22 * casillaInicial_.columna) {
             posicion_.x -= dt / 25;
             animar(dt);
         }
         else {
-            posicion_.x = xinicial_; // Aseguramos que quede clavado en la posición exacta
+            posicion_.x = 141 + 11 + 22 * casillaInicial_.columna; // Aseguramos que quede clavado en la posición exacta
             intro_tablero_ = false;
             setState(0, 1);
         }
@@ -33,6 +34,7 @@ void Animal::actualizar(float dt)
 		setState(0, equipo_);
         return;
     }
+
     // movimiento usando el Vector 2D
     posicion_ += velocidad_ * (dt / 25);	    
 
@@ -50,6 +52,15 @@ void Animal::actualizar(float dt)
 	if (posicion_.x >= 130 + 22 * 10) int trash = mover(TABLERO, -1, 0); // Limite derecho del tablero
 	if (posicion_.y <= 25) int trash = mover(TABLERO, 0, 1); // Limite inferior del tablero
 	if (posicion_.y >= 25 + 22 * 10) int trash = mover(TABLERO, 0, -1); // Limite superior del tablero
+
+    animar(dt);
+}
+
+void Animal::actualizarEnBatalla(float dt)
+{
+
+    // movimiento usando el Vector 2D
+    posicion_ += velocidad_ * (dt / 25);
 
     animar(dt);
 }
@@ -122,7 +133,8 @@ void Animal::setState(int frameX, int frameY)
 std::vector<Movimiento> Animal::movimientosPosibles() const
 {
     std::vector<Movimiento> movimientos;
-    Casilla origen = { casillaInicial_[0], casillaInicial_[1] };
+    //Casilla origen = { casillaInicial_[0], casillaInicial_[1] };
+    Casilla origen = casillaInicial_;
 
     int alcance = max_casillas_movidas_;
 

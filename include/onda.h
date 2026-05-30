@@ -7,8 +7,8 @@ class Onda : public Ataque {
     float tamanioInicial_;
 
 public:
-    Onda(int dano, float alcance, float recarga, const char* sprite, float tamanio, float duracion, float r, float g, float b)
-        : Ataque(dano, alcance, recarga, sprite, tamanio, duracion, r, g, b),
+    Onda(int dano, float alcance, float recarga, const char* sprite, float tamanio, float duracion)
+        : Ataque(dano, alcance, recarga, sprite, tamanio, duracion),
         tamanioInicial_(tamanio) {}
 
     void activar(float x, float y, float dirX, float dirY) override {

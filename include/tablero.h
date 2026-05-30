@@ -41,7 +41,9 @@ class Tablero
 
 public:
 
+    Casilla casillaDisputada{};
     bool enBatalla = false;
+    
     Animal* animalesEnBatalla[2]{};
 
     Tablero(Jugador* jugador1, Jugador* jugador2);
@@ -54,6 +56,7 @@ public:
     void seleccionarPieza(int jugador, RenderizadorAudio* audio);
     void actualizar(float dt);
     void actualizarColision();
+    int determinarGanador();
 
     bool getHayColision() const { return hay_colision_; }
     const Cursor& getCursorActivo() const { return turno_actual_ == 0 ? cursorJ1_ : cursorJ2_; }
@@ -68,6 +71,8 @@ public:
 	void setLetreroPosY(float y) { letreroTurnos_.posicion.y = y; }
 
 	Animal* getAnimalEnCasilla(int fila, int columna) const { return casillas_[fila][columna]; }
+    void acomodarGanador(Animal* animalGanador);
+
 	const Tarjeta* getTarjeta() const { return &tarjeta; }
 
     Tarjeta tarjeta;
