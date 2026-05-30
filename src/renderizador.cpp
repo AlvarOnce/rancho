@@ -271,7 +271,7 @@ void Renderizador::dibujar(const Arena* arena) const
         const Ataque* atq = arena->getAtaqueObjeto(i);
         
         if (atq && atq->isActivo()) 
-            dibujarSprite(atq->getSprite(), atq->getTamanio(), atq->getTamanio(),atq->getX(), atq->getY(),-10.0f,1, 1, 0, 0,true);
+            dibujarSprite(atq->getSprite(), atq->getTamanio(), atq->getTamanio(),atq->getX(), atq->getY(),-4.40f,1, 1, 0, 0,true);
   
     }
 

@@ -1,6 +1,8 @@
 #pragma once
 #include "animal.h"
 #include "RenderizadorAudio.h"
+#include "embestida.h"
+#include "onda.h"
 
 //dimensiones que ocupa la arena en la pantalla
 const int ANCHO_DE_LA_ARENA = 480;
@@ -61,8 +63,6 @@ class Arena
 	void actualizarBarreras(float dt);
 	void confirmarImpacto();
 	void confirmarFinCombate();
-	void mantenerLimites(int jugador);
-	bool colisionBarrera(float x, float y);
 	void colocarBarrerasAleatorias();
 	
 public:

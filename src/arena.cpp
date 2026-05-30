@@ -1,5 +1,7 @@
 #include "arena.h"
 #include "interaccion.h"
+#include "embestida.h"
+#include "onda.h"
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
@@ -114,15 +116,21 @@ bool Arena::recibirAtaque(int jugador)
 	Ataque* ataque = combatientes_[jugador]->getAtaque();
 	if (!ataque) return false;
 
-	float offsetX = pos_x_[jugador] + ultima_direccion_x_[jugador] * 18.0f;
-	float offsetY = pos_y_[jugador] + ultima_direccion_y_[jugador] * 18.0f;
+	float offsetX = pos_x_[jugador];
+	float offsetY = pos_y_[jugador];
+
+	if (!dynamic_cast<Embestida*>(ataque) && !dynamic_cast<Onda*>(ataque))
+	{
+		offsetX += ultima_direccion_x_[jugador] * 18.0f;
+		offsetY += ultima_direccion_y_[jugador] * 18.0f;
+	}
 	ataque->activar(offsetX, offsetY,ultima_direccion_x_[jugador],ultima_direccion_y_[jugador]);
-	//audio->sonarAtaque(combatientes_[jugador]);
-	recarga_de_ataque_[jugador] = ataque->getRecarga();
-	//if (combatientes_[rival]->getEspecie() == GALLINA)
-			//audio->sonarDanoGallina();
-		//else if (combatientes_[rival]->getEspecie() == CABRA)
-			//audio->sonarDanoCabra();
+		//audio->sonarAtaque(combatientes_[jugador]);
+		recarga_de_ataque_[jugador] = ataque->getRecarga();
+		//if (combatientes_[rival]->getEspecie() == GALLINA)
+				//audio->sonarDanoGallina();
+			//else if (combatientes_[rival]->getEspecie() == CABRA)
+				//audio->sonarDanoCabra();
 	return true;
 }
 
@@ -148,26 +156,30 @@ void Arena::actualizarMovimiento(float dt)
 		if (movimiento_izq_[i]) { ultima_direccion_x_[i] = -1; ultima_direccion_y_[i] = 0; }
 		if (movimiento_dch_[i]) { ultima_direccion_x_[i] = 1; ultima_direccion_y_[i] = 0; }
 
-		if (colisionBarrera(pos_x_[i], pos_y_[i]))
-		{
-			pos_x_[i] = pos_antigua_x_[i];
-			pos_y_[i] = pos_antigua_y_[i];
+		//Impulso de embestida-Interaccion gestiona si esta activa
+		Embestida* emb = dynamic_cast<Embestida*>(combatientes_[i] ? combatientes_[i]->getAtaque() : nullptr);
+		if (emb && emb->isActivo()) {
+			pos_x_[i] += emb->getDirX() * emb->getVelocidadEmbestida() * dt_seg;
+			pos_y_[i] += emb->getDirY() * emb->getVelocidadEmbestida() * dt_seg;
 		}
-	
-		int rival = (i == 0) ? 1 : 0;
-		float dx = pos_x_[i] - pos_x_[rival];
-		float dy = pos_y_[i] - pos_y_[rival];
-		float dist = sqrt(dx * dx + dy * dy);
-		if (dist < 22.0f) 
-		{
-			pos_x_[i] = pos_antigua_x_[i];
-			pos_y_[i] = pos_antigua_y_[i];
-		}
-		mantenerLimites(i);
 
-		if (combatientes_[i] != nullptr) {
-			combatientes_[i]->setPosicion(Vector2D(pos_x_[i], pos_y_[i]));
+		// Colisión animal con barreras uso la funcion Interaccion::animalChocaBarrera
+		for (int b = 0; b < NUM_DE_BARRERAS; b++) {
+			if (!barrera_visible_[b]) continue;
+			if (Interaccion::animalChocaBarrera(pos_x_[i], pos_y_[i],barrera_x_[b], barrera_y_[b])) {
+				pos_x_[i] = pos_antigua_x_[i];
+				pos_y_[i] = pos_antigua_y_[i];
+				break;
+			}
 		}
+		// Límites de la arena uso la funcion Interaccion::mantenerDentroArena
+		Interaccion::mantenerDentroArena(pos_x_[i], pos_y_[i],ARENA_MARGEN_X, ARENA_MARGEN_Y,ZONA_DE_COMBATE_X, ZONA_DE_COMBATE_Y);
+
+		// Animales pueden pasarse: NO hay colisión animal-animal aquí.
+		// El daño por contacto lo gestiona confirmarImpacto (embestida).
+
+		if (combatientes_[i])
+			combatientes_[i]->setPosicion(Vector2D(pos_x_[i], pos_y_[i]));
 	}
 }
 
@@ -186,55 +198,51 @@ void Arena::actualizarAtaques(float dt)
 
 		ataque->mover(dt);
 		if (!ataque->isActivo()) continue;
-
-		if (ataque->getX() < LIMITE_IZQ_ARENA || ataque->getX() > LIMITE_DCH_ARENA ||
-			ataque->getY() < LIMITE_ARRIBA_ARENA || ataque->getY() > LIMITE_ABAJO_ARENA)
+		//Ataque fuera de la arena
+		if (Interaccion::ataqueEstaFuera(ataque, LIMITE_IZQ_ARENA, LIMITE_DCH_ARENA, LIMITE_ARRIBA_ARENA, LIMITE_ABAJO_ARENA))
 			ataque->desactivar();
-
-		if (colisionBarrera(ataque->getX(), ataque->getY()))
-			ataque->desactivar();
+		
+		for (int b = 0; b < NUM_DE_BARRERAS; b++) {
+			if (!barrera_visible_[b]) continue;
+			if (Interaccion::ataqueChocaBarrera(ataque, barrera_x_[b], barrera_y_[b])) {
+				ataque->desactivar();
+				break;
+			}
+		}
 	}
 }
 
-void Arena::actualizarBarreras(float dt) 
+void Arena::actualizarBarreras(float dt)
 {
 	for (int i = 0; i < NUM_DE_BARRERAS; i++) {
 		contador_ciclo_barrera_[i] += dt;
-		if (contador_ciclo_barrera_[i] >= ciclo_maximo_barrera_[i]) 
-
-	
+		if (contador_ciclo_barrera_[i] >= ciclo_maximo_barrera_[i]) {
 			contador_ciclo_barrera_[i] = 0.0f;
 			barrera_visible_[i] = !barrera_visible_[i];
 			ciclo_maximo_barrera_[i] = 10000.0f + (rand() % 10);
 
-			if (barrera_visible_[i]) 
+			if (barrera_visible_[i])
 			{
-				for (int j = 0; j < 2; j++) 
+				for (int j = 0; j < 2; j++)
 				{
 					if (!vivo_[j]) continue;
-					float dx = pos_x_[j] - barrera_x_[i];
-					float dy = pos_y_[j] - barrera_y_[i];
-					if (dx > -10 && dx < 10 && dy > -12 && dy < 12) 
-					{
-						// empujamos al jugador fuera de la barrera
-						// lo movemos hacia el lado mas cercano
+					if (Interaccion::animalChocaBarrera(pos_x_[j], pos_y_[j], barrera_x_[i], barrera_y_[i])) {
+						float dx = pos_x_[j] - barrera_x_[i];
+						float dy = pos_y_[j] - barrera_y_[i];
 						if (abs(dx) > abs(dy))
 							pos_x_[j] += (dx > 0) ? 12.0f : -12.0f;
 						else
 							pos_y_[j] += (dy > 0) ? 14.0f : -14.0f;
 
-						// sincronizamos con el animal
-						if (combatientes_[j] != nullptr) 
-						{
-							combatientes_[j]->posicion_.x = pos_x_[j];
-							combatientes_[j]->posicion_.y = pos_y_[j];
-						
+						if (combatientes_[j])
+							combatientes_[j]->setPosicion(Vector2D(pos_x_[j], pos_y_[j]));
 					}
 				}
 			}
 		}
 	}
 }
+					
 
 void Arena::confirmarImpacto() 
 {
@@ -245,12 +253,16 @@ void Arena::confirmarImpacto()
 		int rival = (i == 0) ? 1 : 0;
 		if (!vivo_[rival]) continue;
 
-		if (Interaccion::procesarImpacto(ataque, combatientes_[rival])) {
+		Embestida* emb = dynamic_cast<Embestida*>(ataque);
+
+		bool impacto = emb
+		? Interaccion::procesarEmbestida(emb, combatientes_[i], combatientes_[rival],pos_x_[i], pos_y_[i],pos_x_[rival], pos_y_[rival])
+			: Interaccion::procesarImpacto(ataque, combatientes_[rival]);
+		if(impacto)
 			std::cout << "Jugador " << rival + 1 << " recibe "
-				<< combatientes_[i]->getTipoAtaque()
-				<< " de " << ataque->getDano()
-				<< " dano. Vida: " << combatientes_[rival]->vida_ << std::endl;
-		}
+			<< combatientes_[i]->getTipoAtaque()
+			<< " de " << ataque->getDano()
+			<< " dano. Vida: " << combatientes_[rival]->vida_ << std::endl;
 	}
 }
 
@@ -265,30 +277,6 @@ void Arena::confirmarFinCombate()
 		}
 	}
 }
-
-void Arena::mantenerLimites(int jugador)
-{
-	float radio = 11.0f;
-
-	if (pos_x_[jugador] < ARENA_MARGEN_X + radio) pos_x_[jugador] = ARENA_MARGEN_X + radio;
-	if (pos_x_[jugador] > ARENA_MARGEN_X + ZONA_DE_COMBATE_X - radio) pos_x_[jugador] = ARENA_MARGEN_X + ZONA_DE_COMBATE_X - radio;
-	if (pos_y_[jugador] < ARENA_MARGEN_Y + radio) pos_y_[jugador] = ARENA_MARGEN_Y + radio;
-	if (pos_y_[jugador] > ARENA_MARGEN_Y + ZONA_DE_COMBATE_Y - radio) pos_y_[jugador] = ARENA_MARGEN_Y + ZONA_DE_COMBATE_Y - radio;
-}
-
-bool Arena::colisionBarrera(float x, float y) 
-{
-	for (int i = 0; i < NUM_DE_BARRERAS; i++) 
-	{
-		if (!barrera_visible_[i]) continue;
-		float dx = x - barrera_x_[i];
-		float dy = y - barrera_y_[i];
-		if (dx > -10 && dx < 10 && dy > -12 && dy < 12)
-			return true;
-	}
-	return false;
-}
-
 void Arena::colocarBarrerasAleatorias() 
 {
 	float margen = 15.0f;

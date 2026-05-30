@@ -1,6 +1,6 @@
 #pragma once
 #include "animal.h"
-#include "onda.h"
+#include "embestida.h"
 
 class Cabra : public Animal
 {
@@ -12,10 +12,10 @@ public:
 		max_casillas_movidas_ = 4;
 		nFrames = 5;
 		especie_ = CABRA;
-		ataque_ = new Onda(7, 100.0f, 0.6f, "../assets/Sprites/menu/selector.png", 16.0f, 0.4f);
+		ataque_ = new Embestida(8, 0.3f, 1.2f,"../assets/Sprites/creditos/botella.png", 20.0f);
 	} 
 
-    const char* getTipoAtaque() const override { return "Onda"; }
+    const char* getTipoAtaque() const override { return "Embestida"; }
 
 	//void actualizar(float dt) override;
 };

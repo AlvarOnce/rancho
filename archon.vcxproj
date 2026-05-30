@@ -137,6 +137,7 @@
     <ClInclude Include="include\creditos.h" />
     <ClInclude Include="include\cursor.h" />
     <ClInclude Include="include\disparo.h" />
+    <ClInclude Include="include\embestida.h" />
     <ClInclude Include="include\estructuras.h" />
     <ClInclude Include="include\ETSIDI.h" />
     <ClInclude Include="include\freeglut.h" />

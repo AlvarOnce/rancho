@@ -4,10 +4,8 @@
 class Golpe : public Ataque {
 
 public:
-    Golpe(int dano, float alcance, float recarga,
-        const char* sprite, float tamanio, float duracion,
-        float r, float g, float b)
-        : Ataque(dano, alcance, recarga, sprite, tamanio, duracion, r, g, b) {}
+    Golpe(int dano, float alcance, float recarga,const char* sprite, float tamanio, float duracion)
+        : Ataque(dano, alcance, recarga, sprite, tamanio, duracion) {}
 
     void mover(float dt) override {
         if (!activo_) return;
