@@ -330,6 +330,11 @@ void Tablero::acomodarGanador(Animal* animalGanador)
     casillas_[casillaDisputada.fila][casillaDisputada.columna]->
     setPosicion({ 141.0f + 11.0f + 22.0f * casillaDisputada.columna, 36.0f + 11.0f + 22.0f * (8 - casillaDisputada.fila) });
 }
+void Tablero::acomodarPerdedor(Animal* animalPerdedor)
+{
+	animalPerdedor->vida_ = 1; // para que no se muera visualmente, aunque ya no tenga vida lógica, así se puede mostrar en el tablero de piezas muertas
+    anadirPiezaMuerta(animalPerdedor);
+}
 
 void Tablero::anadirPiezaMuerta(Animal* pieza)
 {

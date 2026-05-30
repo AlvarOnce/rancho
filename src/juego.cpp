@@ -63,17 +63,22 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
 
     case BATALLA:
 
-        arena_->actualizar(dt);
+        if (!arena_->combateTerminado())
+        {
+            arena_->actualizar(dt);
+        }
 
-        if (arena_->combateTerminado())
+        if (arena_->combateTerminado() && proximo_estado != TABLERO)
         {
             Animal* animalPerdedor = jugadores_[arena_->obtenerPerdedor()]->getAnimalEnCombate();
             Animal* animalGanador = jugadores_[1 - arena_->obtenerPerdedor()]->getAnimalEnCombate();
 
             tablero_->acomodarGanador(animalGanador);
+            tablero_->acomodarPerdedor(animalPerdedor);
 
-            animalPerdedor->vida_ = 0;
-            animalPerdedor->setPosicion(Vector2D(-100, -100));
+            std::cout<< "combate terminado" << std::endl;
+            //animalPerdedor->vida_ = 0;
+            //animalPerdedor->setPosicion(Vector2D(-100, -100));
 
             transicion_.empieza();
             proximo_estado = TABLERO;

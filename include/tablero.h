@@ -80,6 +80,8 @@ public:
 
 	Animal* getAnimalEnCasilla(int fila, int columna) const { return casillas_[fila][columna]; }
     void acomodarGanador(Animal* animalGanador);
+    void acomodarPerdedor(Animal* animalPerdedor);
+
 
 	const Tarjeta* getTarjeta() const { return &tarjeta; }
 
