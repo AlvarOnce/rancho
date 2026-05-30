@@ -88,8 +88,9 @@ public:
 	bool isVivo(int jugador) const { return vivo_[jugador]; }
 	const Animal* getCombatiente(int jugador) const { return combatientes_[jugador]; }
 
-	void setCombatientes(Animal* animal1, Animal* animal2) {
-
+	void setCombatientes(Animal* animal1, Animal* animal2) 
+	{
+		intro_arena = true;
 		combate_terminado_ = false;
 		combatientes_[0] = animal1;
 		combatientes_[1] = animal2;

@@ -63,9 +63,10 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
 
     case BATALLA:
 
-        arena_->actualizar(dt);
+        if (!arena_->combateTerminado())
+            arena_->actualizar(dt);
 
-        if (arena_->combateTerminado())
+        else 
         {
             Animal* animalPerdedor = jugadores_[arena_->obtenerPerdedor()]->getAnimalEnCombate();
             Animal* animalGanador = jugadores_[1 - arena_->obtenerPerdedor()]->getAnimalEnCombate();
@@ -81,7 +82,7 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
         break;
 
     case CREDITOS:
-        if (!transicion_.getActivo())
+        if (!transicion_.getActivo())   
             creditos_->actualizar(25);
         if (creditos_->getFinalizado())
         {
