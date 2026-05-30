@@ -54,7 +54,7 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
             arena_->setCombatientes(jugadores_[0]->getAnimalEnCombate(), jugadores_[1]->getAnimalEnCombate());
         }
 
-        if (tablero_->determinarGanador() != -1)
+        else if (tablero_->determinarGanador() != -1)
         {
             transicion_.empieza();
             proximo_estado = GANADOR;
@@ -218,6 +218,10 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
          if (key == 'd' || key == 'D') tablero_->recibirMovimiento(0, 1, 0);
 		 if (key == 'q' || key == 'Q') tablero_->seleccionarPieza(0,audio_); // Selección para J1
          if (key == 'm' || key == 'M') tablero_->seleccionarPieza(1,audio_); // Selección para J2
+         // Si "tecla" es el char que pulsas:
+         if (key >= '1' && key <= '5') tablero_->procesarTeclaHechizo(key - '0'); // Hechizos para J1
+         if (key >= '6' && key <= '9') tablero_->procesarTeclaHechizo(key - '0'); // Hechizos para J2
+         if (key == '0') tablero_->procesarTeclaHechizo(0); // Hechizo 0 para J2
         break;
 
 		case BATALLA: // movimiento continuo en la batalla, se procesa al pulsar la tecla y al levantarla, hay movimiento mientras se mantenga pulsada la tecla

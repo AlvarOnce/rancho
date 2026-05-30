@@ -10,6 +10,16 @@ const int BANDO_OSCURIDAD = 1;
 const int CASILLA_LUZ = 0;
 const int CASILLA_OSCURA = 1;
 
+enum EstadoHechizo { // para controlar el estado de los hechizos
+    INACTIVO,
+    TELETRANSPORTE_SELECCIONAR_ALIADO,
+    TELETRANSPORTE_SELECCIONAR_DESTINO,
+    CURAR_SELECCIONAR_ALIADO,
+    INTERCAMBIO_SELECCIONAR_ALIADO,
+    INTERCAMBIO_SELECCIONAR_ENEMIGO,
+    ATRAPAR_SELECCIONAR_ENEMIGO
+};
+
 struct Letrero 
 {
     Vector2D posicion = { 550.0f, 65.0f };
@@ -81,4 +91,17 @@ public:
     bool esMovimientoLegal(const Movimiento& m) const;
     void mover(const Movimiento& m);
     //bool hayColisionEnemiga(const Movimiento& m) const;
+
+	// hechizos
+    EstadoHechizo estadoHechizo_ = INACTIVO;
+    int teclaHechizoActivo_ = -1;
+    Animal* primerObjetivoHechizo_ = nullptr;
+    bool hechizoDisponible_[2][5]; // matriz para controlar si un jugador tiene disponible cada hechizo
+
+    EstadoHechizo getEstadoHechizo() const { return estadoHechizo_; }
+
+    void procesarTeclaHechizo(int tecla);
+    void ejecutarPasoHechizo(Animal* casilla, int fila, int col);
+    void finalizarHechizo();
+    void avanzarTurnosAtrapados();
 };

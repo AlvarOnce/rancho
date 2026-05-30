@@ -59,6 +59,9 @@ public:
 	bool intro_tablero_ = true;
 	float xinicial_ = 152;
 
+	bool atrapado_ = false;
+	int ciclos_atrapado_ = 0;
+
 	bool mover(modoJuego modo, int dx, int dy);	//ahora es un bool, si devuelve true se ha movido bien,
 												// si devuelve false, no se ha movido
 	virtual void atacar()						
