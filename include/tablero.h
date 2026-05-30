@@ -28,6 +28,7 @@ class Tablero
     int color_casilla_[Constantes::FILAS_TABLERO][Constantes::COLUMNAS_TABLERO];
     bool hay_colision_ = false;
     int turno_actual_ = BANDO_LUZ;
+	int jugadas_realizadas_ = 0;
     Letrero letreroTurnos_;
 
     Jugador* jugadores_[2];// que recuerda donde estaba al cambiar el turno// para poder acceder a su pieza seleccionada

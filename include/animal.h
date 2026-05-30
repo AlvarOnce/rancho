@@ -19,7 +19,7 @@ class Animal
 {
 public:
 
-	Animal(Casilla casillaInicial, int equipo) : casillaInicial_(casillaInicial), equipo_(equipo) {
+	Animal(Casilla casillaInicial, int equipo) : casillaInicial_(casillaInicial), equipo_(equipo), casilla_actual_(casillaInicial) {
 
 		if (equipo_ == 0)
 		{
@@ -45,6 +45,7 @@ public:
 	Vector2D velocidad_;
 	Casilla casillaInicial_{};
 	especieAnimal especie_;
+	Casilla casilla_actual_{};
 
 	float capaz_{};
 	int equipo_;

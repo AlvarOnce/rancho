@@ -76,13 +76,20 @@ void Tablero::recibirMovimiento(int jugador, int dx, int dy)
             Animal* pieza = jugadorActivo->getPiezaSeleccionada();
             if (pieza->getEnMovimiento()) return;
 
-            bool movimiento_valido = false;
-            movimiento_valido = pieza->mover(TABLERO, dx, dy);
+            // Calculamos el destino correctamente: las filas cambian con 'dy' y las columnas con 'dx'
+            int fila_destino = pieza->casilla_actual_.fila - dy;
+            int columna_destino = pieza->casilla_actual_.columna + dx;
 
-            // Ahora es solo una linea pieza->mover(dx, dy); 
-            // vamos a probar a que el cursor se quede quiero mientras se mueve la pieza
-            // if (movimiento_valido) cursor.mover(dx, dy);
-        }
+            if (casillas_[fila_destino][columna_destino] != nullptr && casillas_[fila_destino][columna_destino]->getEquipo() == pieza->getEquipo()) {
+                bool movimiento_cancelado = pieza->mover(CANCELAR, 0, 0);
+                std::cout << "Movimiento cancelado por colision, pieza sigue en "
+                    << pieza->casilla_actual_.fila << ", " << pieza->casilla_actual_.columna << std::endl;
+            }
+            else {
+                bool movimiento_exitoso = pieza->mover(TABLERO, dx, dy);
+                std::cout << "pieza se mueve a " << fila_destino << ", " << columna_destino << std::endl;
+            }
+            }
     }
 }
 
@@ -169,6 +176,8 @@ void Tablero::seleccionarPieza(int jugador, RenderizadorAudio* audio)
 
                 turno_actual_ = (turno_actual_ == 0) ? 1 : 0;
                 letreroTurnos_.setState(0, turno_actual_);
+                jugadas_realizadas_ += turno_actual_;
+                if (turno_actual_ == 0) std::cout << "Jugada" << jugadas_realizadas_ << std::endl;
             }
             else
             {
