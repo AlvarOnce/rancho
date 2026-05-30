@@ -96,6 +96,7 @@ public:
     EstadoHechizo estadoHechizo_ = INACTIVO;
     int teclaHechizoActivo_ = -1;
     Animal* primerObjetivoHechizo_ = nullptr;
+    bool hechizoDisponible_[2][5]; // matriz para controlar si un jugador tiene disponible cada hechizo
 
     EstadoHechizo getEstadoHechizo() const { return estadoHechizo_; }
 
