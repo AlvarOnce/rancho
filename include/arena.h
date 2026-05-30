@@ -1,6 +1,8 @@
 #pragma once
 #include "animal.h"
 #include "RenderizadorAudio.h"
+#include "embestida.h"
+#include "onda.h"
 
 //dimensiones que ocupa la arena en la pantalla
 const int ANCHO_DE_LA_ARENA = 480;
@@ -61,8 +63,6 @@ class Arena
 	void actualizarBarreras(float dt);
 	void confirmarImpacto();
 	void confirmarFinCombate();
-	void mantenerLimites(int jugador);
-	bool colisionBarrera(float x, float y);
 	void colocarBarrerasAleatorias();
 	
 public:
@@ -88,8 +88,9 @@ public:
 	bool isVivo(int jugador) const { return vivo_[jugador]; }
 	const Animal* getCombatiente(int jugador) const { return combatientes_[jugador]; }
 
-	void setCombatientes(Animal* animal1, Animal* animal2) {
-
+	void setCombatientes(Animal* animal1, Animal* animal2) 
+	{
+		intro_arena = true;
 		combate_terminado_ = false;
 		combatientes_[0] = animal1;
 		combatientes_[1] = animal2;

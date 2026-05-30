@@ -86,7 +86,7 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
         break;
 
     case CREDITOS:
-        if (!transicion_.getActivo())
+        if (!transicion_.getActivo())   
             creditos_->actualizar(25);
         if (creditos_->getFinalizado())
         {
