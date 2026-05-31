@@ -22,7 +22,7 @@ namespace ParametrosAnimales
 
 	inline constexpr int VIDA_CABRA = 6;
 	inline constexpr int VIDA_CERDO =  8;
-	inline constexpr int VIDA_GALLINA = 5;
+	inline constexpr int VIDA_GALLINA = 4;
 	inline constexpr int VIDA_GRANJERO = 10;
 	inline constexpr int VIDA_LLAMA =  9;
 	inline constexpr int VIDA_OVEJA =  6;
@@ -34,12 +34,12 @@ namespace ParametrosAnimales
 	inline constexpr float DURACION_LLAMA =  140.0f;
 	inline constexpr float DURACION_OVEJA =  0.2f;
 
-	inline constexpr int DANO_CABRA = 3;
-	inline constexpr int DANO_CERDO =  2;
-	inline constexpr int DANO_GALLINA = 1;
-	inline constexpr int DANO_GRANJERO = 2;
-	inline constexpr int DANO_LLAMA =  2;
-	inline constexpr int DANO_OVEJA =  2;
+	inline constexpr int DANO_CABRA = 4;
+	inline constexpr int DANO_CERDO =  3;
+	inline constexpr int DANO_GALLINA = 2;
+	inline constexpr int DANO_GRANJERO = 3;
+	inline constexpr int DANO_LLAMA =  3;
+	inline constexpr int DANO_OVEJA =  3;
 }
 
 struct Casilla {

@@ -32,19 +32,19 @@ protected:
 
 public:
 
-	Animal(Casilla casillaInicial, int equipo) : casillaInicial_(casillaInicial), equipo_(equipo) {
+	Animal(Casilla casillaInicial, int equipo) : casilla_inicial_(casillaInicial), equipo_(equipo), casilla_actual_(casillaInicial) {
 
 		if (equipo_ == 0)
 		{
-			posicion_ = { -44.0f - 15.0f * casillaInicial_.fila + 11.0f + 44.0f * casillaInicial_.columna, 36.0f + 176.0f - (22.0f * casillaInicial_.fila) + 11.0f };
-			capaz_ = -3.0f + 0.01f * casillaInicial_.fila + 0.01f * casillaInicial_.columna;
+			posicion_ = { -44.0f - 15.0f * casilla_inicial_.fila + 11.0f + 44.0f * casilla_inicial_.columna, 36.0f + 176.0f - (22.0f * casilla_inicial_.fila) + 11.0f };
+			capaz_ = -3.0f + 0.01f * casilla_inicial_.fila + 0.01f * casilla_inicial_.columna;
 			setState(0, 0);
 		}
 
 		if (equipo_ == 1)
 		{
-			posicion_ = { 480.0f + 15.0f * casillaInicial_.fila - 11.0f + 44.0f * (casillaInicial_.columna - 7), 36.0f + 176.0f - (22.0f * casillaInicial_.fila) + 11.0f };
-			capaz_ = -3.5f + 0.01f * casillaInicial_.fila + 0.01f * casillaInicial_.columna;
+			posicion_ = { 480.0f + 15.0f * casilla_inicial_.fila - 11.0f + 44.0f * (casilla_inicial_.columna - 7), 36.0f + 176.0f - (22.0f * casilla_inicial_.fila) + 11.0f };
+			capaz_ = -3.5f + 0.01f * casilla_inicial_.fila + 0.01f * casilla_inicial_.columna;
 			//480.0f + 44.0f + 15.0f * casillaInicial_.fila - 11.0f 
 			setState(0, 1);
 		}
@@ -53,7 +53,8 @@ public:
 
 	virtual ~Animal() {}
 
-	Casilla casillaInicial_{};
+	Casilla casilla_inicial_{};
+	Casilla casilla_actual_;
 
 	Ataque* ataque_;
 	float avanzando_casilla_ = 0;	// para saber cuando ha terminado de moverse
