@@ -29,7 +29,7 @@ protected:
 
 public:
 
-	Animal(Casilla casillaInicial, int equipo) : casillaInicial_(casillaInicial), equipo_(equipo) {
+	Animal(Casilla casillaInicial, int equipo) : casillaInicial_(casillaInicial), equipo_(equipo), casilla_actual_(casillaInicial) {
 
 		if (equipo_ == 0)
 		{
@@ -51,6 +51,8 @@ public:
 	virtual ~Animal() {}
 
 	Casilla casillaInicial_{};
+	especieAnimal especie_;
+	Casilla casilla_actual_{};
 
 	Ataque* ataque_;
 	float avanzando_casilla_ = 0;	// para saber cuando ha terminado de moverse
