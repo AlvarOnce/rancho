@@ -1,0 +1,19 @@
+Eventos importantes:
+
+15/02/2026 - Creación del repositorio "archon" en github.
+
+07/03/2026 - Cambio de nombre del repositorio a "rancho".
+
+07/03/2026 - Primera ventana mostrando imagen y música (freeglut.h).
+
+17/03/2026 - Establecimiento del GitFlow Workflow para la creación de ramas.
+
+28/03/2026 - Creación del coordinador del Juego
+
+04/05/2026 - Creación de la memoria del proyecto
+
+13/05/2026 - Actualización del repositorio a Visual Studio 2026
+
+29/05/2026 - realease/v0.1: Menu, Tablero y arena funcionando en su forma más básica con imagen y sonido.
+
+31/05/2026 - realease/v0.2: Animación y sonido de animales y ataques en tablero y batalla. Hechizos del granjero.

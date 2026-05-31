@@ -1,13 +1,16 @@
 #pragma once
 #include "animal.h"
 #include "RenderizadorAudio.h"
+#include "embestida.h"
+#include "onda.h"
+
 //dimensiones que ocupa la arena en la pantalla
 const int ANCHO_DE_LA_ARENA = 480;
 const int ALTO_DE_LA_ARENA = 270;
 
 //dimensiones de la zona de combate
-const int ZONA_DE_COMBATE_X = 198;
-const int ZONA_DE_COMBATE_Y = 198;
+const int ZONA_DE_COMBATE_X = 328;
+const int ZONA_DE_COMBATE_Y = 246;
 
 //calculo de margenes de la arena
 const float ARENA_MARGEN_X = (ANCHO_DE_LA_ARENA - ZONA_DE_COMBATE_X) / 2.0f;
@@ -26,12 +29,11 @@ const int ABAJO = 1;
 const int IZQUIERDA = 2;
 const int DERECHA = 3;
 
-const int ATAQUE_TIPO_DISPARO = 1;
-const int ATAQUE_TIPO_GOLPE = 2;
-const int ATAQUE_EN_AREA = 3;
-
 class Arena
 {	
+	bool intro_arena = true;
+	RenderizadorAudio* audio_ = nullptr;
+
 	Animal* combatientes_[2]{}; // si quereis Bnado Luz [0], [1] para el otro bando.
 	float pos_x_[2] = {};
 	float pos_y_[2] = {};
@@ -46,63 +48,56 @@ class Arena
 	bool movimiento_izq_[2] = {};
 	bool movimiento_dch_[2] = {};
 
-	float disparo_x_[2] = {};
-	float disparo_y_[2] = {};
-	float direccion_disparo_x_[2] = {};
-	float direccion_disparo_y_[2] = {};
-	bool disparo_disparado_[2] = {}; // xd el nombre.
-
 	float recarga_de_ataque_[2] = {};//tiempo que queda para poder atacar 
-	float recarga_maxima_de_ataque_[2] = {};//tiempo de racarga total de cada pieza
 
 	float barrera_x_[NUM_DE_BARRERAS] = {};
 	float barrera_y_[NUM_DE_BARRERAS] = {};
 	bool barrera_visible_[NUM_DE_BARRERAS] = {};
 	float contador_ciclo_barrera_[8] = {};
 	float ciclo_maximo_barrera_[8] = {};
-	int ganador_ = {};
-	bool combate_terminado_;
 
-	//atributos de ataque a melee
-	bool ataque_activo_[2] = {};
-	float ataque_x_[2] = {};
-	float ataque_y_[2] = {};
-	float ataque_visible_tiempo_[2] = {};
-	inline static const float DURACION_ATAQUE = 0.2f; 
+	int ganador_ = -1;
 
 	void actualizarMovimiento(float dt);
-	void actualizarDisparo(float dt);
+	void actualizarAtaques(float dt);
 	void actualizarRecarga(float dt);
 	void actualizarBarreras(float dt);
 	void confirmarImpacto();
 	void confirmarFinCombate();
-	void mantenerLimites(int jugador);
-	bool colisionBarrera(float x, float y);
 	void colocarBarrerasAleatorias();
-	void actualizarAtaque(float dt);
 	
 public:
+
+	bool combate_terminado_ = false;
 
 	Arena();
 	~Arena();
 
-	void inicioCombate(Animal* pieza_luz, Animal* pieza_oscuridad);
+	void inicioCombate();
 	void actualizar(float dt);
 	void recibirMovimiento(int jugador, int movimiento, bool tecla_pulsada);
 	bool recibirAtaque(int jugador, RenderizadorAudio* audio);
 	int obtenerPerdedor() const; 
-	bool combateTerminado() const;
-	int ganadorCombate() const;
-
+	bool combateTerminado() const { return combate_terminado_; }
+	int ganadorCombate() const { return ganador_;};
 	bool isBarreraVisible(int indice) const { return barrera_visible_[indice]; }
 	float getBarreraX(int indice) const { return barrera_x_[indice]; }
 	float getBarreraY(int indice) const { return barrera_y_[indice]; }
 
-	bool isAtaqueActivo(int jugador) const { return ataque_activo_[jugador]; }
-	float getAtaqueX(int jugador) const { return ataque_x_[jugador]; }
-	float getAtaqueY(int jugador) const { return ataque_y_[jugador]; }
+	
 
 	bool isVivo(int jugador) const { return vivo_[jugador]; }
 	const Animal* getCombatiente(int jugador) const { return combatientes_[jugador]; }
+
+	void setCombatientes(Animal* animal1, Animal* animal2) 
+	{
+		intro_arena = true;
+		combate_terminado_ = false;
+		combatientes_[0] = animal1;
+		combatientes_[1] = animal2;
+	}
+	const Ataque* getAtaqueObjeto(int i) const {
+		return combatientes_[i] ? combatientes_[i]->getAtaque() : nullptr;
+	}
 };
 

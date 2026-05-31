@@ -3,46 +3,56 @@
 #include <vector>
 #include "ETSIDI.h"
 #include "estructuras.h"
+#include "ataque.h"
 
 enum modoJuego 
 {
 	TABLERO, BATALLA, CANCELAR
 };
 
-enum tipoAnimacion 
+enum especieAnimal
 {
-	QUIETO, CAMINAR, ATACAR,
-};
-
-enum especieAnimal 
-{
-	CABRA, CERDO, GALLINA, OVEJA, GRANJERO
+	CABRA, CERDO, GALLINA, GRANJERO, LLAMA, OVEJA
 };
 
 class Animal
 {
+protected:
+	// Lógica
+	Vector2D posicion_;
+	Vector2D velocidad_;
+	especieAnimal especie_;
+
+	float capaz_{};
+	int equipo_;
+	int vida_;
+
 public:
 
-	Animal(float posx, float posy, float capa, int vida, float xinicial, int equipo)
-		: posicion_(posx, posy), capaz_(capa), vida_(vida), xinicial_(xinicial), equipo_(equipo) {
+	Animal(Casilla casillaInicial, int equipo) : casillaInicial_(casillaInicial), equipo_(equipo) {
 
 		if (equipo_ == 0)
+		{
+			posicion_ = { -44.0f - 15.0f * casillaInicial_.fila + 11.0f + 44.0f * casillaInicial_.columna, 36.0f + 176.0f - (22.0f * casillaInicial_.fila) + 11.0f };
+			capaz_ = -3.0f + 0.01f * casillaInicial_.fila + 0.01f * casillaInicial_.columna;
 			setState(0, 0);
-		else if (equipo_ == 1)
-			setState(0, 1);
+		}
 
+		if (equipo_ == 1)
+		{
+			posicion_ = { 480.0f + 15.0f * casillaInicial_.fila - 11.0f + 44.0f * (casillaInicial_.columna - 7), 36.0f + 176.0f - (22.0f * casillaInicial_.fila) + 11.0f };
+			capaz_ = -3.5f + 0.01f * casillaInicial_.fila + 0.01f * casillaInicial_.columna;
+			//480.0f + 44.0f + 15.0f * casillaInicial_.fila - 11.0f 
+			setState(0, 1);
+		}
+		ataque_ = nullptr;
 	}
 
 	virtual ~Animal() {}
 
-	// Lógica
-	Vector2D posicion_;
-	Vector2D velocidad_;
+	Casilla casillaInicial_{};
 
-	float capaz_;
-	int equipo_;
-	int vida_;
-	int ataque_{ 0 };
+	Ataque* ataque_;
 	float avanzando_casilla_ = 0;	// para saber cuando ha terminado de moverse
 	bool en_movimiento_ = false;	// para bloquear el teclado si se esta moviendo
 	int casillas_movidas_x_ = 0;
@@ -52,10 +62,9 @@ public:
 	bool intro_tablero_ = true;
 	float xinicial_ = 152;
 
-	int casillaInicial_[2] = { 0,0 };
+	bool atrapado_ = false;
+	int ciclos_atrapado_ = 0;
 
-	especieAnimal especie_;
-	
 	bool mover(modoJuego modo, int dx, int dy);	//ahora es un bool, si devuelve true se ha movido bien,
 												// si devuelve false, no se ha movido
 	virtual void atacar()						
@@ -63,6 +72,8 @@ public:
 		std::cout << "Soy un animal genérico, mi ataque no está definido.";
 	}
 
+	float getVida() const { return vida_; }
+	float getEquipo() const { return equipo_; }
 	float getPosX() const { return posicion_.x; }
 	float getPosY() const { return posicion_.y; }
 	float getVelX() const { return velocidad_.x; }
@@ -77,13 +88,14 @@ public:
 
 	especieAnimal getEspecie() const { return especie_; }
 	bool getVivo() const { return vida_ > 0; }
-	int getEquipo() const { return equipo_; }
 
 //protected: // Solo los hijos animales pueden modificar sus posiciones
 
+	void setVida(const int vida) { vida_ = vida; }
 	void setPosicion(const Vector2D& pos) { posicion_ = pos; }
 	void setPosX(float posx) { posicion_.x  = posx; }
 	void setPosy(float posy) { posicion_.y  = posy; }
+	void setCapaz(float capaz) { capaz_ = capaz; }
 	void setVelocidad(const Vector2D& vel) { velocidad_ = vel; }
 	void setVelX(float velx) { velocidad_.x = velx; } 
 	void setVelY(float vely) { velocidad_.y = vely; }
@@ -101,8 +113,16 @@ public:
 	void setState(int frameX, int frameY);
 	void animar(float dt);
 
-	virtual void actualizar(float dt);
+	virtual void actualizarEnTablero(float dt);
+	virtual void actualizarEnBatalla(float dt);
 
 	// funcion virtual
 	virtual std::vector<Movimiento> movimientosPosibles() const; 
+	// ATAQUE
+	Ataque* getAtaque() const { return ataque_; }
+	int   getDanoAtaque()    const { return ataque_ ? ataque_->getDano() : 0; }
+	float getAlcanceAtaque() const { return ataque_ ? ataque_->getAlcance() : 0.f; }
+	float getRecargaAtaque() const { return ataque_ ? ataque_->getRecarga() : 0.f; }
+	virtual const char* getTipoAtaque() const { return "No estoy definido"; };
+	void recibirDano(int dano) { vida_ -= dano; }
 };

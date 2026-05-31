@@ -1,6 +1,7 @@
 #include "renderizador.h"
 #include <iostream>
 #include <string>
+#include <cmath>
 
 // LIMPIAR PANTALLA
 void Renderizador::limpiarPantalla()
@@ -14,24 +15,47 @@ void Renderizador::limpiarPantalla()
 void Renderizador::dibujar(const Animal* animal) const
 {
     if (!animal || !animal->getVivo()) return;
+
 	std::string ruta_sprite;
     switch (animal->getEspecie()) {
+
         case CABRA:
-            ruta_sprite = "../assets/Sprites/cabra/cabraSpritesheet.png";
+            if (animal->getEquipo() == 0) ruta_sprite = "../assets/Sprites/cabra/cabraSpritesheet.png";
+            else ruta_sprite = "../assets/Sprites/cabra/cabraSpritesheet1.png";
             break;
+
         case GALLINA:
-            ruta_sprite = "../assets/Sprites/gallina/gallinaSpritesheet.png";
+            if (animal->getEquipo() == 0) ruta_sprite = "../assets/Sprites/gallina/gallinaSpritesheet.png";
+            else ruta_sprite = "../assets/Sprites/gallina/gallinaSpritesheet1.png";
             break;
+
         case GRANJERO:
-            ruta_sprite = "../assets/Sprites/granjero/granjeroSpritesheet.png";
+            if(animal->getEquipo() == 0) ruta_sprite = "../assets/Sprites/granjero/granjeroSpritesheet.png";
+            else ruta_sprite = "../assets/Sprites/granjero/granjeroSpritesheet1.png";
             break;
+
+        case OVEJA:
+            if (animal->getEquipo() == 0) ruta_sprite = "../assets/Sprites/oveja/ovejaSpritesheet.png";
+            else ruta_sprite = "../assets/Sprites/oveja/ovejaSpritesheet1.png";
+            break;
+
+        case CERDO:
+            if (animal->getEquipo() == 0) ruta_sprite = "../assets/Sprites/cerdo/cerdoSpritesheet.png";
+            else ruta_sprite = "../assets/Sprites/cerdo/cerdoSpritesheet1.png";
+            break;
+
+        case LLAMA:
+            if (animal->getEquipo() == 0) ruta_sprite = "../assets/Sprites/llama/llamaSpritesheet.png";
+            else ruta_sprite = "../assets/Sprites/llama/llamaSpritesheet1.png";
+            break;
+
         default:
             ruta_sprite = "../assets/Sprites/gallina/gallinaSpritesheet.png";
             break;
     }
 
     dibujarSprite(
-        ruta_sprite.c_str(),
+       ruta_sprite.c_str(),
         256, 128,
         animal->getPosX(), animal->getPosY(),
         animal->getCapaz(),
@@ -55,44 +79,54 @@ void Renderizador::dibujar(const Tablero* tablero) const
 	// referencias constantes para no modificar los objetos originales
     const Cursor& cursorActivo = tablero->getCursorActivo();
     const Jugador* jugadorActivo = tablero->getJugadorActivo();
-
+    
     int filaCursor = cursorActivo.getFila();
     int colCursor = cursorActivo.getColumna();
-
+    
     const Animal* animalEnCursor = tablero->getAnimalEnCasilla(filaCursor, colCursor);
     bool tienePiezaAgarrada = jugadorActivo->tienePiezaAgarrada();
-
-    if (animalEnCursor != nullptr || tienePiezaAgarrada) {
+    if (tablero->getEstadoHechizo() == INACTIVO) // para que no aparezcan mientras se usa un hechizo
+    {
+        if (animalEnCursor != nullptr || tienePiezaAgarrada) {
 
         int maxMovimientos = 0;
         int equipoFicha = -1;
+        float deltaTamanoTarjeta = 4 * sin(2 * tablero->angulo);
 
         if (animalEnCursor != nullptr) {
             maxMovimientos = animalEnCursor->getMaxCasillasMovidas();
             equipoFicha = animalEnCursor->getEquipo();
+
+            // dibujar tarjeta de animal en cursor
+         
+            dibujarSprite("../assets/Sprites/tarjetas/tarjetas.png", 256 + deltaTamanoTarjeta, 512 + deltaTamanoTarjeta/2.0f, 69 + (342* equipoFicha), 32, -5.5, 8, 2, equipoFicha, animalEnCursor->getEspecie());
         }
 
         if (tienePiezaAgarrada) {
             const Animal* piezaSeleccionada = jugadorActivo->getPiezaSeleccionada();
             maxMovimientos = piezaSeleccionada->getMaxCasillasMovidas();
             equipoFicha = piezaSeleccionada->getEquipo();
+
+            // dibujar tarjeta de animal seleccionado
+            dibujarSprite("../assets/Sprites/tarjetas/tarjetas.png", 256 + deltaTamanoTarjeta, 512 + deltaTamanoTarjeta/2.0f, 69 + (342 * equipoFicha), 32, -5.5, 8, 2, equipoFicha, piezaSeleccionada->getEspecie());
         }
 
-        for (int i = 0; i < Constantes::FILAS_TABLERO; i++) {
-            for (int j = 0; j < Constantes::COLUMNAS_TABLERO; j++) {
+            for (int i = 0; i < Constantes::FILAS_TABLERO; i++) {
+                for (int j = 0; j < Constantes::COLUMNAS_TABLERO; j++) {
 
-                if (abs(i - filaCursor) + abs(j - colCursor) <= maxMovimientos) // solo si es alcanzable
-                {
-                    if (equipoFicha == jugadorActivo->getEquipo()) // solo si es mi animal
+                    if (abs(i - filaCursor) + abs(j - colCursor) <= maxMovimientos) // solo si es alcanzable
                     {
-                        const Animal* animalDestino = tablero->getAnimalEnCasilla(i, j);
-
-                        // EVALUACION DE CORTOCIRCUITO: solo si esta vacia o animal contrario
-                        if (animalDestino == nullptr || animalDestino->getEquipo() != jugadorActivo->getEquipo())
+                        if (equipoFicha == jugadorActivo->getEquipo()) // solo si es mi animal
                         {
-                            int posPosibleX = 141 + 11 + 22 * j;
-                            int posPosibleY = 36 + 11 + 22 * (8 - i);
-                            dibujarSprite("../assets/Sprites/tablero/casillaPosible.png", 32, 32, posPosibleX, posPosibleY, -2.5);
+                            const Animal* animalDestino = tablero->getAnimalEnCasilla(i, j);
+
+                            // EVALUACION DE CORTOCIRCUITO: solo si esta vacia o animal contrario
+                            if (animalDestino == nullptr || animalDestino->getEquipo() != jugadorActivo->getEquipo())
+                            {
+                                int posPosibleX = 141 + 11 + 22 * j;
+                                int posPosibleY = 36 + 11 + 22 * (8 - i);
+                                dibujarSprite("../assets/Sprites/tablero/casillaPosible.png", 32, 32, posPosibleX, posPosibleY, -2.5);
+                            }
                         }
                     }
                 }
@@ -109,6 +143,11 @@ void Renderizador::dibujar(const Tablero* tablero) const
             }
         }
     }
+    
+    // DIBUJAR LOS ANIMALES MUERTOS
+    for (Animal* muerto : tablero->getPiezasMuertas()) {
+        this->dibujar(muerto); 
+    }
 
     // DIBUJAR LA PIEZA AGARRADA
     if (jugadorActivo->tienePiezaAgarrada()) {
@@ -117,16 +156,11 @@ void Renderizador::dibujar(const Tablero* tablero) const
 
     // DIBUJAR EL CURSOR
     // falta que haya dos cursores de diferentes colores, uno para cada jugador
-    dibujarSprite("../assets/Sprites/tablero/cursor.png", 32, 32, cursorActivo.getPosX(), cursorActivo.getPosY(), -5.0f);
+    dibujarSprite("../assets/Sprites/tablero/cursor.png", 64, 32, cursorActivo.getPosX(), cursorActivo.getPosY(), -5.0f,1,2, cursorActivo.getIdJugador(),0);
 
-    // DIBUJAR LA TARJETA ID
-    if (cursorActivo.getPosX() > 150 && cursorActivo.getPosX() < 170) {
-        const Tarjeta* tarjeta = tablero->getTarjeta();
-        if (tarjeta != nullptr) {
-            // Tarjeta::dibujar ahora está aquí
-            dibujarSprite("../assets/Sprites/tablero/tarjetasID.png", 128, 64, tarjeta->IZQ, tarjeta->DER, -5);
-        }
-    }
+    // DIBUJAR AL PATO jajaja
+    dibujarSprite("../assets/Sprites/tablero/pato.png", 128, 64, tablero->pato.posicion.x, tablero->pato.posicion.y, -5.0f, 2, 4, tablero->pato.frameActualX_, tablero->pato.frameActualY_);
+
 }
 
 //MENU
@@ -223,49 +257,55 @@ void Renderizador::dibujar(const Transicion* transicion) const
 
 void Renderizador::dibujar(const Arena* arena) const
 {
-    // DIBUJAR FONDO DE LA ARENA
-    dibujarArena(ARENA_MARGEN_X, ARENA_MARGEN_Y, ZONA_DE_COMBATE_X, ZONA_DE_COMBATE_Y, 0.1f, 0.2f, 0.6f, -5.0f);
+ 
+    dibujarSprite("../assets/Sprites/batalla/oficial.png", 512, 512, 480 / 2, 270 / 2, -1);
+    //dibujarArena(ARENA_MARGEN_X, ARENA_MARGEN_Y, ZONA_DE_COMBATE_X, ZONA_DE_COMBATE_Y, 0.1f, 0.2f, 0.6f, -5.0f);
 
     // DIBUJAR BARRERAS
     for (int i = 0; i < NUM_DE_BARRERAS; i++)
     {
         if (arena->isBarreraVisible(i))
         {
-            dibujarBarreras(arena->getBarreraX(i) - 7, arena->getBarreraY(i) - 9, 14, 18, 0.6f, 0.6f, 0.6f, -3.0f);
-            dibujarBarreras(arena->getBarreraX(i) - 8, arena->getBarreraY(i) - 11, 16, 4, 0.8f, 0.8f, 0.8f, 0.1f);
+            dibujarSprite("../assets/Sprites/batalla/obstaculos.png", 32, 32, arena->getBarreraX(i), arena->getBarreraY(i), -3);
+           //dibujarBarreras(arena->getBarreraX(i) - 7, arena->getBarreraY(i) - 9, 14, 18, 0.6f, 0.6f, 0.6f, -3.0f);
+           //dibujarBarreras(arena->getBarreraX(i) - 8, arena->getBarreraY(i) - 11, 16, 4, 0.8f, 0.8f, 0.8f, 0.1f);
         }
         else
         {
-            dibujarBarreras(arena->getBarreraX(i) - 6, arena->getBarreraY(i) - 11, 12, 3, 0.2f, 0.2f, 0.2f, -0.9f);
+            //dibujarBarreras(arena->getBarreraX(i) - 6, arena->getBarreraY(i) - 11, 12, 3, 0.2f, 0.2f, 0.2f, -0.9f);
+            //dibujarSprite("../assets/Sprites/batalla/obstaculos.png", 32, 32, arena->getBarreraX(i) - 7, arena->getBarreraY(i) - 9, -3);
         }
     }
 
     // DIBUJAR ATAQUES ACTIVOS
     for (int i = 0; i < 2; i++) {
-        if (arena->isAtaqueActivo(i)) {
-            dibujarBarreras(arena->getAtaqueX(i) - 4, arena->getAtaqueY(i) - 8, 8, 16, 0.55f, 0.27f, 0.07f, -2.0f);
-        }
+        const Ataque* atq = arena->getAtaqueObjeto(i);
+        
+        if (atq && atq->isActivo()) 
+            dibujarSprite(atq->getSprite(), atq->getTamanio(), atq->getTamanio(),atq->getX(), atq->getY(),-4.40f,1, 1, 0, 0,true);
+  
     }
 
     // DIBUJAR COMBATIENTES
-    glDisable(GL_DEPTH_TEST); // esto de openGL hay que ver si es necesario o no, pero por lo menos ahora está aquí en renderizador
+    for (int i = 0; i < 2; i++) 
+        if (arena->isVivo(i)) 
+            if (arena->getCombatiente(i) != nullptr) 
+                this->dibujar(arena->getCombatiente(i));
 
-    for (int i = 0; i < 2; i++) {
-        if (arena->isVivo(i)) {
-            const Animal* combatiente = arena->getCombatiente(i);
+    // DIBUJAR VIDA de combatientes
+    dibujarSprite("../assets/Sprites/vida/vida.png", 512, 128, 49, 210, -3,1,16, arena->getCombatiente(0)->getVida(), 0);
+    dibujarSprite("../assets/Sprites/vida/vida.png", 512, 128, 431, 210, -3, 1, 16, arena->getCombatiente(1)->getVida(), 0);
 
-            if (combatiente != nullptr) {
-                dibujarSprite("../assets/Sprites/gallina/gallinaSpritesheet.png",
-                    256, 32, combatiente->getPosX(), combatiente->getPosY(), -4.5f, 1, 8,
-                    combatiente->getFrameActualX(),
-                    combatiente->getFrameActualY(),
-                    true
-                );
-            }
-        }
-    }
+    // DIBUJAR ATAQUE de combatientes
+    dibujarSprite("../assets/Sprites/vida/ataque.png", 512, 128, 22, 210, -3, 1, 16, arena->getCombatiente(0)->getRecargaAtaque(), 0);
+    dibujarSprite("../assets/Sprites/vida/ataque.png", 512, 128, 460, 210, -3, 1, 16, arena->getCombatiente(1)->getRecargaAtaque(), 0);
+}
 
-    glEnable(GL_DEPTH_TEST);
+void Renderizador::dibujar(const Ganador* ganador) const
+{
+    // DIBUJAR FONDO Y LETRERO DE TURNOS
+    dibujarSprite("../assets/Sprites/pantallaGanador/ganador.png", 512, 512, 480 / 2, 270 / 2, -1);
+
 }
 
 // FUNCION GENERAL PARA DIBUJAR UN SPRITE, SE USA PARA TODO
@@ -313,42 +353,5 @@ void Renderizador::dibujarSprite(const char* rutaImagen, float ancho, float alto
 
     //glEnable(GL_LIGHTING);
     glDisable(GL_TEXTURE_2D);   
-}
-
-// FUNCIONES ESPECÍFICAS PARA DIBUJAR ELEMENTOS DE LA ARENA
-void Renderizador::dibujarArena(float x, float y, float ancho, float alto, float r, float g, float b, float profundidad) const
-{
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_LIGHTING);
-    glColor3f(r, g, b);
-
-    glPushMatrix();
-    glTranslatef(x + ancho / 2, y + alto / 2, profundidad);
-    glBegin(GL_POLYGON);
-        glVertex3f(-ancho / 2, -alto / 2, 0);
-        glVertex3f(ancho / 2, -alto / 2, 0);
-        glVertex3f(ancho / 2, alto / 2, 0);
-        glVertex3f(-ancho / 2, alto / 2, 0);
-    glEnd();
-    glPopMatrix();
-}
-
-void Renderizador::dibujarBarreras(float x, float y, float ancho, float alto, float r, float g, float b, float profundidad) const
-{
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_LIGHTING);
-    glColor3f(r, g, b);
-
-    glPushMatrix();
-    glTranslatef(x + ancho / 2, y + alto / 2, profundidad);
-    glBegin(GL_POLYGON);
-        glVertex3f(-ancho / 2, -alto / 2, 0);
-        glVertex3f(ancho / 2, -alto / 2, 0);
-        glVertex3f(ancho / 2, alto / 2, 0);
-        glVertex3f(-ancho / 2, alto / 2, 0);
-    glEnd();
-    glPopMatrix();
-    glEnable(GL_DEPTH_TEST);
 }
 

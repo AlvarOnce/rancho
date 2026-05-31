@@ -25,10 +25,11 @@ class Juego
     Jugador* jugadores_[2];
     Creditos* creditos_;
     Controles* controles_;
+    Ganador* ganador_;
 
 public:
 
-    enum Estado { MENU, TABLERO, BATALLA, CREDITOS, CONTROLES};
+    enum Estado { MENU, TABLERO, BATALLA, CREDITOS, CONTROLES, GANADOR};
     Estado estado_actual;
     Estado proximo_estado;
 

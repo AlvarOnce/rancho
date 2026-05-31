@@ -1,17 +1,21 @@
 #pragma once
 #include "animal.h"
+#include "embestida.h"
 
-class Cabra: public Animal 
+class Cabra : public Animal
 {
 public:
 
-	Cabra(float posx,float posy, float capa, int vida, float xinicial, int equipo ) 
-		: Animal(posx, posy, capa, vida, xinicial, equipo)
+	Cabra(Casilla casillaInicial, int equipo) : Animal(casillaInicial, equipo)
 	{
+		vida_ = 10;
 		max_casillas_movidas_ = 4;
 		nFrames = 5;
 		especie_ = CABRA;
-	}
+		ataque_ = new Embestida(8, 0.3f, 1.2f,"../assets/Sprites/creditos/botella.png", 20.0f);
+	} 
+
+    const char* getTipoAtaque() const override { return "Embestida"; }
 
 	//void actualizar(float dt) override;
 };

@@ -13,6 +13,7 @@ Juego::Juego()
     renderizador_ = new Renderizador();
     creditos_ = new Creditos();
     controles_ = new Controles();
+    ganador_ = new Ganador();
     audio_ = new RenderizadorAudio();
 
     for (int i = 0; i < 2; i++)
@@ -29,6 +30,7 @@ Juego::~Juego()
     delete renderizador_;
 	delete creditos_;
     delete controles_;
+    delete ganador_;
     for (int i = 0; i < 2; i++)
         delete jugadores_[i];
 }
@@ -45,31 +47,46 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
         tablero_->actualizar(dt);
         if (tablero_->enBatalla)
         {
-            arena_->inicioCombate(tablero_->animalesEnBatalla[0], tablero_->animalesEnBatalla[1]);
             transicion_.empieza();
             proximo_estado = BATALLA;
             tablero_->enBatalla = false;
+
+            arena_->setCombatientes(jugadores_[0]->getAnimalEnCombate(), jugadores_[1]->getAnimalEnCombate());
+        }
+
+        else if (tablero_->determinarGanador() != -1)
+        {
+            transicion_.empieza();
+            proximo_estado = GANADOR;
         }
         break;
 
     case BATALLA:
-        arena_->actualizar(dt);
-        if (arena_->combateTerminado())
+
+        if (!arena_->combateTerminado())
         {
-            int perdedor = arena_->obtenerPerdedor();
-            Animal* animalPerdedor = tablero_->animalesEnBatalla[perdedor];
-        
-  
-            animalPerdedor->vida_ = 0;
-            animalPerdedor->setPosicion(Vector2D(-100, -100));
-      
+            arena_->actualizar(dt);
+        }
+
+        else if (proximo_estado != TABLERO)
+        {
+            Animal* animalPerdedor = jugadores_[arena_->obtenerPerdedor()]->getAnimalEnCombate();
+            Animal* animalGanador = jugadores_[1 - arena_->obtenerPerdedor()]->getAnimalEnCombate();
+
+            tablero_->acomodarGanador(animalGanador);
+            tablero_->acomodarPerdedor(animalPerdedor);
+
+            std::cout<< "combate terminado" << std::endl;
+            //animalPerdedor->setVida_(0);
+            //animalPerdedor->setPosicion(Vector2D(-100, -100));
+
             transicion_.empieza();
             proximo_estado = TABLERO;
         }
         break;
 
     case CREDITOS:
-        if (!transicion_.getActivo())
+        if (!transicion_.getActivo())   
             creditos_->actualizar(25);
         if (creditos_->getFinalizado())
         {
@@ -86,6 +103,11 @@ void Juego::actualizarLogica(float dt) // FASE 1: matemáticas, colisiones y reg
             transicion_.empieza();
             proximo_estado = MENU;
         }
+        break;
+
+    case GANADOR:
+
+
         break;
     }
 
@@ -110,28 +132,33 @@ void Juego::renderizarGraficos() // FASE 2: pintar en pantalla
 {   
     renderizador_->limpiarPantalla();
 
-    switch (estado_actual) 
+    switch (estado_actual)
     {
     case MENU:
-		renderizador_->dibujar(menu_);
+        renderizador_->dibujar(menu_);
         break;
 
-    case TABLERO:  
-		renderizador_->dibujar(tablero_);
+    case TABLERO:
+        renderizador_->dibujar(tablero_);
         break;
 
     case BATALLA:
-		renderizador_->dibujar(arena_);
+        renderizador_->dibujar(arena_);
         break;
 
     case CREDITOS:
-		renderizador_->dibujar(creditos_);
+        renderizador_->dibujar(creditos_);
         break;
 
     case CONTROLES:
         renderizador_->dibujar(controles_);
         break;
+
+    case GANADOR:
+        renderizador_->dibujar(ganador_);
+        break;
     }
+
     renderizador_->dibujar(&transicion_);
 }
 
@@ -141,9 +168,10 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
 
 	if (key == 'b' || key == 'B') // temporalmente, para saltar el menú y probar la batalla directamente
     {
-        arena_->inicioCombate(jugadores_[0]->getAnimalEnCombate(), jugadores_[1]->getAnimalEnCombate());
         transicion_.empieza();
         proximo_estado = BATALLA;
+        arena_->setCombatientes(jugadores_[0]->getAnimalEnCombate(), jugadores_[1]->getAnimalEnCombate());
+        arena_->inicioCombate();
         return;
     }
 
@@ -152,7 +180,7 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
         case MENU:
 
         if (key == 13) { // Intro para elegir una opción
-
+            audio_->eleccionMenu();
             switch (menu_->getOpcionActual()) {
 
             case Selector::JUGAR:
@@ -194,6 +222,10 @@ void Juego::procesarTeclaPresionada(unsigned char key) // Hacer que tecla solo s
          if (key == 'd' || key == 'D') tablero_->recibirMovimiento(0, 1, 0);
 		 if (key == 'q' || key == 'Q') tablero_->seleccionarPieza(0,audio_); // Selección para J1
          if (key == 'm' || key == 'M') tablero_->seleccionarPieza(1,audio_); // Selección para J2
+         // Si "tecla" es el char que pulsas:
+         if (key >= '1' && key <= '5') tablero_->procesarTeclaHechizo(key - '0'); // Hechizos para J1
+         if (key >= '6' && key <= '9') tablero_->procesarTeclaHechizo(key - '0'); // Hechizos para J2
+         if (key == '0') tablero_->procesarTeclaHechizo(0); // Hechizo 0 para J2
         break;
 
 		case BATALLA: // movimiento continuo en la batalla, se procesa al pulsar la tecla y al levantarla, hay movimiento mientras se mantenga pulsada la tecla
@@ -232,12 +264,20 @@ void Juego::procesarTeclaLevantada(unsigned char key)
 
 void Juego::procesarTeclaEspecialPresionada(int key) // JUGADOR 2 (FLECHAS)
 {
- 
     switch (estado_actual) 
     {
     case MENU:
-        if (key == GLUT_KEY_UP) menu_->moverSelector(-1); // arriba resta 1 (se acerca a 0 que es JUGAR)
-        if (key == GLUT_KEY_DOWN) menu_->moverSelector(1); // abajo suma 1 (bajándo hacia el 3 que es CREDITOS)
+        if (key == GLUT_KEY_UP) 
+        {
+            menu_->moverSelector(-1); // arriba resta 1 (se acerca a 0 que es JUGAR)
+            audio_->sonidoMenu();
+        }
+        if (key == GLUT_KEY_DOWN) 
+        {
+            menu_->moverSelector(1); // abajo suma 1 (bajándo hacia el 3 que es CREDITOS)
+            audio_->sonidoMenu();
+        }
+            
         break;
 
     case TABLERO:

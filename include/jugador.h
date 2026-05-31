@@ -16,6 +16,8 @@ class Jugador
     Animal* animalEnCombate_ = nullptr;
     int equipo_;
 
+    //template <typename T> void agregarAnimal(float& posX, float& posY, float& posZ, float dirX, float varExt2);
+
 public:
 
     Jugador(int equipo);
