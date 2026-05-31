@@ -26,6 +26,9 @@ protected:
 	float capaz_{};
 	int equipo_;
 	int vida_;
+	int vida_base_;       // vida base del animal
+	int vida_actual_;     // vida que cambia durante el combate
+	int bonus_vida_casilla_ = 0; // bonus de vida temporal por estar en casilla de su color
 
 public:
 
@@ -125,4 +128,12 @@ public:
 	float getRecargaAtaque() const { return ataque_ ? ataque_->getRecarga() : 0.f; }
 	virtual const char* getTipoAtaque() const { return "No estoy definido"; };
 	void recibirDano(int dano) { vida_ -= dano; }
+
+	// casillas de colores
+	void setBonusVidaCasilla(int bonus) { bonus_vida_casilla_ = bonus; }
+	int getBonusVidaCasilla() const { return bonus_vida_casilla_; }
+	int getVidaBase() const { return vida_base_; }
+	void setVidaBase(int v) { vida_base_ = v; }
+	int getVidaActual() const { return vida_actual_; }
+	void setVidaActual(int v) { vida_actual_ = v; }
 };

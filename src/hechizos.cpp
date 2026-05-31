@@ -81,6 +81,13 @@ void Tablero::procesarTeclaHechizo(int tecla) {
 }
 
 void Tablero::ejecutarPasoHechizo(Animal* casilla, int fila, int col) {
+
+    // no se pueden usar hechizos sobre las casillas de poder
+    if (tipo_casilla_[fila][col] == 'P') {
+        std::cout << "[!] No se pueden usar habilidades sobre un animal en un Punto de Poder.\n";
+        return; // Anula la acción
+    }
+
     Jugador* jugadorActivo = getJugadorActivo();
     int bando = jugadorActivo->getEquipo();
 
