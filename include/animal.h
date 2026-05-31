@@ -51,7 +51,6 @@ public:
 	virtual ~Animal() {}
 
 	Casilla casillaInicial_{};
-	especieAnimal especie_;
 	Casilla casilla_actual_{};
 
 	Ataque* ataque_;

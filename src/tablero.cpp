@@ -104,7 +104,7 @@ void Tablero::recibirMovimiento(int jugador, int dx, int dy) // dx y dy son -1, 
             int columna_destino = pieza->casilla_actual_.columna + dx;
 
             if (casillas_[fila_destino][columna_destino] != nullptr && casillas_[fila_destino][columna_destino]->getEquipo() == pieza->getEquipo() 
-                && (pieza->especie_ == GALLINA  || pieza->especie_ == CERDO)) {
+                && (pieza->getEspecie() == GALLINA || pieza->getEspecie() == CERDO)) {
                 bool movimiento_cancelado = pieza->mover(CANCELAR, 0, 0);
             }
             else {
@@ -331,6 +331,8 @@ bool Tablero::esMovimientoLegal(const Movimiento& m) const
     if (casillaDestino != nullptr && casillaDestino->getEquipo() == turno_actual_)
         return false;
 
+    bool puedeSaltar = (pieza->getEspecie() != GALLINA && pieza->getEspecie() != CERDO);
+
     // conexión con los vectores de movimientos posibles de cada animal
     std::vector<Movimiento> permitidos = pieza->movimientosPosibles();
     bool esValidoGeometricamente = false;
@@ -345,7 +347,7 @@ bool Tablero::esMovimientoLegal(const Movimiento& m) const
         }
     }
 
-    return esValidoGeometricamente;
+    return (esValidoGeometricamente && esAlcanzable(m.origen, m.destino, pieza->getMaxCasillasMovidas(), puedeSaltar));
 }
 
 void Tablero::mover(const Movimiento& m)
@@ -428,4 +430,74 @@ void Tablero::anadirPiezaMuerta(Animal* pieza)
     pieza->setVelocidad(Vector2D(0, 0));
     pieza->setEnMovimiento(false);
     pieza->setState(0, 0); 
+}
+
+bool Tablero::esAlcanzable(Casilla origen, Casilla destino, int maxMovimientos, bool puedeSaltar) const
+{
+    // Si la distancia ideal ya es mayor al máximo, es imposible llegar
+    int distManhattan = std::abs(destino.fila - origen.fila) + std::abs(destino.columna - origen.columna);
+    if (distManhattan > maxMovimientos) return false;
+
+    // Si el animal puede saltar (Oveja, Cabra...), la distancia ideal es suficiente
+    if (puedeSaltar) return true;
+
+    // Si es la misma casilla en la que estamos, siempre es alcanzable
+    if (origen.fila == destino.fila && origen.columna == destino.columna) return true;
+
+    // Algoritmo BFS para los que no saltan (Gallina, Cerdo)
+    int distancias[Constantes::FILAS_TABLERO][Constantes::COLUMNAS_TABLERO];
+    for (int i = 0; i < Constantes::FILAS_TABLERO; ++i) {
+        for (int j = 0; j < Constantes::COLUMNAS_TABLERO; ++j) {
+            distancias[i][j] = -1; // -1 significa "no visitado"
+        }
+    }
+
+    std::queue<Casilla> cola;
+    cola.push(origen);
+    distancias[origen.fila][origen.columna] = 0;
+
+    // Movimientos posibles paso a paso: Arriba, Abajo, Izquierda, Derecha
+    int dFila[] = { -1, 1, 0, 0 };
+    int dCol[] = { 0, 0, -1, 1 };
+
+    while (!cola.empty())
+    {
+        Casilla actual = cola.front();
+        cola.pop();
+
+        // Si ya nos quedamos sin movimientos en esta rama, no seguimos explorando
+        if (distancias[actual.fila][actual.columna] >= maxMovimientos) continue;
+
+        // Explorar las 4 casillas adyacentes
+        for (int i = 0; i < 4; ++i)
+        {
+            int nFila = actual.fila + dFila[i];
+            int nCol = actual.columna + dCol[i];
+
+            // Comprobar que no nos salimos del tablero
+            if (nFila >= 0 && nFila < Constantes::FILAS_TABLERO &&
+                nCol >= 0 && nCol < Constantes::COLUMNAS_TABLERO)
+            {
+                if (distancias[nFila][nCol] == -1) // Si no la hemos visitado aún
+                {
+                    if (casillas_[nFila][nCol] != nullptr)
+                    {
+                        // Hay obstáculo. Solo podemos mirar si es EXACTAMENTE el destino 
+                        // (para poder marcar un enemigo como objetivo de combate)
+                        if (nFila == destino.fila && nCol == destino.columna) return true;
+                    }
+                    else
+                    {
+                        // Casilla vacía, seguimos explorando
+                        distancias[nFila][nCol] = distancias[actual.fila][actual.columna] + 1;
+                        if (nFila == destino.fila && nCol == destino.columna) return true;
+                        cola.push({ nFila, nCol });
+                    }
+                }
+            }
+        }
+    }
+
+    // Si la cola se vacía y no hemos llegado, el camino está bloqueado
+    return false;
 }

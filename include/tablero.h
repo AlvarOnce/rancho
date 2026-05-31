@@ -4,6 +4,7 @@
 #include "tarjetaID.h" 
 #include "jugador.h"
 #include "estructuras.h"
+#include <queue>
 #include "RenderizadorAudio.h"
 const int BANDO_LUZ = 0;
 const int BANDO_OSCURIDAD = 1;
@@ -104,6 +105,7 @@ public:
 	void setLetreroPosY(float y) { letreroTurnos_.posicion.y = y; }
 
     void anadirPiezaMuerta(Animal* pieza);
+    bool esAlcanzable(Casilla origen, Casilla destino, int maxMovimientos, bool puedeSaltar) const;
 
 	Animal* getAnimalEnCasilla(int fila, int columna) const { return casillas_[fila][columna]; }
     void acomodarGanador(Animal* animalGanador);

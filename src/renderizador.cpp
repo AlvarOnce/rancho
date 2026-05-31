@@ -75,58 +75,56 @@ void Renderizador::dibujar(const Tablero* tablero) const
         tablero->getLetreroPosX(), 270 / 2, -5, 4, 8,
         tablero->getLetreroFrameX(), tablero->getLetreroFrameY());
 
+   
     // ILUMINAR CASILLAS POSIBLES
-	// referencias constantes para no modificar los objetos originales
     const Cursor& cursorActivo = tablero->getCursorActivo();
     const Jugador* jugadorActivo = tablero->getJugadorActivo();
-    
+
     int filaCursor = cursorActivo.getFila();
     int colCursor = cursorActivo.getColumna();
-    
+
     const Animal* animalEnCursor = tablero->getAnimalEnCasilla(filaCursor, colCursor);
     bool tienePiezaAgarrada = jugadorActivo->tienePiezaAgarrada();
-    if (tablero->getEstadoHechizo() == INACTIVO) // para que no aparezcan mientras se usa un hechizo
-    {
-        if (animalEnCursor != nullptr || tienePiezaAgarrada) {
+
+    if (animalEnCursor != nullptr || tienePiezaAgarrada) {
 
         int maxMovimientos = 0;
         int equipoFicha = -1;
-        float deltaTamanoTarjeta = 4 * sin(2 * tablero->angulo);
 
-        if (animalEnCursor != nullptr) {
-            maxMovimientos = animalEnCursor->getMaxCasillasMovidas();
-            equipoFicha = animalEnCursor->getEquipo();
-
-            // dibujar tarjeta de animal en cursor
-         
-            dibujarSprite("../assets/Sprites/tarjetas/tarjetas.png", 256 + deltaTamanoTarjeta, 512 + deltaTamanoTarjeta/2.0f, 69 + (342* equipoFicha), 32, -5.5, 8, 2, equipoFicha, animalEnCursor->getEspecie());
-        }
+        const Animal* animalEvaluado = nullptr;
+        Casilla origenMovimiento = { filaCursor, colCursor };
 
         if (tienePiezaAgarrada) {
-            const Animal* piezaSeleccionada = jugadorActivo->getPiezaSeleccionada();
-            maxMovimientos = piezaSeleccionada->getMaxCasillasMovidas();
-            equipoFicha = piezaSeleccionada->getEquipo();
-
-            // dibujar tarjeta de animal seleccionado
-            dibujarSprite("../assets/Sprites/tarjetas/tarjetas.png", 256 + deltaTamanoTarjeta, 512 + deltaTamanoTarjeta/2.0f, 69 + (342 * equipoFicha), 32, -5.5, 8, 2, equipoFicha, piezaSeleccionada->getEspecie());
+            animalEvaluado = jugadorActivo->getPiezaSeleccionada();
+            maxMovimientos = animalEvaluado->getMaxCasillasMovidas();
+            equipoFicha = animalEvaluado->getEquipo();
+            origenMovimiento = animalEvaluado->casillaInicial_;
+        }
+        else if (animalEnCursor != nullptr) {
+            animalEvaluado = animalEnCursor;
+            maxMovimientos = animalEvaluado->getMaxCasillasMovidas();
+            equipoFicha = animalEvaluado->getEquipo();
         }
 
-            for (int i = 0; i < Constantes::FILAS_TABLERO; i++) {
-                for (int j = 0; j < Constantes::COLUMNAS_TABLERO; j++) {
+        // Detectar si el animal tiene permitido saltar
+        bool puedeSaltar = (animalEvaluado->getEspecie() != GALLINA && animalEvaluado->getEspecie() != CERDO);
 
-                    if (abs(i - filaCursor) + abs(j - colCursor) <= maxMovimientos) // solo si es alcanzable
+        for (int i = 0; i < Constantes::FILAS_TABLERO; i++) {
+            for (int j = 0; j < Constantes::COLUMNAS_TABLERO; j++) {
+
+                if (equipoFicha == jugadorActivo->getEquipo()) // solo si es mi animal
+                {
+                    Casilla destino = { i, j };
+
+                    if (tablero->esAlcanzable(origenMovimiento, destino, maxMovimientos, puedeSaltar))
                     {
-                        if (equipoFicha == jugadorActivo->getEquipo()) // solo si es mi animal
-                        {
-                            const Animal* animalDestino = tablero->getAnimalEnCasilla(i, j);
+                        const Animal* animalDestino = tablero->getAnimalEnCasilla(i, j);
 
-                            // EVALUACION DE CORTOCIRCUITO: solo si esta vacia o animal contrario
-                            if (animalDestino == nullptr || animalDestino->getEquipo() != jugadorActivo->getEquipo())
-                            {
-                                int posPosibleX = 141 + 11 + 22 * j;
-                                int posPosibleY = 36 + 11 + 22 * (8 - i);
-                                dibujarSprite("../assets/Sprites/tablero/casillaPosible.png", 32, 32, posPosibleX, posPosibleY, -2.5);
-                            }
+                        if (animalDestino == nullptr || animalDestino->getEquipo() != jugadorActivo->getEquipo())
+                        {
+                            int posPosibleX = 141 + 11 + 22 * j;
+                            int posPosibleY = 36 + 11 + 22 * (8 - i);
+                            dibujarSprite("../assets/Sprites/tablero/casillaPosible.png", 32, 32, posPosibleX, posPosibleY, -2.5);
                         }
                     }
                 }
