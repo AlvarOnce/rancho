@@ -80,14 +80,12 @@ void Tablero::recibirMovimiento(int jugador, int dx, int dy)
             int fila_destino = pieza->casilla_actual_.fila - dy;
             int columna_destino = pieza->casilla_actual_.columna + dx;
 
-            if (casillas_[fila_destino][columna_destino] != nullptr && casillas_[fila_destino][columna_destino]->getEquipo() == pieza->getEquipo()) {
+            if (casillas_[fila_destino][columna_destino] != nullptr && casillas_[fila_destino][columna_destino]->getEquipo() == pieza->getEquipo() 
+                && (pieza->especie_ == GALLINA  || pieza->especie_ == CERDO)) {
                 bool movimiento_cancelado = pieza->mover(CANCELAR, 0, 0);
-                std::cout << "Movimiento cancelado por colision, pieza sigue en "
-                    << pieza->casilla_actual_.fila << ", " << pieza->casilla_actual_.columna << std::endl;
             }
             else {
                 bool movimiento_exitoso = pieza->mover(TABLERO, dx, dy);
-                std::cout << "pieza se mueve a " << fila_destino << ", " << columna_destino << std::endl;
             }
             }
     }
