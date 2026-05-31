@@ -107,9 +107,18 @@ void Tablero::recibirMovimiento(int jugador, int dx, int dy) // dx y dy son -1, 
             Animal* pieza = jugadorActivo->getPiezaSeleccionada();
             if (pieza->getEnMovimiento()) return;
 
-            bool movimiento_valido = false;
-            movimiento_valido = pieza->mover(TABLERO, dx, dy);
-        }
+            // Calculamos el destino correctamente: las filas cambian con 'dy' y las columnas con 'dx'
+            int fila_destino = pieza->casilla_actual_.fila - dy;
+            int columna_destino = pieza->casilla_actual_.columna + dx;
+
+            if (casillas_[fila_destino][columna_destino] != nullptr && casillas_[fila_destino][columna_destino]->getEquipo() == pieza->getEquipo() 
+                && (pieza->getEspecie() == GALLINA || pieza->getEspecie() == CERDO)) {
+                bool movimiento_cancelado = pieza->mover(CANCELAR, 0, 0);
+            }
+            else {
+                bool movimiento_exitoso = pieza->mover(TABLERO, dx, dy);
+            }
+            }
     }
 }
 
@@ -159,6 +168,20 @@ void Tablero::seleccionarPieza(int jugador, RenderizadorAudio* audio)
             // leer la coordenada destino matemática a partir de los píxeles
             m.destino.columna = std::round((pieza->getPosX() - 152.0f) / 22.0f);
             m.destino.fila = 8 - std::round((pieza->getPosY() - 47.0f) / 22.0f);
+
+            {  //esto es para el en passant, especial para ti Pablo
+
+                if (pieza->getEspecie() == GALLINA && jugadorActivo->getEquipo() == 0 && (ultimoMovimiento_.destino.columna - m.destino.columna) == -1 && ultimoMovimiento_.destino.fila == m.destino.fila
+                    || (pieza->getEspecie() == GALLINA && jugadorActivo->getEquipo() == 1 && (ultimoMovimiento_.destino.columna - m.destino.columna) == 1 && ultimoMovimiento_.destino.fila == m.destino.fila)) {
+
+                    anadirPiezaMuerta(casillas_[ultimoMovimiento_.destino.fila][ultimoMovimiento_.destino.columna]);
+                    casillas_[ultimoMovimiento_.destino.fila][ultimoMovimiento_.destino.columna] = nullptr;
+                }
+                if (pieza->getEspecie() == GALLINA && (m.origen.columna == 7 && m.destino.columna == 5) || (m.origen.columna == 1 && m.destino.columna == 3)) {
+                    ultimoMovimiento_ = m;
+                }
+                else ultimoMovimiento_.destino.columna = 10; // lo suyo seria vaciarlo, que no tenga nada, pero hago esto de momento
+            }
 
             if (esMovimientoLegal(m))
             {
@@ -332,6 +355,8 @@ bool Tablero::esMovimientoLegal(const Movimiento& m) const
     if (casillaDestino != nullptr && casillaDestino->getEquipo() == turno_actual_)
         return false;
 
+    bool puedeSaltar = (pieza->getEspecie() != GALLINA && pieza->getEspecie() != CERDO);
+
     // conexión con los vectores de movimientos posibles de cada animal
     std::vector<Movimiento> permitidos = pieza->movimientosPosibles();
     bool esValidoGeometricamente = false;
@@ -346,7 +371,7 @@ bool Tablero::esMovimientoLegal(const Movimiento& m) const
         }
     }
 
-    return esValidoGeometricamente;
+    return (esValidoGeometricamente && esAlcanzable(m.origen, m.destino, pieza->getMaxCasillasMovidas(), puedeSaltar));
 }
 
 void Tablero::mover(const Movimiento& m)
@@ -420,11 +445,11 @@ void Tablero::anadirPiezaMuerta(Animal* pieza)
 
     if (pieza->getEquipo() == 0)
     {
-        posicion_piezas_muertas_.x = 40.0f + (muertas_equipo * 22.0f); 
+        posicion_piezas_muertas_.x = 40.0f + (muertas_equipo * 11.0f); 
     }
     else
     {
-        posicion_piezas_muertas_.x = 450.0f - (muertas_equipo * 22.0f);
+        posicion_piezas_muertas_.x = 450.0f - (muertas_equipo * 11.0f);
     }
 
     pieza->setPosicion(Vector2D(posicion_piezas_muertas_));

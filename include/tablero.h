@@ -4,6 +4,7 @@
 #include "tarjetaID.h" 
 #include "jugador.h"
 #include "estructuras.h"
+#include <queue>
 #include "RenderizadorAudio.h"
 const int BANDO_LUZ = 0;
 const int BANDO_OSCURIDAD = 1;
@@ -52,6 +53,7 @@ class Tablero
     int turnos_totales_ = 0; // contador para llevar el ciclo: 2 turnos totales = 1 ciclo completo
     bool hay_colision_ = false;
     int turno_actual_ = BANDO_LUZ;
+	int jugadas_realizadas_ = 0;
     Letrero letreroTurnos_;
 
     Jugador* jugadores_[2];// que recuerda donde estaba al cambiar el turno// para poder acceder a su pieza seleccionada
@@ -60,7 +62,7 @@ class Tablero
 
 
 	Movimiento ultimoMovimiento_;
-	Vector2D posicion_piezas_muertas_ = { 0.0f, 247.0f }; 
+	Vector2D posicion_piezas_muertas_ = { 0.0f, 250.0f }; 
 	std::vector<Animal*> piezas_muertas_; 
 
     static const int TAMANO_CASILLA = 22;
@@ -104,6 +106,7 @@ public:
 	void setLetreroPosY(float y) { letreroTurnos_.posicion.y = y; }
 
     void anadirPiezaMuerta(Animal* pieza);
+    bool esAlcanzable(Casilla origen, Casilla destino, int maxMovimientos, bool puedeSaltar) const;
 
 	Animal* getAnimalEnCasilla(int fila, int columna) const { return casillas_[fila][columna]; }
     void acomodarGanador(Animal* animalGanador);

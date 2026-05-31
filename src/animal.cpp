@@ -53,6 +53,10 @@ void Animal::actualizarEnTablero(float dt)
 	if (posicion_.y <= 25) int trash = mover(TABLERO, 0, 1); // Limite inferior del tablero
 	if (posicion_.y >= 25 + 22 * 10) int trash = mover(TABLERO, 0, -1); // Limite superior del tablero
 
+    int columna_actual_ = (posicion_.x - 152) / 22;
+    int fila_actual_ = 8 - (posicion_.y - 47) / 22;
+    casilla_actual_ = { fila_actual_, columna_actual_ };
+
     animar(dt);
 }
 
@@ -133,7 +137,6 @@ void Animal::setState(int frameX, int frameY)
 std::vector<Movimiento> Animal::movimientosPosibles() const
 {
     std::vector<Movimiento> movimientos;
-    //Casilla origen = { casillaInicial_[0], casillaInicial_[1] };
     Casilla origen = casillaInicial_;
 
     int alcance = max_casillas_movidas_;
