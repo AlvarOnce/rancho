@@ -419,11 +419,11 @@ void Tablero::anadirPiezaMuerta(Animal* pieza)
 
     if (pieza->getEquipo() == 0)
     {
-        posicion_piezas_muertas_.x = 40.0f + (muertas_equipo * 22.0f); 
+        posicion_piezas_muertas_.x = 40.0f + (muertas_equipo * 11.0f); 
     }
     else
     {
-        posicion_piezas_muertas_.x = 450.0f - (muertas_equipo * 22.0f);
+        posicion_piezas_muertas_.x = 450.0f - (muertas_equipo * 11.0f);
     }
 
     pieza->setPosicion(Vector2D(posicion_piezas_muertas_));
