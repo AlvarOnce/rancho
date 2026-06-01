@@ -82,7 +82,7 @@ void Tablero::actualizar(float dt)
     determinarGanador();
 }
 
-void Tablero::recibirMovimiento(int jugador, int dx, int dy) // dx y dy son -1, 0 o 1 dependiendo de la direcciÛn del movimiento
+void Tablero::recibirMovimiento(int jugador, int dx, int dy) // dx y dy son -1, 0 o 1 dependiendo de la direcci√≥n del movimiento
 {
     if (casillas_[8][0] != nullptr && casillas_[8][0]->getIntroTablero()) return;
 
@@ -95,7 +95,7 @@ void Tablero::recibirMovimiento(int jugador, int dx, int dy) // dx y dy son -1, 
         if (estadoHechizo_ != INACTIVO) // si hay un hechizo activo, se mueve el cursor
         {
             cursor.mover(dx, dy);
-            return; // corta aquÌ para que no intente mover al granjero
+            return; // corta aqu√≠ para que no intente mover al granjero
         }
 
 		if (!jugadorActivo->tienePiezaAgarrada()) // si no tiene pieza agarrada, se mueve el cursor
@@ -136,8 +136,8 @@ void Tablero::seleccionarPieza(int jugador, renderizadorAudio* audio)
                     return; // bloquea recoger la pieza
                 }
 
-                // guardar el origen antes de levantarla fÌsicamente
-                casilla->casillaInicial_ = { cursor.getFila(), cursor.getColumna()};
+                // guardar el origen antes de levantarla f√≠sicamente
+                casilla->casilla_inicial_ = { cursor.getFila(), cursor.getColumna()};
 
                 jugadorActivo->agarrarPieza(casilla);
                 casillas_[cursor.getFila()][cursor.getColumna()] = nullptr;
@@ -150,16 +150,29 @@ void Tablero::seleccionarPieza(int jugador, renderizadorAudio* audio)
         {
             Animal* pieza = jugadorActivo->getPiezaSeleccionada();
 
-            // si la pieza sigue desplaz·ndose visualmente, evitar soltarla
+            // si la pieza sigue desplaz√°ndose visualmente, evitar soltarla
             if (pieza->getEnMovimiento()) return;
 
             Movimiento m;
-            m.origen = pieza->casillaInicial_;
+            m.origen = pieza->casilla_inicial_;
 
-            // leer la coordenada destino matem·tica a partir de los pÌxeles
+            // leer la coordenada destino matem√°tica a partir de los p√≠xeles
             m.destino.columna = std::round((pieza->getPosX() - 152.0f) / 22.0f);
             m.destino.fila = 8 - std::round((pieza->getPosY() - 47.0f) / 22.0f);
 
+            {  //esto es para el en passant
+
+                if (pieza->getEspecie() == GALLINA && jugadorActivo->getEquipo() == 0 && (ultimoMovimiento_.destino.columna - m.destino.columna) == -1 && ultimoMovimiento_.destino.fila == m.destino.fila
+                    || (pieza->getEspecie() == GALLINA && jugadorActivo->getEquipo() == 1 && (ultimoMovimiento_.destino.columna - m.destino.columna) == 1 && ultimoMovimiento_.destino.fila == m.destino.fila)) {
+
+                    anadirPiezaMuerta(casillas_[ultimoMovimiento_.destino.fila][ultimoMovimiento_.destino.columna]);
+                    casillas_[ultimoMovimiento_.destino.fila][ultimoMovimiento_.destino.columna] = nullptr;
+                }
+                if (pieza->getEspecie() == GALLINA && (m.origen.columna == 7 && m.destino.columna == 5) || (m.origen.columna == 1 && m.destino.columna == 3)) {
+                    ultimoMovimiento_ = m;
+                }
+                else ultimoMovimiento_.destino.columna = 10; // lo suyo seria vaciarlo, que no tenga nada, pero hago esto de momento
+            }
             if (esMovimientoLegal(m))
             {
                 if (getHayColision()) // asignar animales de combate a piezas chocantes (J1 izquierda, J2 derecha siempre)
@@ -222,11 +235,11 @@ void Tablero::seleccionarPieza(int jugador, renderizadorAudio* audio)
             }
             else
             {
-                // MOVIMIENTO ILEGAL: volver a colocar la pieza en su posiciÛn original
+                // MOVIMIENTO ILEGAL: volver a colocar la pieza en su posici√≥n original
                 casillas_[m.origen.fila][m.origen.columna] = pieza;
 
                 float origX = 141.0f + 11.0f + (22.0f * m.origen.columna);
-                float origY = 36.0f + 11.0f + (22.0f * (8 - m.origen.fila)); // lo de (8 - m.origen.fila) se explica m·s abajo en la linea 274
+                float origY = 36.0f + 11.0f + (22.0f * (8 - m.origen.fila)); // lo de (8 - m.origen.fila) se explica m√°s abajo en la linea 274
                 pieza->setPosX(origX);
                 pieza->setPosy(origY);
 
@@ -254,11 +267,11 @@ void Tablero::actualizarColision()
     {
         Animal* pieza = jugadorActivo->getPiezaSeleccionada();
 
-        // calcula la casilla sobre la que est· volando el animal
-        int destCol = std::round((pieza->getPosX() - 152.0f) / 22.0f); // round sirve para redondear al entero m·s cercano
+        // calcula la casilla sobre la que est√° volando el animal
+        int destCol = std::round((pieza->getPosX() - 152.0f) / 22.0f); // round sirve para redondear al entero m√°s cercano
         int destFila = 8 - std::round((pieza->getPosY() - 47.0f) / 22.0f);
 
-        // Si est· dentro del tablero y hay un enemigo, activar colisiÛn
+        // Si est√° dentro del tablero y hay un enemigo, activar colisi√≥n
         if (destFila >= 0 && destFila < Constantes::FILAS_TABLERO &&
             destCol >= 0 && destCol < Constantes::COLUMNAS_TABLERO)
         {
@@ -312,7 +325,7 @@ void Pato::setState(int frameX, int frameY)
 }
 bool Tablero::esMovimientoLegal(const Movimiento& m) const
 {
-    // validar que el destino estÈ dentro de las dimensiones del tablero
+    // validar que el destino est√© dentro de las dimensiones del tablero
     if (m.destino.fila < 0 || m.destino.fila >= Constantes::FILAS_TABLERO ||
         m.destino.columna < 0 || m.destino.columna >= Constantes::COLUMNAS_TABLERO)
         return false;
@@ -327,12 +340,12 @@ bool Tablero::esMovimientoLegal(const Movimiento& m) const
     if (!pieza)
         return false;
 
-    // comprobar colisiÛn con piezas del propio equipo
+    // comprobar colisi√≥n con piezas del propio equipo
     Animal* casillaDestino = casillas_[m.destino.fila][m.destino.columna];
     if (casillaDestino != nullptr && casillaDestino->getEquipo() == turno_actual_)
         return false;
 
-    // conexiÛn con los vectores de movimientos posibles de cada animal
+    // conexi√≥n con los vectores de movimientos posibles de cada animal
     std::vector<Movimiento> permitidos = pieza->movimientosPosibles();
     bool esValidoGeometricamente = false;
 
@@ -354,17 +367,17 @@ void Tablero::mover(const Movimiento& m)
     Jugador* jugadorActivo = getJugadorActivo();
     Animal* pieza = jugadorActivo->getPiezaSeleccionada();
 
-    // mover la pieza en la matriz lÛgica del tablero
+    // mover la pieza en la matriz l√≥gica del tablero
     casillas_[m.destino.fila][m.destino.columna] = pieza;
     pieza->casillaInicial_ = { m.destino.fila,m.destino.columna };
 
-    // sincronizar la posiciÛn fÌsica/gr·fica del animal con su nuevo destino
+    // sincronizar la posici√≥n f√≠sica/gr√°fica del animal con su nuevo destino
     float nuevaPosX = 141.0f + 11.0f + (22.0f * m.destino.columna);
-    float nuevaPosY = 36.0f + 11.0f + (22.0f * (8 - m.destino.fila)); // invertir el eje Y para que la fila 0 estÈ en la parte inferior del tablero
-    // esto es porque en la lÛgica del tablero, la fila 0 es la inferior, pero en el dibujo, la fila 0 est· en la parte superior.
-    // habrÌa que cambiar alguna de las dos cosas para que no haya que hacer esta conversiÛn, pero es un detalle menor y no afecta a la lÛgica del juego
+    float nuevaPosY = 36.0f + 11.0f + (22.0f * (8 - m.destino.fila)); // invertir el eje Y para que la fila 0 est√© en la parte inferior del tablero
+    // esto es porque en la l√≥gica del tablero, la fila 0 es la inferior, pero en el dibujo, la fila 0 est√° en la parte superior.
+    // habr√≠a que cambiar alguna de las dos cosas para que no haya que hacer esta conversi√≥n, pero es un detalle menor y no afecta a la l√≥gica del juego
 
-    pieza->setPosicion(Vector2D(nuevaPosX, nuevaPosY)); // este tipo de uso de vector2D hay que hacerlo en todo el cÛdigo
+    pieza->setPosicion(Vector2D(nuevaPosX, nuevaPosY)); // este tipo de uso de vector2D hay que hacerlo en todo el c√≥digo
 
     // parar el movimiento de la pieza, por si acasoS
     pieza->setVelocidad(Vector2D(0, 0));
@@ -388,7 +401,7 @@ int Tablero::determinarGanador() {
             casillas_[4][4]->getEquipo() == casillas_[8][4]->getEquipo())
             return casillas_[4][4]->getEquipo();
 
-    // condiciÛn de ganar por eliminaciÛn
+    // condici√≥n de ganar por eliminaci√≥n
     int muertes_equipo_0 = 0;
     int muertes_equipo_1 = 0;
 
@@ -417,7 +430,7 @@ void Tablero::acomodarGanador(Animal* animalGanador)
 }
 void Tablero::acomodarPerdedor(Animal* animalPerdedor)
 {
-	//animalPerdedor->setVida(1); // para que no se muera visualmente, aunque ya no tenga vida lÛgica, asÌ se puede mostrar en el tablero de piezas muertas
+	//animalPerdedor->setVida(1); // para que no se muera visualmente, aunque ya no tenga vida l√≥gica, as√≠ se puede mostrar en el tablero de piezas muertas
     anadirPiezaMuerta(animalPerdedor);
 }
 
