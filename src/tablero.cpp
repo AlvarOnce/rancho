@@ -356,6 +356,7 @@ void Tablero::mover(const Movimiento& m)
 
     // mover la pieza en la matriz lógica del tablero
     casillas_[m.destino.fila][m.destino.columna] = pieza;
+    pieza->casillaInicial_ = { m.destino.fila,m.destino.columna };
 
     // sincronizar la posición física/gráfica del animal con su nuevo destino
     float nuevaPosX = 141.0f + 11.0f + (22.0f * m.destino.columna);
