@@ -106,9 +106,9 @@ void Tablero::ejecutarPasoHechizo(Animal* casilla, int fila, int col, renderizad
     case TELETRANSPORTE_SELECCIONAR_DESTINO:
         if (casilla == nullptr) { // Casilla vacía
             casillas_[fila][col] = primerObjetivoHechizo_;
-            casillas_[primerObjetivoHechizo_->casilla_inicial_.fila][primerObjetivoHechizo_->casilla_inicial_.columna] = nullptr;
+            casillas_[primerObjetivoHechizo_->casillaInicial_.fila][primerObjetivoHechizo_->casillaInicial_.columna] = nullptr;
 
-            primerObjetivoHechizo_->casilla_inicial_ = { fila, col };
+            primerObjetivoHechizo_->casillaInicial_ = { fila, col };
             float nuevaPosX = 141.0f + 11.0f + (22.0f * col);
             float nuevaPosY = 36.0f + 11.0f + (22.0f * (8 - fila));
             primerObjetivoHechizo_->setPosicion(Vector2D(nuevaPosX, nuevaPosY));
@@ -149,16 +149,16 @@ void Tablero::ejecutarPasoHechizo(Animal* casilla, int fila, int col, renderizad
 
     case INTERCAMBIO_SELECCIONAR_ENEMIGO:
         if (casilla && casilla->getEquipo() != bando) {
-            Casilla pos1 = primerObjetivoHechizo_->casilla_inicial_;
-            Casilla pos2 = casilla->casilla_inicial_;
+            Casilla pos1 = primerObjetivoHechizo_->casillaInicial_;
+            Casilla pos2 = casilla->casillaInicial_;
 
             // intercambio en la matriz
             casillas_[pos2.fila][pos2.columna] = primerObjetivoHechizo_;
             casillas_[pos1.fila][pos1.columna] = casilla;
 
             // intercambio de atributos lógicos
-            primerObjetivoHechizo_->casilla_inicial_ = pos2;
-            casilla->casilla_inicial_ = pos1;
+            primerObjetivoHechizo_->casillaInicial_ = pos2;
+            casilla->casillaInicial_ = pos1;
 
             // actualizar física aliado
             float nuevaPosX1 = 141.0f + 11.0f + (22.0f * pos2.columna);
@@ -204,10 +204,10 @@ void Tablero::finalizarHechizo() {
     Animal* granjero = jugadorActivo->getPiezaSeleccionada();
 
     // devolver el granjero a su casilla original ya que castear el hechizo consume su acción
-    float origX = 141.0f + 11.0f + (22.0f * granjero->casilla_inicial_.columna);
-    float origY = 36.0f + 11.0f + (22.0f * (8 - granjero->casilla_inicial_.fila));
+    float origX = 141.0f + 11.0f + (22.0f * granjero->casillaInicial_.columna);
+    float origY = 36.0f + 11.0f + (22.0f * (8 - granjero->casillaInicial_.fila));
     granjero->setPosicion(Vector2D(origX, origY));
-    casillas_[granjero->casilla_inicial_.fila][granjero->casilla_inicial_.columna] = granjero;
+    casillas_[granjero->casillaInicial_.fila][granjero->casillaInicial_.columna] = granjero;
 
     jugadorActivo->soltarPieza();
 

@@ -60,7 +60,7 @@ class Tablero
 
 
 	Movimiento ultimoMovimiento_;
-	Vector2D posicion_piezas_muertas_ = { 0.0f, 250.0f }; 
+	Vector2D posicion_piezas_muertas_ = { 0.0f, 247.0f }; 
 	std::vector<Animal*> piezas_muertas_; 
 
     static const int TAMANO_CASILLA = 22;

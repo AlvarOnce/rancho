@@ -137,7 +137,7 @@ void Tablero::seleccionarPieza(int jugador, renderizadorAudio* audio)
                 }
 
                 // guardar el origen antes de levantarla físicamente
-                casilla->casilla_inicial_ = { cursor.getFila(), cursor.getColumna()};
+                casilla->casillaInicial_ = { cursor.getFila(), cursor.getColumna()};
 
                 jugadorActivo->agarrarPieza(casilla);
                 casillas_[cursor.getFila()][cursor.getColumna()] = nullptr;
@@ -154,25 +154,12 @@ void Tablero::seleccionarPieza(int jugador, renderizadorAudio* audio)
             if (pieza->getEnMovimiento()) return;
 
             Movimiento m;
-            m.origen = pieza->casilla_inicial_;
+            m.origen = pieza->casillaInicial_;
 
             // leer la coordenada destino matemática a partir de los píxeles
             m.destino.columna = std::round((pieza->getPosX() - 152.0f) / 22.0f);
             m.destino.fila = 8 - std::round((pieza->getPosY() - 47.0f) / 22.0f);
 
-            {  //esto es para el en passant
-
-                if (pieza->getEspecie() == GALLINA && jugadorActivo->getEquipo() == 0 && (ultimoMovimiento_.destino.columna - m.destino.columna) == -1 && ultimoMovimiento_.destino.fila == m.destino.fila
-                    || (pieza->getEspecie() == GALLINA && jugadorActivo->getEquipo() == 1 && (ultimoMovimiento_.destino.columna - m.destino.columna) == 1 && ultimoMovimiento_.destino.fila == m.destino.fila)) {
-
-                    anadirPiezaMuerta(casillas_[ultimoMovimiento_.destino.fila][ultimoMovimiento_.destino.columna]);
-                    casillas_[ultimoMovimiento_.destino.fila][ultimoMovimiento_.destino.columna] = nullptr;
-                }
-                if (pieza->getEspecie() == GALLINA && (m.origen.columna == 7 && m.destino.columna == 5) || (m.origen.columna == 1 && m.destino.columna == 3)) {
-                    ultimoMovimiento_ = m;
-                }
-                else ultimoMovimiento_.destino.columna = 10; // lo suyo seria vaciarlo, que no tenga nada, pero hago esto de momento
-            }
             if (esMovimientoLegal(m))
             {
                 if (getHayColision()) // asignar animales de combate a piezas chocantes (J1 izquierda, J2 derecha siempre)
@@ -369,7 +356,7 @@ void Tablero::mover(const Movimiento& m)
 
     // mover la pieza en la matriz lógica del tablero
     casillas_[m.destino.fila][m.destino.columna] = pieza;
-    pieza->casilla_inicial_ = { m.destino.fila,m.destino.columna };
+    pieza->casillaInicial_ = { m.destino.fila,m.destino.columna };
 
     // sincronizar la posición física/gráfica del animal con su nuevo destino
     float nuevaPosX = 141.0f + 11.0f + (22.0f * m.destino.columna);
