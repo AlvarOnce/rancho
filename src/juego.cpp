@@ -31,7 +31,7 @@ Juego::~Juego()
     delete renderizador_;
 	delete creditos_;
     delete controles_;
-    delete ganador_;
+    delete ganador_; 
     for (int i = 0; i < 2; i++)
         delete jugadores_[i];
 }
